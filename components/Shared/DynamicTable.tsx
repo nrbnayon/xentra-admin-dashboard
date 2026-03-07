@@ -10,7 +10,6 @@ import {
   TableAction,
   SortConfig,
   ConfirmationConfig,
-  TableColumn,
 } from "@/types/table.types";
 import {
   ArrowUpDown,
@@ -331,7 +330,7 @@ export function DynamicTable<T extends Record<string, any>>({
                   >
                     <div
                       className={cn(
-                        "flex items-center gap-2",
+                        "flex items-center gap-2 text-base",
                         column.align === "center" && "justify-center",
                         column.align === "right" && "justify-end",
                         column.sortable && "cursor-pointer select-none",
@@ -340,7 +339,7 @@ export function DynamicTable<T extends Record<string, any>>({
                     >
                       {column.header}
                       {column.sortable && (
-                        <span className="text-white">
+                        <span className="text-foreground">
                           {sortConfig?.key === column.key ? (
                             sortConfig.direction === "asc" ? (
                               <ArrowUp className="w-4 h-4" />

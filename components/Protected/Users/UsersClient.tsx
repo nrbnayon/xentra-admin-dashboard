@@ -70,41 +70,41 @@ export default function UsersClient() {
       key: "name",
       header: "Name",
       sortable: true,
-      className: "font-medium text-gray-700",
+      className: "font-medium text-foreground",
     },
     {
       key: "phone_number",
       header: "Phone Number",
       sortable: true,
-      className: "text-[#5e5e5e] font-medium",
+      className: "text-foreground font-medium",
     },
     {
       key: "balance",
       header: "Balance",
       render: (val: number) => `${val} HTG`,
       sortable: true,
-      className: "text-[#5e5e5e] font-medium",
+      className: "text-foreground font-medium",
     },
     {
       key: "contest_joined",
       header: "Contest Joined",
       sortable: true,
       align: "center",
-      className: "text-[#5e5e5e] font-medium",
+      className: "text-foreground font-medium",
     },
     {
       key: "total_win",
       header: "Total Win",
       sortable: true,
       align: "center",
-      className: "text-[#5e5e5e] font-medium",
+      className: "text-foreground font-medium",
     },
     {
       key: "total_lose",
       header: "Total lose",
       sortable: true,
       align: "center",
-      className: "text-[#5e5e5e] font-medium",
+      className: "text-foreground font-medium",
     },
     {
       key: "status",
@@ -143,22 +143,22 @@ export default function UsersClient() {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="w-48 bg-[#1a365d] text-white rounded-xl shadow-xl overflow-hidden border-none absolute -right-6"
+            className="w-56 bg-white text-gray-600 rounded-xl shadow-[0px_0px_35px_0px_rgba(0,0,0,0.05)] overflow-hidden border-none absolute -right-6 p-5"
           >
             <DropdownMenuItem
-              className="focus:bg-[#1a365d] focus:text-white hover:bg-[#2a4365] cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none"
+              className="text-white bg-primary hover:bg-primary/80 cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none focus:text-black"
               onClick={() => openPredictionView(selectedUser as User)}
             >
               View Prediction
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="focus:bg-[#1a365d] focus:text-white hover:bg-[#2a4365] cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none"
+              className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none focus:text-black"
               onClick={() => openWalletView(selectedUser as User)}
             >
               View Wallet
             </DropdownMenuItem>
             <DropdownMenuItem
-              className="focus:bg-[#1a365d] focus:text-white hover:bg-[#2a4365] cursor-pointer text-sm p-3 flex items-center justify-center outline-none"
+              className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 flex items-center justify-center outline-none focus:text-black"
               onClick={() => openTransactionHistory(selectedUser as User)}
             >
               Transaction History
@@ -177,7 +177,7 @@ export default function UsersClient() {
         description="Here is the list of all the users details"
       />
 
-      <main className="p-4 md:p-6 lg:p-8">
+      <main className="p-4 md:px-6 lg:px-8">
         <DynamicTable<User>
           data={users}
           config={{
@@ -192,8 +192,8 @@ export default function UsersClient() {
             searchKeys: ["name", "phone_number"],
           }}
           pagination={{ enabled: true, pageSize: 10 }}
-          className="shadow-[0px_0px_35px_0px_rgba(0,0,0,0.05)] border-none rounded-2xl overflow-hidden mt-6"
-          headerClassName="bg-[#E5F3FC] text-[#475467] font-medium"
+          className="shadow-[0px_0px_35px_0px_rgba(0,0,0,0.05)] border-none rounded-2xl overflow-hidden"
+          headerClassName="bg-[#E6F4FF] text-foreground font-medium"
         />
       </main>
 
