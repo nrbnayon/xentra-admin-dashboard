@@ -1,77 +1,56 @@
 "use client";
 
 import DashboardHeader from "@/components/Shared/DashboardHeader";
-import { DashboardStatsCard } from "./DashboardStatsCard";
-import { 
-  BarChart3, 
-  ChefHat, 
-  Users, 
-  Salad
-} from "lucide-react";
-import { RevenueCostTrendChart } from "./RevenueCostTrendChart";
-import { FoodCostDistributionChart } from "./FoodCostDistributionChart";
-import { TopBudgetRecipes } from "./TopBudgetRecipes";
-import { RecentAlerts } from "./RecentAlerts";
-import { dashboardStats } from "@/data/dashboardData";
+import { StatsCard } from "@/components/Shared/StatsCard";
+import RevenueTrendChart from "./RevenueTrendChart";
+import {
+  dashboardStatsTop,
+  dashboardStatsBottom,
+  revenueChartData,
+} from "@/data/dashboardData";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 export default function DashboardClient() {
   return (
-    <div className="pb-10">
+    <div className="pb-10 min-h-screen">
       <DashboardHeader
-        title="Dashboard Overview"
-        description="Monitor your F&B operations and financial performance in real-time"
+        title="Dashboard"
+        description="Here is the overall details of your dashboard"
       />
 
-      <main className="p-4 md:p-8 space-y-8">
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <DashboardStatsCard
-            title="Total Revenue"
-            value={dashboardStats.totalRevenue.value}
-            icon={BarChart3}
-            iconColor="#22C55E"
-            iconBgColor="#DCFCE7"
-            percentage={dashboardStats.totalRevenue.percentage}
-            subtitleText="Up from last month"
-          />
-          <DashboardStatsCard
-            title="Food cost"
-            value={dashboardStats.foodCost.value}
-            icon={Salad}
-            iconColor="#3B82F6"
-            iconBgColor="#DBEAFE"
-            percentage={dashboardStats.foodCost.percentage}
-            subtitleText="Up from last month"
-          />
-          <DashboardStatsCard
-            title="Active Recipes"
-            value={dashboardStats.activeRecipes.value}
-            icon={ChefHat}
-            iconColor="#EF4444"
-            iconBgColor="#FEE2E2"
-            percentage={dashboardStats.activeRecipes.percentage}
-            subtitleText="Up from last month"
-          />
-          <DashboardStatsCard
-            title="Staff On duty"
-            value={dashboardStats.staffOnDuty.value}
-            icon={Users}
-            iconColor="#F59E0B"
-            iconBgColor="#FEF3C7"
-            subtitleText={`${dashboardStats.staffOnDuty.onLeave} Staff on leave`}
-          />
-        </div>
+      <main className="p-4 md:p-6 lg:p-8">
+        <div className="flex flex-col gap-6">
+          {/* Top Row Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {dashboardStatsTop.map((stat, index) => (
+              <StatsCard
+                key={index}
+                title={<TranslatedText text={stat.title} />}
+                value={stat.value}
+                icon={stat.icon}
+                iconColor={stat.iconColor}
+                iconBgColor={stat.iconBgColor}
+              />
+            ))}
+          </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RevenueCostTrendChart />
-          <FoodCostDistributionChart />
-        </div>
+          {/* Bottom Row Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* The second row has only two cards taking up space of 1 each in a 4 col grid, or maybe they just take 1 col each, so we map them normally */}
+            {dashboardStatsBottom.map((stat, index) => (
+              <StatsCard
+                key={index}
+                title={<TranslatedText text={stat.title} />}
+                value={stat.value}
+                icon={stat.icon}
+                iconColor={stat.iconColor}
+                iconBgColor={stat.iconBgColor}
+              />
+            ))}
+          </div>
 
-        {/* Bottom Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <TopBudgetRecipes />
-          <RecentAlerts />
+          {/* RevenueCostTrendChart section */}
+          <RevenueTrendChart data={revenueChartData} />
         </div>
       </main>
     </div>
