@@ -54,32 +54,19 @@ export const SignInForm = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // For now, simulating the logic as in the original file but with API if ready
-      // const response = await login(data).unwrap();
-
-      // Simulate API call for demonstration as per original file's style
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      const mockResponse = {
-        user: {
-          full_name: "Nayon II",
-          phone_number: data.phone_number,
-          role: "admin",
-          image: "/images/user.webp",
-        },
-        accessToken: `mock_access_token_${Date.now()}`,
-      };
+      // Using dummy authentication via authApi
+      const response = await login(data).unwrap();
 
       dispatch(
         setCredentials({
-          user: mockResponse.user,
-          token: mockResponse.accessToken,
+          user: response.user,
+          token: response.accessToken,
         }),
       );
 
       const maxAge = data.rememberMe ? 86400 * 30 : undefined; // 30 days or session
-      document.cookie = `accessToken=${mockResponse.accessToken}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
-      document.cookie = `userRole=${mockResponse.user.role}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
+      document.cookie = `accessToken=${response.accessToken}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
+      document.cookie = `userRole=${response.user.role}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
 
       toast.success("Logged in successfully!");
       router.push("/");
