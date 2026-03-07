@@ -27,7 +27,11 @@ export default function WithdrawalsClient() {
         item.id === id ? { ...item, status: newStatus } : item,
       ),
     );
-    toast.success(`Withdrawal ${newStatus.toLowerCase()} successfully`);
+    toast.success(
+      <TranslatedText
+        text={`Withdrawal ${newStatus.toLowerCase()} successfully`}
+      />,
+    );
   };
 
   const filteredData = withdrawals.filter((item) => {
@@ -38,38 +42,38 @@ export default function WithdrawalsClient() {
   const columns = [
     {
       key: "name",
-      header: "Name",
+      header: <TranslatedText text="Name" />,
       sortable: true,
       className: "font-medium text-gray-900 dark:text-white",
     },
     {
       key: "moncashNumber",
-      header: "Moncash Number",
+      header: <TranslatedText text="Moncash Number" />,
       render: (val: string) => val || "—",
       className: "text-gray-600 dark:text-gray-400",
     },
     {
       key: "natcashNumber",
-      header: "Natcash Number",
+      header: <TranslatedText text="Natcash Number" />,
       render: (val: string) => val || "—",
       className: "text-gray-600 dark:text-gray-400",
     },
     {
       key: "amount",
-      header: "Amount",
+      header: <TranslatedText text="Amount" />,
       render: (val: number) => `${val} HTG`,
       sortable: true,
       className: "text-gray-600 dark:text-gray-400",
     },
     {
       key: "date",
-      header: "Date",
+      header: <TranslatedText text="Date" />,
       sortable: true,
       className: "text-gray-600 dark:text-gray-400",
     },
     {
       key: "status",
-      header: "Status",
+      header: <TranslatedText text="Status" />,
       render: (status: WithdrawalStatus) => {
         let colors = "";
         switch (status) {
@@ -87,7 +91,7 @@ export default function WithdrawalsClient() {
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold ${colors}`}
           >
-            {status}
+            <TranslatedText text={status} />
           </span>
         );
       },
@@ -95,55 +99,11 @@ export default function WithdrawalsClient() {
     },
   ];
 
-  const actions = [
-    {
-      label: "More",
-      icon: (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition outline-none border-none cursor-pointer">
-              <MoreVertical className="w-5 h-5 text-gray-500" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="w-32 bg-white dark:bg-gray-800 rounded-xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 p-2 space-y-1"
-          >
-            <DropdownMenuItem
-              className="flex items-center justify-center py-2 px-3 rounded-lg bg-[#D92D20] text-white hover:bg-[#B42318] cursor-pointer text-sm font-medium focus:bg-[#B42318] focus:text-white outline-none"
-              onClick={(e) => {
-                // The actual item is passed via row in the DynamicTable action handler,
-                // but since I'm using a custom trigger, I need to handle it carefully.
-                // However, DynamicTable maps actions to rows.
-              }}
-            >
-              Reject
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="flex items-center justify-center py-2 px-3 rounded-lg bg-[#32D583] text-white hover:bg-[#12B76A] cursor-pointer text-sm font-medium focus:bg-[#12B76A] focus:text-white outline-none"
-              onClick={() => {}}
-            >
-              Approve
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ),
-      // Overriding the default action logic to use the dropdown content correctly
-      onClick: (row: Withdrawal) => {
-        // This is called when the icon itself is clicked if it wasn't a DropdownTrigger
-      },
-    },
-  ];
-
-  // Since DynamicTable might not support custom components in 'icon' correctly for triggers,
-  // I'll adjust the columns to include a custom Action column if standard actions don't suffice.
-  // Actually, I'll use a custom render for the Action column to match the exact design.
-
   const columnsWithAction = [
     ...columns,
     {
       key: "action",
-      header: "Action",
+      header: <TranslatedText text="Action" />,
       align: "center" as const,
       render: (_: any, row: Withdrawal) => (
         <DropdownMenu>
@@ -160,13 +120,13 @@ export default function WithdrawalsClient() {
               className="flex items-center justify-center py-2 px-4 rounded-full bg-[#D92D20] text-white hover:bg-[#B42318] cursor-pointer text-sm font-medium focus:bg-[#B42318] focus:text-white outline-none"
               onClick={() => handleStatusChange(row.id, "Rejected")}
             >
-              Reject
+              <TranslatedText text="Reject" />
             </DropdownMenuItem>
             <DropdownMenuItem
               className="flex items-center justify-center py-2 px-4 rounded-full bg-[#12B76A] text-white hover:bg-[#0E9355] cursor-pointer text-sm font-medium focus:bg-[#0E9355] focus:text-white outline-none"
               onClick={() => handleStatusChange(row.id, "Approved")}
             >
-              Approve
+              <TranslatedText text="Approve" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -188,7 +148,7 @@ export default function WithdrawalsClient() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab as TabType)}
-              className={`px-8 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer min-w-[120px] ${
+              className={`px-8 py-3 font-medium border-b-2 transition-colors cursor-pointer min-w-30 ${
                 activeTab === tab
                   ? "border-[#1a365d] text-[#1a365d] dark:text-blue-400 dark:border-blue-400"
                   : "border-transparent text-[#1C5898] hover:text-foreground dark:text-gray-400 dark:hover:text-gray-200"
