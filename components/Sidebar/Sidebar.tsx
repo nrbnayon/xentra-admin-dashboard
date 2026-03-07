@@ -13,20 +13,14 @@ import {
   PanelRightOpen,
   ChevronDown,
   ChevronUp,
-  ClipboardList,
-  Truck,
   User,
-  Bot,
+  Gamepad2,
+  Download,
   BarChart3,
-  Bolt,
-  Leaf,
+  Settings,
+  LayoutGrid,
 } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  BbqGrillIcon,
-  CheckmarkCircle03Icon,
-  DashboardSquare02Icon,
-} from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import LogoutModal from "../Shared/LogoutModal";
@@ -73,72 +67,39 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   const links: LinkType[] = useMemo(
     () => [
       {
-        label: "Dashboard Overview",
+        label: "Dashboard",
         href: "/dashboard",
-        icon: DashboardSquare02Icon,
+        icon: <LayoutGrid />,
         roles: ["admin"],
       },
       {
-        label: "Ingredients",
-        href: "/ingredients",
-        icon: (
-          <Leaf className="w-6 h-6 p-1 rounded-full border border-current" />
-        ),
+        label: "Matches",
+        href: "/matches",
+        icon: <Gamepad2 />,
         roles: ["admin"],
       },
       {
-        label: "Recipe Management",
-        href: "/recipe-management",
-        icon: BbqGrillIcon,
-        roles: ["admin"],
-      },
-      {
-        label: "Menu Management",
-        href: "/menu-management",
-        icon: <ClipboardList />,
-        roles: ["admin"],
-      },
-      {
-        label: "Suppliers",
-        href: "/suppliers",
-        icon: <Truck />,
-        subLinks: [
-          {
-            label: "All Purchase",
-            href: "/suppliers/all-purchase",
-            roles: ["admin"],
-          },
-        ],
-        roles: ["admin"],
-      },
-      {
-        label: "Staff Management",
-        href: "/staff-management",
+        label: "Users",
+        href: "/users",
         icon: <User />,
         roles: ["admin"],
       },
       {
-        label: "Approvals",
-        href: "/approvals",
-        icon: CheckmarkCircle03Icon,
+        label: "Withdrawals",
+        href: "/withdrawals",
+        icon: <Download />,
         roles: ["admin"],
       },
       {
-        label: "AI Assistant",
-        href: "/ai-assistant",
-        icon: <Bot />,
-        roles: ["admin"],
-      },
-      {
-        label: "Analytics",
-        href: "/analytics",
+        label: "Revenue",
+        href: "/revenue",
         icon: <BarChart3 />,
         roles: ["admin"],
       },
       {
         label: "Settings",
         href: "/settings",
-        icon: <Bolt />,
+        icon: <Settings />,
         roles: ["admin"],
       },
     ],
@@ -375,7 +336,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
               </div>
 
               {/* Navigation Links */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 {filteredLinks.map((link, idx) => {
                   const isActive = isLinkActive(link);
                   const hasSubLinks = link.subLinks && link.subLinks.length > 0;
@@ -621,18 +582,18 @@ const Logo = ({ open }: { open: boolean }) => {
     <div className="font-normal flex items-center text-sm relative z-20 w-full justify-center">
       <motion.div
         animate={{
-          width: open ? "120px" : "40px",
-          height: open ? "auto" : "40px",
+          width: open ? "80px" : "40px",
+          height: open ? "80px" : "40px",
         }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className="flex items-center justify-center overflow-hidden"
+        className="flex items-center justify-center overflow-hidden rounded-xl shadow-lg"
       >
         <Image
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover"
           alt="Logo"
           src="/icons/logo.png"
-          width={open ? 120 : 40}
-          height={open ? 120 : 40}
+          width={open ? 80 : 40}
+          height={open ? 80 : 40}
           priority
         />
       </motion.div>

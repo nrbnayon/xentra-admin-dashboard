@@ -35,7 +35,7 @@ export default function DashboardClient() {
           </div>
 
           {/* Bottom Row Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* The second row has only two cards taking up space of 1 each in a 4 col grid, or maybe they just take 1 col each, so we map them normally */}
             {dashboardStatsBottom.map((stat, index) => (
               <StatsCard

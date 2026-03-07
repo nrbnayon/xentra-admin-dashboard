@@ -1,4 +1,4 @@
-import { User, Gamepad2, ShoppingBag, BarChart2, Loader2 } from "lucide-react";
+import { User, Gamepad2, ShoppingBag, BarChart2,  CircleDashed } from "lucide-react";
 import { DashboardStatItem, RevenueData } from "@/types/dashboard";
 
 export const dashboardStatsTop: DashboardStatItem[] = [
@@ -45,7 +45,7 @@ export const dashboardStatsBottom: DashboardStatItem[] = [
     value: "22",
     iconBgColor: "#FFF4E5",
     iconColor: "#FFB020",
-    icon: Loader2,
+    icon: CircleDashed,
   },
 ];
 

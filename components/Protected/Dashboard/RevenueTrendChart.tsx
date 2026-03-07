@@ -7,6 +7,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
 } from "recharts";
 import TranslatedText from "@/components/Shared/TranslatedText";
@@ -18,7 +19,7 @@ interface RevenueTrendChartProps {
 const CustomDot = (props: any) => {
   const { cx, cy, stroke, payload } = props;
 
-  return <circle cx={cx} cy={cy} r={5} fill="#0095FF" stroke="none" />;
+  return <circle cx={cx} cy={cy} r={5} fill="#0190FE" stroke="none" />;
 };
 
 export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
@@ -60,10 +61,28 @@ export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
               domain={[0, 140000]}
               dx={-15}
             />
+            <Tooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="bg-white p-3 rounded-lg shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] border-none">
+                      <p className="text-sm font-semibold text-foreground">
+                        {payload[0].payload.month}
+                      </p>
+                      <p className="text-sm text-[#0190FE] font-bold">
+                        ${payload[0].value.toLocaleString()}
+                      </p>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+              cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+            />
             <Line
               type="linear"
               dataKey="revenue"
-              stroke="#0095FF"
+              stroke="#0190FE"
               strokeWidth={2}
               dot={<CustomDot />}
               activeDot={{ r: 7 }}
@@ -86,14 +105,21 @@ export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
             >
               <path
                 d="M0 6H24"
-                stroke="#0095FF"
+                stroke="#0190FE"
                 strokeWidth="2"
                 strokeDasharray="2 2"
               />
-              <circle cx="12" cy="6" r="4" fill="#0095FF" />
+              <circle
+                cx="12"
+                cy="6"
+                r="4"
+                stroke="#0190FE"
+                strokeWidth="2"
+                fill="none"
+              />
             </svg>
           </div>
-          <span className="text-sm text-[#0095FF] font-medium">
+          <span className="text-sm text-[#0190FE] font-medium">
             <TranslatedText text="Revenue" />
           </span>
         </div>
