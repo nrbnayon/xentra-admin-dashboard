@@ -21,7 +21,7 @@ export default function MatchesClient() {
   const [activeTab, setActiveTab] = useState<TabType>("All");
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 6;
 
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
@@ -146,7 +146,7 @@ export default function MatchesClient() {
 
           <button
             onClick={openMatchModalForCreation}
-            className="flex items-center gap-2 bg-primary hover:bg-[#2a4365] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-colors"
+            className="flex items-center gap-2 bg-primary hover:bg-[#2a4365] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Create Match
@@ -154,7 +154,7 @@ export default function MatchesClient() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto no-scrollbar">
+        <div className="flex mb-6 overflow-x-auto no-scrollbar">
           {["All", "Upcoming", "Latest", "Completed"].map((tab) => (
             <button
               key={tab}
@@ -162,10 +162,10 @@ export default function MatchesClient() {
                 setActiveTab(tab as TabType);
                 setCurrentPage(1);
               }}
-              className={`flex-1 min-w-30 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex-1 max-w-50 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab
                   ? "border-primary text-primary"
-                  : "border-transparent text-gray-500 hover:text-foreground dark:text-gray-400 dark:hover:text-gray-200"
+                  : "border-transparent text-[#1C5898] hover:text-foreground dark:text-gray-400 dark:hover:text-gray-200"
               }`}
             >
               <TranslatedText text={tab} />

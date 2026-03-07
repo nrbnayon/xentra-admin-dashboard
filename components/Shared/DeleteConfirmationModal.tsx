@@ -42,7 +42,7 @@ export function DeleteConfirmationModal({
         <button
           onClick={onClose}
           disabled={isLoading}
-          className="absolute right-4 top-4 p-2 text-gray-400 hover:text-secondary dark:hover:text-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="absolute right-4 top-4 p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <X className="w-5 h-5" />
         </button>

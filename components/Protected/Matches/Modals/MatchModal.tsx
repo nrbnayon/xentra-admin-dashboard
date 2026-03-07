@@ -1,7 +1,8 @@
 import { Match } from "@/types/matches";
 import { X, UploadCloud } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface MatchModalProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export default function MatchModal({
   match,
 }: MatchModalProps) {
   const [formData, setFormData] = useState({
+    title: "",
     sport: "Football",
     league: "",
     date: "",
@@ -26,13 +28,17 @@ export default function MatchModal({
     entryFee: 50,
     platformFee: "",
     image: null as File | null,
+    imagePreview: "" as string,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [dragActive, setDragActive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (match) {
       setFormData({
+        title: match.title || "",
         sport: match.sport,
         league: match.league,
         date: match.date,
@@ -42,9 +48,11 @@ export default function MatchModal({
         entryFee: match.entryFee,
         platformFee: match.platformFee.toString(),
         image: null,
+        imagePreview: match.image || "",
       });
     } else {
       setFormData({
+        title: "",
         sport: "Football",
         league: "",
         date: "",
@@ -54,6 +62,7 @@ export default function MatchModal({
         entryFee: 50,
         platformFee: "",
         image: null,
+        imagePreview: "",
       });
     }
     setErrors({});
@@ -61,8 +70,50 @@ export default function MatchModal({
 
   if (!isOpen) return null;
 
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleFile = (file: File) => {
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData((prev) => ({
+          ...prev,
+          image: file,
+          imagePreview: e.target?.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast.error("Please upload an image file.");
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFile(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFile(e.target.files[0]);
+    }
+  };
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
+    if (!formData.title) newErrors.title = "Match Title is required";
     if (!formData.league) newErrors.league = "League Name is required";
     if (!formData.date) newErrors.date = "Match Date is required";
     if (!formData.time) newErrors.time = "Match Time Start is required";
@@ -81,23 +132,19 @@ export default function MatchModal({
       return;
     }
 
-    const { image, ...restData } = formData;
+    const { image, imagePreview, ...restData } = formData;
 
     onSave({
       ...restData,
       sport: restData.sport as Match["sport"],
       platformFee: Number(restData.platformFee),
-      image: match?.image || "/images/bg.webp", // Mock uploading
+      image: imagePreview || "/images/bg.webp", // In a real app, this would be the uploaded URL
     });
     toast.success(
       match ? "Match updated successfully!" : "Match created successfully!",
     );
     onClose();
   };
-
-  const isDark =
-    typeof window !== "undefined" &&
-    document.documentElement.classList.contains("dark");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -106,34 +153,53 @@ export default function MatchModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto scrollbar-hide">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-bold text-foreground dark:text-white">
             {match ? "Edit Match" : "Create Match"}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500"
+            className="text-gray-500 hover:text-red-500 cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-              Sport Name <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={formData.sport}
-              onChange={(e) =>
-                setFormData({ ...formData, sport: e.target.value })
-              }
-              className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="Football">Football</option>
-              <option value="Basketball">Basketball</option>
-            </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
+                Match Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                placeholder="e.g. FIFA WORLD CUP"
+                className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.title ? "border-red-500" : ""}`}
+              />
+              {errors.title && (
+                <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
+                Sport Name <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={formData.sport}
+                onChange={(e) =>
+                  setFormData({ ...formData, sport: e.target.value })
+                }
+                className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+              >
+                <option value="Football">Football</option>
+                <option value="Basketball">Basketball</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -146,6 +212,7 @@ export default function MatchModal({
               onChange={(e) =>
                 setFormData({ ...formData, league: e.target.value })
               }
+              placeholder="e.g. Premier League"
               className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.league ? "border-red-500" : ""}`}
             />
             {errors.league && (
@@ -199,6 +266,7 @@ export default function MatchModal({
                 onChange={(e) =>
                   setFormData({ ...formData, teamA: e.target.value })
                 }
+                placeholder="Team A Name"
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamA ? "border-red-500" : ""}`}
               />
               {errors.teamA && (
@@ -215,6 +283,7 @@ export default function MatchModal({
                 onChange={(e) =>
                   setFormData({ ...formData, teamB: e.target.value })
                 }
+                placeholder="Team B Name"
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamB ? "border-red-500" : ""}`}
               />
               {errors.teamB && (
@@ -228,7 +297,7 @@ export default function MatchModal({
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">
                 Entry Fee <span className="text-red-500">*</span>
               </label>
-              <div className="flex gap-4 items-center">
+              <div className="flex flex-wrap gap-4 items-center">
                 {[50, 100, 250, 500].map((fee) => (
                   <label
                     key={fee}
@@ -273,38 +342,76 @@ export default function MatchModal({
           <div>
             <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
               <span>Upload Image</span>
-              <button
-                className="text-red-500 hover:text-red-700"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setFormData({ ...formData, image: null });
-                }}
-              >
-                <X className="w-4 h-4" />
-              </button>
+              {formData.imagePreview && (
+                <button
+                  className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFormData({ ...formData, image: null, imagePreview: "" });
+                  }}
+                >
+                  <X className="w-4 h-4" /> Remove
+                </button>
+              )}
             </label>
-            <div className="border-2 border-dashed border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10 rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/20 transition-colors">
-              <UploadCloud className="w-8 h-8 text-gray-500 dark:text-gray-400 mb-2" />
-              <p className="text-sm font-medium text-foreground dark:text-gray-300">
-                Click to upload or drag and drop
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Max. File Size: 10MB
-              </p>
+            <div
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[160px] relative overflow-hidden ${
+                dragActive
+                  ? "border-primary bg-primary/10"
+                  : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
+              } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
+            >
+              {formData.imagePreview ? (
+                <div className="absolute inset-0 w-full h-full">
+                  <Image
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <p className="text-white text-sm font-medium">
+                      Click to change
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <UploadCloud className="w-8 h-8 text-gray-500 dark:text-gray-400 mb-2" />
+                  <p className="text-sm font-medium text-foreground dark:text-gray-300">
+                    Click to upload or drag and drop
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Max. File Size: 10MB
+                  </p>
+                </>
+              )}
             </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
         </div>
 
         <div className="p-6 border-t dark:border-gray-700 flex justify-center gap-4">
           <button
             onClick={onClose}
-            className="px-8 py-2.5 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="px-8 py-2.5 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className="px-8 py-2.5 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors"
+            className="px-8 py-2.5 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
           >
             {match ? "Save" : "+ Create"}
           </button>

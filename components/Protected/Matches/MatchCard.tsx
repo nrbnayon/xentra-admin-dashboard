@@ -35,11 +35,36 @@ export default function MatchCard({
     }
   };
 
+  const formatDate = (dateStr: string) => {
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("en-US", {
+        weekday: "long",
+        day: "numeric",
+        month: "short",
+      });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
+  const formatTime = (timeStr: string) => {
+    try {
+      const [hours, minutes] = timeStr.split(":");
+      const h = parseInt(hours);
+      const ampm = h >= 12 ? "PM" : "AM";
+      const h12 = h % 12 || 12;
+      return `${h12}.${minutes}${ampm}`;
+    } catch (e) {
+      return timeStr;
+    }
+  };
+
   return (
-    <div className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg group">
+    <div className="relative w-full h-72 rounded-xl overflow-hidden shadow-lg group">
       {/* Background Image & Overlay */}
       <Image
-        src={match.image || "/images/match1.png"}
+        src={match.image || "/images/match2.png"}
         alt={match.title}
         layout="fill"
         className="object-cover z-0"
@@ -61,13 +86,13 @@ export default function MatchCard({
           <div className="flex gap-2">
             <button
               onClick={() => onEdit(match)}
-              className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors"
+              className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors cursor-pointer"
             >
               <SquarePen className="w-4 h-4 text-foreground" />
             </button>
             <button
               onClick={() => onDelete(match)}
-              className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors"
+              className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors cursor-pointer"
             >
               <X className="w-4 h-4 text-red-500" />
             </button>
@@ -80,20 +105,22 @@ export default function MatchCard({
             {match.title}
           </h3>
 
-          <div className="flex justify-between w-full max-w-[240px] px-2">
-            <div className="text-left bg-black/30 px-3 py-1.5 rounded text-white text-xs">
-              <p className="opacity-80 font-medium">{match.date}</p>
-              <p className="font-bold">{match.time}</p>
+          <div className="flex justify-between w-full max-w-64 px-2 text-center gap-2">
+            <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
+              <p className="font-medium whitespace-nowrap">
+                {formatDate(match.date)}
+              </p>
+              <p className="font-semibold">{formatTime(match.time)}</p>
             </div>
-            <div className="text-right bg-black/30 px-3 py-1.5 rounded text-white text-xs">
-              <p className="opacity-80 font-medium">Entry fee</p>
-              <p className="font-bold">{match.entryFee} HTG</p>
+            <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
+              <p className="font-medium">Entry fee</p>
+              <p className="font-semibold">{match.entryFee} HTG</p>
             </div>
           </div>
 
-          <div className="mt-4 font-bold text-white text-[15px] flex items-center justify-center gap-2 bg-black/40 px-6 py-1 rounded-full">
+          <div className="mt-4 font-bold text-white text-lg flex items-center justify-center gap-2 bg-[#24242480] px-6 py-1 rounded-full">
             <span>{match.teamA}</span>
-            <span className="text-gray-300 font-normal">V/S</span>
+            <span>V/S</span>
             <span>{match.teamB}</span>
           </div>
         </div>
@@ -102,14 +129,14 @@ export default function MatchCard({
         <div className="flex justify-center gap-3 mt-4">
           <button
             onClick={() => onEnterResult(match)}
-            className="flex-1 max-w-[140px] bg-primary hover:bg-[#2a4365] text-white text-sm font-medium py-2 rounded-full transition-colors"
+            className="flex-1 max-w-35 bg-primary hover:bg-[#2a4365] text-white text-sm font-medium py-2 rounded-full transition-colors cursor-pointer"
           >
             Enter Result
           </button>
           {isActionable && (
             <button
               onClick={() => onViewLeaderboard(match)}
-              className="flex-1 max-w-[140px] bg-white hover:bg-gray-100 text-primary text-sm font-medium py-2 rounded-full transition-colors"
+              className="flex-1 max-w-40 bg-white hover:bg-gray-100 text-primary text-sm font-medium px-4 py-2 rounded-full transition-colors cursor-pointer"
             >
               View Leaderboard
             </button>
