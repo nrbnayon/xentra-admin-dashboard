@@ -21,6 +21,10 @@ export default function SettingsClient() {
   const [isEditingAccount, setIsEditingAccount] = useState(false);
   const [isEditingSecurity, setIsEditingSecurity] = useState(false);
   const [isEditingLanguage, setIsEditingLanguage] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+  const [isEditingTerms, setIsEditingTerms] = useState(false);
+  const [isEditingRules, setIsEditingRules] = useState(false);
 
   // Form States
   const [accountInfo, setAccountInfo] = useState({
@@ -77,6 +81,117 @@ export default function SettingsClient() {
       confirmPassword: "",
     });
     toast.success("Password updated successfully");
+  };
+
+  const [termsContent, setTermsContent] = useState(`1. Eligibility
+- You must be 18 years or older to use XENTRA.
+- By registering, you confirm you meet the legal age.
+
+2. Account Registration
+- Registration is completed using your phone number.
+- You are responsible for keeping your login information secure.
+- Each person is allowed only one account.
+- XENTRA reserves the right to suspend or close accounts involved in fraud, abuse, or suspicious activity.
+
+3. Nature of the Platform
+- XENTRA is a skill-based prediction platform, not a traditional sportsbook.
+- Users participate in contests with a shared prize pool.
+- XENTRA does not provide betting odds.
+
+4. Wallet & Payments
+- Deposits are made via MonCash or Natcash.
+- Wallet funds are used only within the app.
+- Withdrawals are subject to verification.
+- XENTRA may delay or cancel withdrawals if fraud is suspected.
+
+5. Platform Fees
+- A service fee is deducted before distributing prizes.
+- The remaining amount forms the prize pool.
+
+6. Winners & Rankings
+- Winners are determined based on prediction accuracy.
+- Only the top players receive payouts.
+- Detailed rules are in the Contest Rules section.
+
+7. Fair Play
+Any attempt to:
+- Manipulate results
+- Abuse the system
+- Use multiple accounts
+- Exploit technical errors
+May result in:
+- Account suspension
+- Loss of funds
+- Permanent ban
+
+8. No Profit Guarantee
+- Participation involves risk.
+- XENTRA does not guarantee profits.
+
+9. Service Availability
+- XENTRA may modify or suspend services at any time.
+
+10. Changes to Conditions
+- These conditions may change at any time.
+- Continued use of the app indicates acceptance of changes.
+
+11. Contact
+- These conditions may change at any time.
+- For assistance, contact XENTRA through the app.`);
+
+  const [rulesContent, setRulesContent] = useState(`1. Qualification
+- Players must be 18 years or older to participate.
+
+2. How to Participate
+Each contest requires players to:
+- Choose the team they think will win (Team A / Team B / Draw).
+- Predict the exact final score of the match
+
+3. Ranking System
+Rankings are determined as follows:
+- Exact score + correct winning team = highest score.
+- If no player predicts the exact score, rankings are based on the closest difference, using this formula:
+- (|Predicted Team A score – Actual Team A score| + |Predicted Team B score – Actual Team B score|)
+- The smallest total difference gives the best rank.
+
+4. Payment Structure
+- Only the Top 5 players for each match receive payment.
+- The distribution of payments is based on the position in the ranking.
+
+5. Prize Fund
+- The total prize fund is calculated after deducting platform service fees.
+- The remaining amount is distributed to the qualifying winners.
+
+6. Jackpot Rules
+If no player predicts the exact score:
+- The prize fund may be transferred to the next qualifying match as a jackpot.
+
+7. Match Results
+- The administrator enters official results after the match ends.
+- Rankings are automatically calculated based on the final results.
+
+8. Wallet Updates
+- Wallet balances are automatically updated once results are confirmed.
+
+9. Fraud & Abuse
+XENTRA reserves the right to suspend or close accounts involved in:
+- Fraud
+- Collusion
+- System abuse
+- Manipulation of contests
+
+10. Nature of Contests
+- All contests on XENTRA are skill-based prediction games and are not sports betting.
+- By participating, you agree to these Contest Rules.`);
+
+  const handleSaveTerms = () => {
+    setIsEditingTerms(false);
+    toast.success("Terms & Conditions updated");
+  };
+
+  const handleSaveRules = () => {
+    setIsEditingRules(false);
+    toast.success("Contest Rules updated");
   };
 
   const handleSaveLanguage = () => {
@@ -508,7 +623,191 @@ export default function SettingsClient() {
             </div>
           </div>
         </div>
+
+        {/* Legal/Policies Section */}
+        <div className="bg-white rounded-[24px] border border-gray-100 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+          <div className="p-6 md:p-8">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-[#1F2937] mb-1">
+                <TranslatedText text="Legal/Policies" />
+              </h2>
+              <p className="text-sm text-[#4B5563] font-medium">
+                <TranslatedText text="Manage your rules and conditions" />
+              </p>
+            </div>
+
+            <div className="space-y-6 pt-6 border-t border-gray-100">
+              {/* Terms and Condition Item */}
+              <div
+                className="flex items-center justify-between group cursor-pointer"
+                onClick={() => setIsTermsModalOpen(true)}
+              >
+                <div>
+                  <h3 className="text-sm font-bold text-[#1F2937] group-hover:text-primary transition-colors">
+                    <TranslatedText text="Terms and Condition" />
+                  </h3>
+                  <p className="text-xs text-[#4B5563] font-medium mt-1">
+                    <TranslatedText text="Manage your teams and condition from here" />
+                  </p>
+                </div>
+                <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
+                  <Eye className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Contest Rules Item */}
+              <div
+                className="flex items-center justify-between group cursor-pointer"
+                onClick={() => setIsRulesModalOpen(true)}
+              >
+                <div>
+                  <h3 className="text-sm font-bold text-[#1F2937] group-hover:text-primary transition-colors">
+                    <TranslatedText text="Contest Rules" />
+                  </h3>
+                  <p className="text-xs text-[#4B5563] font-medium mt-1">
+                    <TranslatedText text="Manage your contest rules from here" />
+                  </p>
+                </div>
+                <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
+                  <Eye className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
+
+      {/* Terms and Conditions Modal */}
+      {isTermsModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => {
+              setIsTermsModalOpen(false);
+              setIsEditingTerms(false);
+            }}
+          />
+          <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-[24px] shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col">
+            <div className="p-6 md:p-8 border-b border-gray-100 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-[#1F2937]">
+                  <TranslatedText text="Terms and Conditions" />
+                </h2>
+                <p className="text-sm text-[#4B5563] font-medium">
+                  <TranslatedText text="Update your terms and condition details" />
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 md:p-8">
+              {isEditingTerms ? (
+                <textarea
+                  value={termsContent}
+                  onChange={(e) => setTermsContent(e.target.value)}
+                  className="w-full h-full min-h-[400px] p-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-none font-sans"
+                />
+              ) : (
+                <div className="space-y-4 text-sm text-[#4B5563] font-medium whitespace-pre-wrap leading-relaxed">
+                  {termsContent}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 md:p-8 border-t border-gray-100 flex gap-4">
+              <button
+                onClick={() => {
+                  setIsTermsModalOpen(false);
+                  setIsEditingTerms(false);
+                }}
+                className="flex-1 py-4 px-6 border border-gray-200 rounded-full font-bold text-[#4B5563] hover:bg-gray-50 transition-all cursor-pointer"
+              >
+                <TranslatedText text="Cancel" />
+              </button>
+              {isEditingTerms ? (
+                <button
+                  onClick={handleSaveTerms}
+                  className="flex-1 py-4 px-6 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                >
+                  <TranslatedText text="Save" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsEditingTerms(true)}
+                  className="flex-1 py-4 px-6 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                >
+                  <TranslatedText text="Edit" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Contest Rules Modal */}
+      {isRulesModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => {
+              setIsRulesModalOpen(false);
+              setIsEditingRules(false);
+            }}
+          />
+          <div className="relative w-full max-w-4xl max-h-[90vh] bg-white rounded-[24px] shadow-2xl overflow-hidden animate-in zoom-in duration-200 flex flex-col">
+            <div className="p-6 md:p-8 border-b border-gray-100 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-[#1F2937]">
+                  <TranslatedText text="Contest Rules" />
+                </h2>
+                <p className="text-sm text-[#4B5563] font-medium">
+                  <TranslatedText text="Update your Contest Rules details" />
+                </p>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6 md:p-8">
+              {isEditingRules ? (
+                <textarea
+                  value={rulesContent}
+                  onChange={(e) => setRulesContent(e.target.value)}
+                  className="w-full h-full min-h-[400px] p-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-none font-sans"
+                />
+              ) : (
+                <div className="space-y-4 text-sm text-[#4B5563] font-medium whitespace-pre-wrap leading-relaxed">
+                  {rulesContent}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 md:p-8 border-t border-gray-100 flex gap-4">
+              <button
+                onClick={() => {
+                  setIsRulesModalOpen(false);
+                  setIsEditingRules(false);
+                }}
+                className="flex-1 py-4 px-6 border border-gray-200 rounded-full font-bold text-[#4B5563] hover:bg-gray-50 transition-all cursor-pointer"
+              >
+                <TranslatedText text="Cancel" />
+              </button>
+              {isEditingRules ? (
+                <button
+                  onClick={handleSaveRules}
+                  className="flex-1 py-4 px-6 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                >
+                  <TranslatedText text="Save" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsEditingRules(true)}
+                  className="flex-1 py-4 px-6 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+                >
+                  <TranslatedText text="Edit" />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
