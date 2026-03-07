@@ -3,7 +3,7 @@ export type UserStatus = "active" | "inactive" | "pending" | "removed";
 export interface User {
   id: string;
   name: string;
-  phone_number: string;
+  phone_number?: string;
   role: "admin" | "user" | "guest" | "creator";
   email_address?: string;
   image?: string;

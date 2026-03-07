@@ -12,7 +12,7 @@ interface LoginResponse {
   user: {
     email_address?: string;
     role: string;
-    phone_number: string;
+    phone_number?: string;
     image?: string;
     full_name?: string;
   };
