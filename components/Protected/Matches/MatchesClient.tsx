@@ -114,33 +114,33 @@ export default function MatchesClient() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setActiveFilter("All")}
-              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-6 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "All"
                   ? "bg-primary text-white"
                   : "bg-white shadow-[0px_2px_10px_0px_#18181829] text-foreground hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
               }`}
             >
-              All
+              <TranslatedText text="All" />
             </button>
             <button
               onClick={() => setActiveFilter("Football")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "Football"
                   ? "bg-primary text-white"
                   : "bg-white shadow-[0px_2px_10px_0px_#18181829] text-foreground hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
               }`}
             >
-              ⚽ Football
+              ⚽ <TranslatedText text="Football" />
             </button>
             <button
               onClick={() => setActiveFilter("Basketball")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "Basketball"
                   ? "bg-primary text-white"
                   : "bg-white shadow-[0px_2px_10px_0px_#18181829] text-foreground hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200"
               }`}
             >
-              🏀 Basketball
+              🏀 <TranslatedText text="Basketball" />
             </button>
           </div>
 
@@ -149,7 +149,7 @@ export default function MatchesClient() {
             className="flex items-center gap-2 bg-primary hover:bg-[#2a4365] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            Create Match
+            <TranslatedText text="Create Match" />
           </button>
         </div>
 
@@ -162,7 +162,7 @@ export default function MatchesClient() {
                 setActiveTab(tab as TabType);
                 setCurrentPage(1);
               }}
-              className={`flex-1 max-w-50 py-3 text-sm font-medium border-b-2 transition-colors ${
+              className={`flex-1 max-w-50 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                 activeTab === tab
                   ? "border-primary text-primary"
                   : "border-transparent text-[#1C5898] hover:text-foreground dark:text-gray-400 dark:hover:text-gray-200"
@@ -187,7 +187,7 @@ export default function MatchesClient() {
           ))}
           {paginatedMatches.length === 0 && (
             <div className="col-span-full py-12 text-center text-gray-500">
-              No matches found for the selected view.
+              <TranslatedText text="No matches found for the selected view." />
             </div>
           )}
         </div>

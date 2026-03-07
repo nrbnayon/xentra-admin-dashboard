@@ -2,6 +2,7 @@ import { Match } from "@/types/matches";
 import { X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface ResultModalProps {
   isOpen: boolean;
@@ -69,7 +70,7 @@ export default function ResultModal({
         <div className="flex justify-end p-4">
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-red-500 transition-colors"
+            className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -79,7 +80,8 @@ export default function ResultModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Team A <span className="text-red-500">*</span>
+                <TranslatedText text="Team A" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -90,7 +92,8 @@ export default function ResultModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Team A Score <span className="text-red-500">*</span>
+                <TranslatedText text="Team A Score" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -102,7 +105,9 @@ export default function ResultModal({
                 placeholder="0"
               />
               {errors.teamAScore && (
-                <p className="text-red-500 text-xs mt-1">{errors.teamAScore}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.teamAScore} />
+                </p>
               )}
             </div>
           </div>
@@ -110,7 +115,8 @@ export default function ResultModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Team B <span className="text-red-500">*</span>
+                <TranslatedText text="Team B" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -121,7 +127,8 @@ export default function ResultModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Team B Score <span className="text-red-500">*</span>
+                <TranslatedText text="Team B Score" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -133,14 +140,17 @@ export default function ResultModal({
                 placeholder="0"
               />
               {errors.teamBScore && (
-                <p className="text-red-500 text-xs mt-1">{errors.teamBScore}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.teamBScore} />
+                </p>
               )}
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-              Winning Team <span className="text-red-500">*</span>
+              <TranslatedText text="Winning Team" />{" "}
+              <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.winningTeam}
@@ -155,7 +165,9 @@ export default function ResultModal({
               <option value="Draw">Draw</option>
             </select>
             {errors.winningTeam && (
-              <p className="text-red-500 text-xs mt-1">{errors.winningTeam}</p>
+              <p className="text-red-500 text-xs mt-1">
+                <TranslatedText text={errors.winningTeam} />
+              </p>
             )}
           </div>
         </div>
@@ -163,15 +175,15 @@ export default function ResultModal({
         <div className="p-8 pb-10 flex gap-4 w-full">
           <button
             onClick={onClose}
-            className="flex-1 py-3 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            className="flex-1 py-3 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
-            Cancel
+            <TranslatedText text="Cancel" />
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-3 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors"
+            className="flex-1 py-3 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
           >
-            Submit & Calculate
+            <TranslatedText text="Submit & Calculate" />
           </button>
         </div>
       </div>

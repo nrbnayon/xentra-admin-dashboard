@@ -3,6 +3,7 @@ import { X, UploadCloud } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface MatchModalProps {
   isOpen: boolean;
@@ -156,7 +157,7 @@ export default function MatchModal({
       <div className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto scrollbar-hide">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700">
           <h2 className="text-xl font-bold text-foreground dark:text-white">
-            {match ? "Edit Match" : "Create Match"}
+            <TranslatedText text={match ? "Edit Match" : "Create Match"} />
           </h2>
           <button
             onClick={onClose}
@@ -170,7 +171,8 @@ export default function MatchModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Match Title <span className="text-red-500">*</span>
+                <TranslatedText text="Match Title" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -182,12 +184,15 @@ export default function MatchModal({
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.title ? "border-red-500" : ""}`}
               />
               {errors.title && (
-                <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.title} />
+                </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Sport Name <span className="text-red-500">*</span>
+                <TranslatedText text="Sport Name" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <select
                 value={formData.sport}
@@ -204,7 +209,8 @@ export default function MatchModal({
 
           <div>
             <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-              League Name <span className="text-red-500">*</span>
+              <TranslatedText text="League Name" />{" "}
+              <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -216,14 +222,17 @@ export default function MatchModal({
               className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.league ? "border-red-500" : ""}`}
             />
             {errors.league && (
-              <p className="text-red-500 text-xs mt-1">{errors.league}</p>
+              <p className="text-red-500 text-xs mt-1">
+                <TranslatedText text={errors.league} />
+              </p>
             )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Match Date <span className="text-red-500">*</span>
+                <TranslatedText text="Match Date" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="date"
@@ -234,12 +243,15 @@ export default function MatchModal({
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.date ? "border-red-500" : ""}`}
               />
               {errors.date && (
-                <p className="text-red-500 text-xs mt-1">{errors.date}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.date} />
+                </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Match Time Start <span className="text-red-500">*</span>
+                <TranslatedText text="Match Time Start" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="time"
@@ -250,7 +262,9 @@ export default function MatchModal({
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.time ? "border-red-500" : ""}`}
               />
               {errors.time && (
-                <p className="text-red-500 text-xs mt-1">{errors.time}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.time} />
+                </p>
               )}
             </div>
           </div>
@@ -258,7 +272,8 @@ export default function MatchModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Team A <span className="text-red-500">*</span>
+                <TranslatedText text="Team A" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -270,12 +285,15 @@ export default function MatchModal({
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamA ? "border-red-500" : ""}`}
               />
               {errors.teamA && (
-                <p className="text-red-500 text-xs mt-1">{errors.teamA}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.teamA} />
+                </p>
               )}
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Team B <span className="text-red-500">*</span>
+                <TranslatedText text="Team B" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -287,7 +305,9 @@ export default function MatchModal({
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamB ? "border-red-500" : ""}`}
               />
               {errors.teamB && (
-                <p className="text-red-500 text-xs mt-1">{errors.teamB}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  <TranslatedText text={errors.teamB} />
+                </p>
               )}
             </div>
           </div>
@@ -295,7 +315,8 @@ export default function MatchModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">
-                Entry Fee <span className="text-red-500">*</span>
+                <TranslatedText text="Entry Fee" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <div className="flex flex-wrap gap-4 items-center">
                 {[50, 100, 250, 500].map((fee) => (
@@ -320,7 +341,8 @@ export default function MatchModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                Platform fee <span className="text-red-500">*</span>
+                <TranslatedText text="Platform fee" />{" "}
+                <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -333,7 +355,7 @@ export default function MatchModal({
               />
               {errors.platformFee && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.platformFee}
+                  <TranslatedText text={errors.platformFee} />
                 </p>
               )}
             </div>
@@ -341,7 +363,9 @@ export default function MatchModal({
 
           <div>
             <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
-              <span>Upload Image</span>
+              <span>
+                <TranslatedText text="Upload Image" />
+              </span>
               {formData.imagePreview && (
                 <button
                   className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
@@ -350,7 +374,7 @@ export default function MatchModal({
                     setFormData({ ...formData, image: null, imagePreview: "" });
                   }}
                 >
-                  <X className="w-4 h-4" /> Remove
+                  <X className="w-4 h-4" /> <TranslatedText text="Remove" />
                 </button>
               )}
             </label>
@@ -376,7 +400,7 @@ export default function MatchModal({
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                     <p className="text-white text-sm font-medium">
-                      Click to change
+                      <TranslatedText text="Click to change" />
                     </p>
                   </div>
                 </div>
@@ -384,10 +408,10 @@ export default function MatchModal({
                 <>
                   <UploadCloud className="w-8 h-8 text-gray-500 dark:text-gray-400 mb-2" />
                   <p className="text-sm font-medium text-foreground dark:text-gray-300">
-                    Click to upload or drag and drop
+                    <TranslatedText text="Click to upload or drag and drop" />
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Max. File Size: 10MB
+                    <TranslatedText text="Max. File Size" />: 10MB
                   </p>
                 </>
               )}
@@ -407,13 +431,13 @@ export default function MatchModal({
             onClick={onClose}
             className="px-8 py-2.5 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
-            Cancel
+            <TranslatedText text="Cancel" />
           </button>
           <button
             onClick={handleSubmit}
             className="px-8 py-2.5 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
           >
-            {match ? "Save" : "+ Create"}
+            <TranslatedText text={match ? "Save" : "+ Create"} />
           </button>
         </div>
       </div>

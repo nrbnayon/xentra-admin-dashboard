@@ -3,6 +3,8 @@
 import { X } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete02Icon } from "@hugeicons/core-free-icons";
+import TranslatedText from "./TranslatedText";
+
 interface DeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -58,17 +60,21 @@ export function DeleteConfirmationModal({
               />
             </div>
 
-            <h3 className="text-xl font-bold text-primary ">{title}</h3>
-            <p className="mt-2 text-sm text-secondary  ">{description}</p>
+            <h3 className="text-xl font-bold text-primary ">
+              <TranslatedText text={title} />
+            </h3>
+            <p className="mt-2 text-sm text-secondary  ">
+              <TranslatedText text={description} />
+            </p>
           </div>
 
           <div className="flex gap-3">
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="flex-1 px-4 py-2.5 bg-gray-100 text-foreground dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-secondary font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 bg-gray-100 text-foreground dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-secondary font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              Cancel
+              <TranslatedText text="Cancel" />
             </button>
             <button
               onClick={onConfirm}
@@ -78,7 +84,7 @@ export function DeleteConfirmationModal({
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                "Delete"
+                <TranslatedText text="Delete" />
               )}
             </button>
           </div>
