@@ -2,22 +2,25 @@
 import { apiSlice } from '../features/apiSlice';
 
 interface LoginRequest {
-  email: string;
+  phone_number: string;
   password: string;
   rememberMe?: boolean;
 }
 
 interface LoginResponse {
   user: {
-    email: string;
+    email_address?: string;
     role: string;
+    phone_number: string;
+    image?: string;
+    full_name?: string;
   };
   accessToken: string;
   refreshToken: string;
 }
 
 interface VerifyOtpRequest {
-  email: string;
+  phone_number: string;
   otp: string;
 }
 

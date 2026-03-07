@@ -2,38 +2,21 @@
 export interface User {  
 id: string;
   name: string;
-  email: string;
+  phone_number: string;
   role: "admin" | "user" | "guest" | "creator";
+  email_address?: string;
   image?: string;
-  status?: "Active" | "Inactive" | "Pending";
+  status?: "active" | "inactive" | "pending";
   location?: string;
   date?: string;
   phone?: string;
-  
-  // Specific to Creators
-  videos?: number;
-  sales?: number;
-  commission?: number;
-  
-  // Modal Details
-  totalEarnings?: number;
-  totalOrders?: number;
-  totalReviews?: number;
-  withdraws?: number;
-  totalSpending?: number; // For regular users
-  activeOrders?: Order[];
-  previousOrders?: Order[];
-}
-
-export interface Order {
-  id: string;
-  productName: string;
-  variant: string;
-  image: string;
+  [key: string]: any;
 }
 
 export interface UserFormData {
   name: string;
-  email: string;
-  role: "admin" | "user" | "guest" | "creator";
+  phone_number: string;
+  email_address?: string;
+  password?: string;
+  role: "admin";
 }

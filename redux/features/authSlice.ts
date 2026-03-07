@@ -3,10 +3,12 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from '../store';
 
 export interface User {
-  name: string;
-  email: string;
-  role: string | "admin" | "user"; // Enhanced type safety
+  full_name?: string;
+  email_address?: string;
+  role: string | "admin"; // Enhanced type safety
   image?: string;
+  phone_number: string;
+  [key: string]: any;
 }
 
 interface AuthState {
