@@ -95,7 +95,7 @@ export const SignInForm = () => {
       <motion.div
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
         className="hidden lg:block lg:flex-1 h-screen overflow-hidden relative bg-[#E6F4FF]"
       >
         <div className="w-full h-full flex items-center justify-center">
@@ -118,7 +118,7 @@ export const SignInForm = () => {
         transition={{ duration: 0.7 }}
         className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-white lg:min-h-screen"
       >
-        <div className="w-full max-w-md space-y-10">
+        <div className="w-full max-w-xl space-y-10">
           {/* Logo + Title */}
           <div className="text-center space-y-3">
             <h1 className="text-4xl font-bold text-primary">Sign In</h1>

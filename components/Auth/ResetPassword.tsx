@@ -59,7 +59,7 @@ const ResetPassword = () => {
       // Clear the verification cookie
       document.cookie = "reset_verified=; path=/; max-age=0; SameSite=Strict";
 
-      router.push("/signin");
+      router.push("/reset-success");
     } catch (error) {
       console.error("Reset failed:", error);
       toast.error("Something went wrong. Please try again.");
@@ -75,12 +75,12 @@ const ResetPassword = () => {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden lg:block lg:flex-1 h-screen bg-[#E6F4FF] relative"
+        className="hidden lg:block lg:flex-1 h-screen overflow-hidden relative bg-[#E6F4FF]"
       >
         <div className="w-full h-full flex items-center justify-center p-20">
           <div className="relative w-full h-full max-w-2xl">
             <Image
-              src="/auth/reset-password.png"
+              src="/auth/reset-password.svg"
               alt="Reset Password Illustration"
               fill
               className="object-contain"
@@ -99,7 +99,7 @@ const ResetPassword = () => {
         transition={{ duration: 0.7 }}
         className="flex-1 flex items-center justify-center p-6 sm:p-12 lg:p-20 bg-white"
       >
-        <div className="w-full max-w-md space-y-10">
+        <div className="w-full max-w-xl space-y-10">
           {/* Title */}
           <div className="text-center space-y-3">
             <h1 className="text-4xl font-bold text-primary">Reset Password</h1>
@@ -198,7 +198,7 @@ const ResetPassword = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-lg font-bold rounded-full shadow-lg transition-all duration-200"
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-lg font-bold rounded-full shadow-lg transition-all duration-200 hover:scale-[1.02]"
               >
                 {isLoading ? (
                   <>

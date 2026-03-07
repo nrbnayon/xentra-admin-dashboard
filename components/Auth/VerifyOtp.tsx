@@ -23,7 +23,7 @@ type FormValues = z.infer<typeof otpValidationSchema>;
 
 const VerifyOtp = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [countdown, setCountdown] = useState(41);
+  const [countdown, setCountdown] = useState(120);
   const router = useRouter();
   const searchParams = useSearchParams();
   const flow = searchParams.get("flow") || "signup";
@@ -61,7 +61,7 @@ const VerifyOtp = () => {
       console.log("Resending OTP to:", phone);
 
       toast.success(`A new code has been sent to ${phone}`);
-      setCountdown(60); // Reset timer
+      setCountdown(120); // Reset timer
     } catch (error) {
       console.error("Resend failed:", error);
       toast.error("Failed to resend OTP. Please try again.");
@@ -101,7 +101,7 @@ const VerifyOtp = () => {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="hidden lg:block lg:flex-1 h-screen bg-[#E6F4FF] relative"
+        className="hidden lg:block lg:flex-1 h-screen overflow-hidden relative bg-[#E6F4FF]"
       >
         <div className="w-full h-full flex items-center justify-center p-20">
           <div className="relative w-full h-full max-w-2xl">
@@ -125,7 +125,7 @@ const VerifyOtp = () => {
         transition={{ duration: 0.7 }}
         className="flex-1 flex items-center justify-center p-6 sm:p-12 lg:p-20 bg-white"
       >
-        <div className="w-full max-w-md space-y-10">
+        <div className="w-full max-w-xl space-y-10">
           {/* Title */}
           <div className="text-center space-y-3">
             <h1 className="text-4xl font-bold text-primary">Enter OTP</h1>
@@ -150,7 +150,7 @@ const VerifyOtp = () => {
                         <InputOTPSlot
                           key={index}
                           index={index}
-                          className="w-12 h-14 sm:w-14 sm:h-16 border-2 border-gray-200 rounded-xl focus:border-primary focus:ring-0 text-2xl font-bold text-primary"
+                          className="w-12 h-14 sm:w-14 sm:h-16 border-1 border-border focus:border-primary focus:ring-0 text-2xl font-bold text-primary"
                         />
                       ))}
                     </InputOTPGroup>
@@ -162,11 +162,11 @@ const VerifyOtp = () => {
               <p className="text-sm text-destructive">{errors.otp.message}</p>
             )}
 
-            <div className="w-full">
+            <div className="w-full flex justify-center">
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-lg font-bold rounded-full shadow-lg transition-all duration-200"
+                className="w-full max-w-sm h-14 bg-primary hover:bg-primary/90 text-white text-xl font-bold rounded-full shadow-xl transition-all duration-300 hover:scale-[1.02]"
               >
                 {isLoading ? (
                   <>
@@ -188,7 +188,7 @@ const VerifyOtp = () => {
                 type="button"
                 onClick={handleResend}
                 disabled={countdown > 0 || isLoading}
-                className="text-primary font-bold hover:underline transition-colors disabled:opacity-70 disabled:no-underline cursor-pointer"
+                className="text-primary font-bold hover:underline transition-colors disabled:text-orange-400 disabled:opacity-70 disabled:no-underline cursor-pointer disabled:cursor-not-allowed"
               >
                 {countdown > 0
                   ? `Resent in 00:${countdown.toString().padStart(2, "0")}`
