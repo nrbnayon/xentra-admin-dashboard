@@ -1,218 +1,217 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
+import DashboardHeader from "@/components/Shared/DashboardHeader";
+import TranslatedText from "@/components/Shared/TranslatedText";
 import { notificationsData } from "@/data/notificationsData";
-import { ApprovalRequest } from "@/types/approvals";
-import { cn } from "@/lib/utils";
-import { Pagination } from "@/components/Shared/Pagination";
-import { Bell } from "lucide-react";
+import { AppNotification } from "@/types/notifications";
 import Image from "next/image";
-import { ApprovalDetailModal } from "../Protected/Approvals/ApprovalDetailModal";
-import { ConfirmationModal } from "../Shared/ConfirmationModal";
+import { Pagination } from "@/components/Shared/Pagination";
+import NotificationDetailsModal from "./NotificationDetailsModal";
+import { ConfirmationModal } from "@/components/Shared/ConfirmationModal";
 import { toast } from "sonner";
-import { NotificationListSkeleton } from "../Skeleton/ApprovalSkeleton";
+import { CircleHelp } from "lucide-react";
 
 export default function NotificationsClient() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<"All" | "Unread">("All");
   const [notifications, setNotifications] =
-    useState<ApprovalRequest[]>(notificationsData);
+    useState<AppNotification[]>(notificationsData);
+  const [activeTab, setActiveTab] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 5;
 
   const [selectedNotification, setSelectedNotification] =
-    useState<ApprovalRequest | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isRejectConfirmOpen, setIsRejectConfirmOpen] = useState(false);
-  const [notificationToReject, setNotificationToReject] = useState<
-    string | null
-  >(null);
+    useState<AppNotification | null>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
-  const filteredNotifications = useMemo(() => {
-    if (activeTab === "Unread") {
-      return notifications.filter((n) => n.readStatus === "unread");
+  const openDetails = (notification: AppNotification) => {
+    setSelectedNotification(notification);
+    setIsDetailsOpen(true);
+  };
+
+  const openReject = (notification: AppNotification) => {
+    setSelectedNotification(notification);
+    setIsRejectModalOpen(true);
+  };
+
+  const handleAccept = () => {
+    toast.success("Notification request accepted successfully");
+    setIsDetailsOpen(false);
+  };
+
+  const handleReject = () => {
+    if (selectedNotification) {
+      setNotifications((prev) =>
+        prev.filter((n) => n.id !== selectedNotification.id),
+      );
+      toast.success("Notification request rejected successfully");
+      setIsRejectModalOpen(false);
     }
-    return notifications;
-  }, [activeTab, notifications]);
+  };
 
-  const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage);
-  const currentItems = filteredNotifications.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
+  // Calculate dynamic pagination values
+  const totalPages = Math.ceil(notifications.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentNotifications = notifications.slice(
+    startIndex,
+    startIndex + itemsPerPage,
   );
 
-  const handleMarkAsRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, readStatus: "read" } : n)),
-    );
-  };
-
-  const handleViewDetails = (notification: ApprovalRequest) => {
-    setSelectedNotification(notification);
-    setIsDetailModalOpen(true);
-    handleMarkAsRead(notification.id);
-  };
-
-  const handleApprove = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, status: "Approved" } : n)),
-    );
-    toast.success("Request approved successfully");
-  };
-
-  const handleRejectInitiate = (id: string) => {
-    setNotificationToReject(id);
-    setIsRejectConfirmOpen(true);
-  };
-
-  const handleRejectConfirm = () => {
-    if (notificationToReject) {
-      setNotifications((prev) =>
-        prev.map((n) =>
-          n.id === notificationToReject ? { ...n, status: "Rejected" } : n,
-        ),
-      );
-      toast.error("Request rejected successfully");
-      setIsRejectConfirmOpen(false);
-      setNotificationToReject(null);
-    }
-  };
-
   return (
-    <div className="bg-white rounded-3xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] overflow-hidden border border-gray-50 p-6 md:p-8 min-h-[600px]">
-      {/* Tabs */}
-      <div className="flex gap-8 border-b border-gray-100 mb-8">
-        {(["All", "Unread"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => {
-              setActiveTab(tab);
-              setCurrentPage(1);
-            }}
-            className={cn(
-              "pb-4 text-sm font-bold transition-all relative min-w-fit cursor-pointer",
-              activeTab === tab
-                ? "text-primary"
-                : "text-gray-400 hover:text-secondary",
-            )}
-          >
-            {tab}
-            {activeTab === tab && (
-              <div className="absolute -bottom-px left-0 w-full h-[3px] bg-primary rounded-full" />
-            )}
-          </button>
-        ))}
-      </div>
+    <div className="pb-10 min-h-screen ">
+      <DashboardHeader
+        title="Notifications"
+        description="Get all your notification from here"
+      />
 
-      {/* List */}
-      <div className="space-y-4 mb-8">
-        {isLoading ? (
-          <NotificationListSkeleton />
-        ) : currentItems.length > 0 ? (
-          currentItems.map((notification) => (
+      <main className="p-4 md:p-6 lg:p-8">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-100 mb-8 overflow-x-auto no-scrollbar">
+          <button
+            className={`px-10 py-3 text-sm font-semibold border-b-2 transition-all ${
+              activeTab === "All"
+                ? "border-primary text-primary"
+                : "border-transparent text-secondary hover:text-foreground"
+            }`}
+            onClick={() => setActiveTab("All")}
+          >
+            <TranslatedText text="All" />
+          </button>
+        </div>
+
+        {/* Notifications List */}
+        <div className="space-y-6">
+          {currentNotifications.map((notification) => (
             <div
               key={notification.id}
-              className={cn(
-                "p-5 rounded-2xl border transition-all flex items-center justify-between group",
-                notification.readStatus === "unread"
-                  ? "bg-blue-50/10 border-blue-100/50"
-                  : "bg-white border-gray-50",
-              )}
+              className="bg-white rounded-2xl p-6 shadow-[0px_0px_25px_0px_#6565651A] flex flex-col md:flex-row md:items-center justify-between gap-4 transition-hover hover:shadow-[0px_0px_35px_0px_#65656526]"
             >
-              <div className="flex items-center gap-4 flex-1">
-                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0 border border-gray-100 relative">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                   <Image
-                    src={
-                      notification.avatar ||
-                      `https://i.pravatar.cc/150?u=${notification.addedBy}`
-                    }
-                    alt={notification.addedBy}
-                    fill
-                    className="object-cover"
-                    unoptimized
+                    src={notification.user?.image || "/images/user.webp"}
+                    alt="User"
+                    width={48}
+                    height={48}
+                    className="object-cover w-full h-full"
                   />
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-foreground mb-0.5">
-                    {notification.title}
-                  </h3>
-                  <p className="text-xs font-medium text-secondary">
-                    {notification.description}
+                <div className="space-y-1">
+                  <h4 className="font-bold text-lg text-primary">
+                    <TranslatedText text={notification.title} />
+                  </h4>
+                  <p className="text-secondary text-sm">
+                    {notification.user?.name}{" "}
+                    <TranslatedText text="want to withdraw" />
                   </p>
-                  <div className="flex items-center gap-2 mt-2">
+
+                  <div className="flex gap-4 pt-2">
                     <button
-                      onClick={() => handleViewDetails(notification)}
-                      className="px-4 py-1.5 bg-green-50 text-green-600 text-xs font-black uppercase tracking-wider rounded border border-green-100 hover:bg-green-100 transition-all cursor-pointer"
+                      onClick={() => openDetails(notification)}
+                      className="px-6 py-2 bg-[#F9FAFB] border border-[#E4E7EC] rounded-lg text-sm font-bold text-[#344054] hover:bg-gray-100 transition-colors cursor-pointer"
                     >
-                      View
+                      <TranslatedText text="View" />
                     </button>
                     <button
-                      onClick={() => handleRejectInitiate(notification.id)}
-                      className="px-4 py-1.5 bg-red-50 text-red-600 text-xs font-black uppercase tracking-wider rounded border border-red-100 hover:bg-red-100 transition-all cursor-pointer"
+                      onClick={() => openReject(notification)}
+                      className="px-6 py-2 text-sm font-bold text-[#D92D20] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                     >
-                      Reject
+                      <TranslatedText text="Reject" />
                     </button>
                   </div>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-secondary">
-                  {notification.timestamp}
-                </span>
+
+              <div className="text-[#667085] text-sm text-right">
+                {notification.timestamp}
               </div>
             </div>
-          ))
-        ) : (
-          <div className="py-20 text-center text-secondary">
-            <Bell className="w-12 h-12 mx-auto mb-4 opacity-10" />
-            <p className="font-bold">No notifications found</p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
 
-      {/* Pagination */}
-      {!isLoading && totalPages > 1 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          totalItems={filteredNotifications.length}
-          itemsPerPage={itemsPerPage}
-          currentItemsCount={currentItems.length}
+        {/* Pagination Container */}
+        <div className="mt-12 flex justify-center w-full">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalItems={notifications.length}
+            itemsPerPage={itemsPerPage}
+            currentItemsCount={currentNotifications.length}
+          />
+        </div>
+      </main>
+
+      {/* Details Modal */}
+      <NotificationDetailsModal
+        isOpen={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+        notification={selectedNotification}
+        onAccept={handleAccept}
+      />
+
+      {/* Reject Confirmation Modal - Dynamic version matching Image 3 */}
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${isRejectModalOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
+      >
+        <div
+          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+          onClick={() => setIsRejectModalOpen(false)}
         />
-      )}
-
-      {/* Modals */}
-      <ApprovalDetailModal
-        isOpen={isDetailModalOpen}
-        onClose={() => setIsDetailModalOpen(false)}
-        request={selectedNotification}
-        onApprove={(id) => {
-          handleApprove(id);
-          setIsDetailModalOpen(false);
-        }}
-        onReject={(id) => {
-          handleRejectInitiate(id);
-          setIsDetailModalOpen(false);
-        }}
-      />
-
-      <ConfirmationModal
-        isOpen={isRejectConfirmOpen}
-        onClose={() => setIsRejectConfirmOpen(false)}
-        onConfirm={handleRejectConfirm}
-        title="Reject Request"
-        message="Are you sure you want to reject this request? This action will set the status to Rejected."
-        confirmText="Yes, Reject"
-        isDestructive={true}
-      />
+        <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 animate-in zoom-in duration-300">
+          <button
+            onClick={() => setIsRejectModalOpen(false)}
+            className="absolute right-4 top-4 text-secondary hover:text-red-500 transition-all p-2 rounded-full cursor-pointer"
+          >
+            <X className="w-6 h-6" />
+          </button>
+          <div className="flex flex-col items-center text-center space-y-6">
+            <div className="p-3 bg-blue-50/50 rounded-full border border-gray-100">
+              <CircleHelp className="w-10 h-10 text-[#0B3154]" />
+            </div>
+            <h3 className="text-xl font-bold text-primary">
+              <TranslatedText text="Are you sure you want to reject?" />
+            </h3>
+            <div className="flex gap-4 w-full pt-4">
+              <button
+                onClick={() => setIsRejectModalOpen(false)}
+                className="flex-1 py-4 border border-gray-200 rounded-full font-bold text-secondary hover:bg-gray-50 transition-all cursor-pointer"
+              >
+                <TranslatedText text="Cancel" />
+              </button>
+              <button
+                onClick={handleReject}
+                className="flex-1 py-4 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200 cursor-pointer"
+              >
+                <TranslatedText text="Reject" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
+// Inline icons for reuse if needed, but imported Lucide instead
+const X = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
+  </svg>
+);
