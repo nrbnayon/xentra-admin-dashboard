@@ -139,7 +139,7 @@ export default function MatchModal({
       ...restData,
       sport: restData.sport as Match["sport"],
       platformFee: Number(restData.platformFee),
-      image: imagePreview || "/images/bg.webp", // In a real app, this would be the uploaded URL
+      image: imagePreview || "/images/match1.png", // In a real app, this would be the uploaded URL
     });
     toast.success(
       match ? "Match updated successfully!" : "Match created successfully!",
