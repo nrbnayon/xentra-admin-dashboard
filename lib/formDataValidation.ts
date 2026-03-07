@@ -1,26 +1,41 @@
 import { z } from "zod";
+import { parsePhoneNumberFromString, CountryCode } from "libphonenumber-js";
+
+// Phone Number Validation helper
+const validatePhoneNumber = (phone: string, countryCode?: string) => {
+  try {
+    const phoneNumber = parsePhoneNumberFromString(
+      phone,
+      countryCode as CountryCode,
+    );
+    return phoneNumber?.isValid() || false;
+  } catch {
+    return false;
+  }
+};
 
 // Login Validation schema
-export const loginValidationSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address")
-    .max(100, "Email must be less than 100 characters")
-    .trim(),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(2, "Password must be at least 2 characters")
-    .max(100, "Password must be less than 100 characters")
-    .trim()
-    .refine((val) => !/\s/.test(val), {
-      message: "Password cannot contain spaces",
-    }),
-  rememberMe: z.boolean(),
-});
+export const loginValidationSchema = z
+  .object({
+    phone_number: z.string().min(1, "Phone number is required"),
+    country_code: z.string().min(1, "Country code is required"),
+    password: z
+      .string()
+      .min(1, "Password is required")
+      .min(2, "Password must be at least 2 characters")
+      .max(100, "Password must be less than 100 characters")
+      .trim()
+      .refine((val) => !/\s/.test(val), {
+        message: "Password cannot contain spaces",
+      }),
+    rememberMe: z.boolean(),
+  })
+  .refine((data) => validatePhoneNumber(data.phone_number, data.country_code), {
+    message: "Please enter a valid phone number",
+    path: ["phone_number"],
+  });
 
-// Sign up Validation schema
+// Sign up Validation schema (Keeping it but user didn't mention it, though they said a-z)
 export const signupValidationSchema = z
   .object({
     full_name: z
@@ -30,15 +45,11 @@ export const signupValidationSchema = z
       .max(50, "Name must be less than 50 characters")
       .regex(
         /^[a-zA-Z\s'-]+$/,
-        "Name can only contain letters, spaces, hyphens, and apostrophes"
+        "Name can only contain letters, spaces, hyphens, and apostrophes",
       )
       .trim(),
-    email: z
-      .string()
-      .min(1, "Email is required")
-      .email("Please enter a valid email address")
-      .max(100, "Email must be less than 100 characters")
-      .trim(),
+    phone_number: z.string().min(1, "Phone number is required"),
+    country_code: z.string().min(1, "Country code is required"),
     password: z
       .string()
       .min(1, "Password is required")
@@ -46,7 +57,7 @@ export const signupValidationSchema = z
       .max(100, "Password must be less than 100 characters")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
       )
       .refine((val) => !/\s/.test(val), {
         message: "Password cannot contain spaces",
@@ -56,23 +67,32 @@ export const signupValidationSchema = z
       .boolean()
       .refine(
         (val) => val === true,
-        "You must agree to the Terms and Conditions to continue"
+        "You must agree to the Terms and Conditions to continue",
       ),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
+  })
+  .refine((data) => validatePhoneNumber(data.phone_number, data.country_code), {
+    message: "Please enter a valid phone number",
+    path: ["phone_number"],
+  });
+
+// Forget Password Validation schema
+export const forgetPasswordValidationSchema = z
+  .object({
+    phone_number: z.string().min(1, "Phone number is required"),
+    country_code: z.string().min(1, "Country code is required"),
+  })
+  .refine((data) => validatePhoneNumber(data.phone_number, data.country_code), {
+    message: "Please enter a valid phone number",
+    path: ["phone_number"],
   });
 
 // Reset Password Validation schema
 export const resetPasswordValidationSchema = z
   .object({
-    email: z
-      .string()
-      .min(1, "Email is required")
-      .email("Please enter a valid email address")
-      .max(100, "Email must be less than 100 characters")
-      .trim(),
     newPassword: z
       .string()
       .min(1, "New password is required")
@@ -80,7 +100,7 @@ export const resetPasswordValidationSchema = z
       .max(100, "Password must be less than 100 characters")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
       )
       .refine((val) => !/\s/.test(val), {
         message: "New password cannot contain spaces",
@@ -92,7 +112,12 @@ export const resetPasswordValidationSchema = z
     path: ["confirmPassword"],
   });
 
-// Email Validation schema
+// OTP Validation schema
+export const otpValidationSchema = z.object({
+  otp: z.string().length(6, "OTP must be 6 digits"),
+});
+
+// Email Validation schema (Keeping it for compatibility if needed elsewhere, but might not be)
 export const emailValidationSchema = z.object({
   email: z
     .string()
@@ -113,7 +138,7 @@ export const passwordValidationSchema = z
       .max(100, "Password must be less than 100 characters")
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
       )
       .refine((val) => !/\s/.test(val), {
         message: "New password cannot contain spaces",

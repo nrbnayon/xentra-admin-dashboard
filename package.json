@@ -19,6 +19,7 @@
     "exceljs": "^4.4.0",
     "framer-motion": "^12.23.26",
     "input-otp": "^1.4.2",
+    "libphonenumber-js": "^1.12.38",
     "lucide-react": "^0.575.0",
     "motion": "^12.23.26",
     "next": "16.1.6",

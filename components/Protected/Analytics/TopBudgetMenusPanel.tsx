@@ -16,7 +16,7 @@ export function TopBudgetMenusPanel() {
             className="flex items-center justify-between py-3.5 hover:bg-gray-50/60 transition-colors rounded-lg px-1"
           >
             <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-xl bg-[#E6F4FF] text-[#0190FE] font-bold flex items-center justify-center shrink-0">
+              <span className="w-10 h-10 rounded-xl bg-[#E6F4FF] text-[#11355B] font-bold flex items-center justify-center shrink-0">
                 {menu.id}
               </span>
               <span className="text-sm font-medium text-foreground">

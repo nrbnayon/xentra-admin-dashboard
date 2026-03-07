@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -12,110 +12,99 @@ import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FloatingInput } from "@/components/ui/floating-input";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { useAppDispatch } from "@/redux/hooks";
 import { setCredentials } from "@/redux/features/authSlice";
 import { toast } from "sonner";
 import { loginValidationSchema } from "@/lib/formDataValidation";
+import { CountryDropdown } from "./CountryDropdown";
+import { COUNTRIES } from "@/lib/countries";
+import { useLoginMutation } from "@/redux/services/authApi";
+import { cn } from "@/lib/utils";
 
 type FormValues = z.infer<typeof loginValidationSchema>;
 
 export const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [login, { isLoading }] = useLoginMutation();
   const router = useRouter();
   const dispatch = useAppDispatch();
+
+  const [selectedCountry, setSelectedCountry] = useState(
+    COUNTRIES.find((c) => c.code === "HT") || COUNTRIES[0],
+  );
 
   const {
     register,
     handleSubmit,
     control,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(loginValidationSchema),
     defaultValues: {
-      email: "",
+      phone_number: "",
+      country_code: "HT",
       password: "",
       rememberMe: false,
     },
   });
 
-  // Trim spaces in real-time for email & password
-  const handleTrimChange =
-    (field: "email" | "password") =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const trimmed = e.target.value.trim();
-      setValue(field, trimmed, { shouldValidate: true });
-    };
-
   const onSubmit = async (data: FormValues) => {
-    // Final trim just in case (though already trimmed)
-    const cleanData = {
-      ...data,
-      email: data.email.trim(),
-      password: data.password.trim(),
-    };
-
-    setIsLoading(true);
     try {
-      // Replace with real API call
-      // const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(cleanData),
-      // });
+      // For now, simulating the logic as in the original file but with API if ready
+      // const response = await login(data).unwrap();
 
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // simulate delay
+      // Simulate API call for demonstration as per original file's style
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      const mockUser = {
-        name: "Nayon II", // or from real response
-        email: cleanData.email,
-        role: "admin",
-        image: "/images/user.webp",
+      const mockResponse = {
+        user: {
+          full_name: "Nayon II",
+          phone_number: data.phone_number,
+          role: "admin",
+          image: "/images/user.webp",
+        },
+        accessToken: `mock_access_token_${Date.now()}`,
       };
-      const mockToken = `mock_access_token_${Date.now()}`;
 
       dispatch(
         setCredentials({
-          user: mockUser,
-          token: mockToken,
+          user: mockResponse.user,
+          token: mockResponse.accessToken,
         }),
       );
 
-      // Cookies - httpOnly would be better in real app (use server action / API route)
-      const maxAge = cleanData.rememberMe ? 86400 : undefined; // 1 day or session
-      document.cookie = `accessToken=${mockToken}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
-      document.cookie = `userRole=${mockUser.role}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
-      document.cookie = `userEmail=${encodeURIComponent(mockUser.email)}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
+      const maxAge = data.rememberMe ? 86400 * 30 : undefined; // 30 days or session
+      document.cookie = `accessToken=${mockResponse.accessToken}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
+      document.cookie = `userRole=${mockResponse.user.role}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
 
       toast.success("Logged in successfully!");
       router.push("/");
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 
   return (
-    <div className="relative h-screen w-full flex flex-col lg:flex-row">
+    <div className="relative h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-white">
       {/* Left - Image (hidden on mobile) */}
       <motion.div
-        initial={{ opacity: 0, x: 30 }}
+        initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }} className="hidden lg:block lg:flex-1 h-screen overflow-hidden relative bg-[#E6F4FF]">
+        transition={{ duration: 0.8, delay: 0.2 }}
+        className="hidden lg:block lg:flex-1 h-screen overflow-hidden relative bg-[#E6F4FF]"
+      >
         <div className="w-full h-full flex items-center justify-center">
           <Image
             src="/icons/logo.png"
             alt="Auth Background"
-            width={200}
-            height={200}
-            className="object-cover"
+            width={240}
+            height={240}
+            className="object-contain"
           />
         </div>
         <div className="top-[-200px] lg:top-[-373px] left-[-150px] lg:left-[-257px] absolute w-[600px] lg:w-[850px] h-[350px] lg:h-[496px] bg-[#1d92ed99] rounded-[300px/175px] lg:rounded-[425px/248px] blur-[100px]" />
@@ -129,103 +118,145 @@ export const SignInForm = () => {
         transition={{ duration: 0.7 }}
         className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12 bg-white lg:min-h-screen"
       >
-        <div className="w-full max-w-md lg:max-w-lg space-y-8">
+        <div className="w-full max-w-md space-y-10">
           {/* Logo + Title */}
           <div className="text-center space-y-3">
-            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">
-              Log In
-            </h1>
-            <p className="text-lg sm:text-xl text-secondary">
-              Please login to continue to your account.
+            <h1 className="text-4xl font-bold text-primary">Sign In</h1>
+            <p className="text-base text-gray-500">
+              Sign in to access your account
             </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Email */}
-            <FloatingInput
-              label="Email"
-              type="email"
-              autoComplete="email"
-              error={errors.email?.message}
-              labelClassName="text-secondary"
-              className="h-14 rounded-full border-2 focus:border-primary focus:ring-0 px-6 text-base"
-              {...register("email")}
-              onChange={handleTrimChange("email")}
-            />
-
-            {/* Password with eye toggle */}
-            <FloatingInput
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
-              error={errors.password?.message}
-              labelClassName="text-secondary"
-              className="h-14 rounded-full border-2 focus:border-primary focus:ring-0 px-6 pr-14 text-base"
-              {...register("password")}
-              onChange={handleTrimChange("password")}
-            >
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                className="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors p-1"
-                aria-label={showPassword ? "Hide password" : "Show password"}
+            {/* Phone */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="phone_number"
+                className="text-base font-semibold text-primary"
               >
-                {showPassword ? (
-                  <Eye className="h-5 w-5" />
-                ) : (
-                  <EyeOff className="h-5 w-5" />
-                )}
-              </button>
-            </FloatingInput>
-
-            {/* Remember me */}
-            <Controller
-              name="rememberMe"
-              control={control}
-              render={({ field }) => (
-                <div className="flex items-center gap-3">
-                  <Checkbox
-                    id="rememberMe"
-                    className="h-5 w-5 border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded"
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
+                Phone
+              </Label>
+              <div className="flex gap-2">
+                <CountryDropdown
+                  selectedCountry={selectedCountry}
+                  onSelect={(country) => {
+                    setSelectedCountry(country);
+                    setValue("country_code", country.code, {
+                      shouldValidate: true,
+                    });
+                  }}
+                  error={!!errors.phone_number}
+                />
+                <div className="flex-1 relative">
+                  <Input
+                    id="phone_number"
+                    placeholder="Enter your number"
+                    className={cn(
+                      "h-14 rounded-xl border-gray-200 focus-visible:ring-0 focus-visible:border-primary px-4 text-base",
+                      errors.phone_number &&
+                        "border-red-500 focus-visible:border-red-500",
+                    )}
+                    {...register("phone_number")}
                   />
-                  <Label
-                    htmlFor="rememberMe"
-                    className="text-sm sm:text-base text-secondary cursor-pointer font-normal select-none"
-                  >
-                    Keep me logged in
-                  </Label>
                 </div>
+              </div>
+              {errors.phone_number && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.phone_number.message}
+                </p>
               )}
-            />
+            </div>
 
-            {/* Submit */}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-lg font-semibold rounded-full shadow-md transition-all duration-200"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                  Logging in...
-                </>
-              ) : (
-                "Log In"
+            {/* Password */}
+            <div className="space-y-2">
+              <Label
+                htmlFor="password"
+                className="text-base font-semibold text-primary"
+              >
+                Password
+              </Label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <Lock className="h-5 w-5" />
+                </span>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  className={cn(
+                    "h-14 rounded-xl border-gray-200 focus-visible:ring-0 focus-visible:border-primary pl-12 pr-12 text-base",
+                    errors.password &&
+                      "border-red-500 focus-visible:border-red-500",
+                  )}
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors p-1"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
               )}
-            </Button>
+            </div>
 
-            {/* Forgot password */}
-            <div className="text-center text-sm sm:text-base">
-              <span className="text-secondary">Forgot Password? </span>
+            {/* Remember me & Forgot Password */}
+            <div className="flex items-center justify-between">
+              <Controller
+                name="rememberMe"
+                control={control}
+                render={({ field }) => (
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="rememberMe"
+                      className="h-5 w-5 border-gray-300 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <Label
+                      htmlFor="rememberMe"
+                      className="text-sm text-gray-600 cursor-pointer font-medium"
+                    >
+                      Remember me
+                    </Label>
+                  </div>
+                )}
+              />
               <Link
                 href="/forgot-password"
-                className="text-primary font-semibold hover:text-primary/80 hover:underline transition-colors"
+                className="text-sm font-semibold text-orange-400 hover:text-orange-500 transition-colors"
               >
-                Reset
+                Forget Password?
               </Link>
+            </div>
+
+            {/* Submit */}
+            <div className="pt-4">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-14 bg-primary hover:bg-primary/90 text-white text-lg font-bold rounded-full shadow-lg transition-all duration-200"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
             </div>
           </form>
         </div>
