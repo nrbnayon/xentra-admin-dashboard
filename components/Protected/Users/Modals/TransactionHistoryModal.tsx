@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { Transaction } from "@/types/users";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface TransactionHistoryModalProps {
   isOpen: boolean;
@@ -24,11 +25,11 @@ export default function TransactionHistoryModal({
       <div className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center p-6 border-b border-transparent shrink-0">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Transaction History
+            <TranslatedText text="Transaction History" />
           </h2>
           <button
             onClick={onClose}
-            className="text-red-500 hover:text-red-700 transition-colors"
+            className="text-red-500 hover:text-red-700 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -39,10 +40,18 @@ export default function TransactionHistoryModal({
             <table className="w-full min-w-[600px] text-left text-sm">
               <thead className="bg-[#E5F3FC] dark:bg-[#1f2937] text-gray-600 dark:text-gray-200">
                 <tr>
-                  <th className="p-4 font-normal py-3 rounded-l-md">Date</th>
-                  <th className="p-4 font-normal py-3">Type</th>
-                  <th className="p-4 font-normal py-3">Amount</th>
-                  <th className="p-4 font-normal py-3 rounded-r-md">Match</th>
+                  <th className="p-4 font-normal py-3 rounded-l-md">
+                    <TranslatedText text="Date" />
+                  </th>
+                  <th className="p-4 font-normal py-3">
+                    <TranslatedText text="Type" />
+                  </th>
+                  <th className="p-4 font-normal py-3">
+                    <TranslatedText text="Amount" />
+                  </th>
+                  <th className="p-4 font-normal py-3 rounded-r-md">
+                    <TranslatedText text="Match" />
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-transparent">
@@ -53,15 +62,19 @@ export default function TransactionHistoryModal({
                     className="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300"
                   >
                     <td className="px-4 py-3">{t.date}</td>
-                    <td className="px-4 py-3">{t.type}</td>
+                    <td className="px-4 py-3">
+                      <TranslatedText text={t.type} />
+                    </td>
                     <td className="px-4 py-3">{t.amount} HTG</td>
-                    <td className="px-4 py-3">{t.match || ""}</td>
+                    <td className="px-4 py-3">
+                      {t.match ? <TranslatedText text={t.match} /> : ""}
+                    </td>
                   </tr>
                 ))}
                 {transactions.length === 0 && (
                   <tr>
                     <td colSpan={4} className="p-4 text-center text-gray-500">
-                      No transactions found.
+                      <TranslatedText text="No transactions found." />
                     </td>
                   </tr>
                 )}

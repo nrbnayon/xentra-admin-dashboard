@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 export default function UsersClient() {
   const [users, setUsers] = useState<User[]>(usersData);
@@ -68,47 +69,47 @@ export default function UsersClient() {
   const columns = [
     {
       key: "name",
-      header: "Name",
+      header: <TranslatedText text="Name" />,
       sortable: true,
       className: "font-medium text-foreground",
     },
     {
       key: "phone_number",
-      header: "Phone Number",
+      header: <TranslatedText text="Phone Number" />,
       sortable: true,
       className: "text-foreground font-medium",
     },
     {
       key: "balance",
-      header: "Balance",
+      header: <TranslatedText text="Balance" />,
       render: (val: number) => `${val} HTG`,
       sortable: true,
       className: "text-foreground font-medium",
     },
     {
       key: "contest_joined",
-      header: "Contest Joined",
+      header: <TranslatedText text="Contest Joined" />,
       sortable: true,
       align: "center",
       className: "text-foreground font-medium",
     },
     {
       key: "total_win",
-      header: "Total Win",
+      header: <TranslatedText text="Total Win" />,
       sortable: true,
       align: "center",
       className: "text-foreground font-medium",
     },
     {
       key: "total_lose",
-      header: "Total lose",
+      header: <TranslatedText text="Total lose" />,
       sortable: true,
       align: "center",
       className: "text-foreground font-medium",
     },
     {
       key: "status",
-      header: "Status",
+      header: <TranslatedText text="Status" />,
       render: (status: string) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
@@ -117,7 +118,9 @@ export default function UsersClient() {
               : "bg-[#FEE2E2] text-[#B91C1C]"
           }`}
         >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+          <TranslatedText
+            text={status.charAt(0).toUpperCase() + status.slice(1)}
+          />
         </span>
       ),
       sortable: true,
@@ -149,19 +152,19 @@ export default function UsersClient() {
               className="text-white bg-primary hover:bg-primary/80 cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none focus:text-black"
               onClick={() => openPredictionView(selectedUser as User)}
             >
-              View Prediction
+              <TranslatedText text="View Prediction" />
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none focus:text-black"
               onClick={() => openWalletView(selectedUser as User)}
             >
-              View Wallet
+              <TranslatedText text="View Wallet" />
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 flex items-center justify-center outline-none focus:text-black"
               onClick={() => openTransactionHistory(selectedUser as User)}
             >
-              Transaction History
+              <TranslatedText text="Transaction History" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

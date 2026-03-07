@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { Wallet } from "@/types/users";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -24,11 +25,11 @@ export default function WalletModal({
       <div className="relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh]">
         <div className="flex justify-between items-center p-6 pb-4 shrink-0">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Wallet
+            <TranslatedText text="Wallet" />
           </h2>
           <button
             onClick={onClose}
-            className="text-red-500 hover:text-red-700 transition-colors"
+            className="text-red-500 hover:text-red-700 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -37,7 +38,7 @@ export default function WalletModal({
         <div className="p-6 pt-0 space-y-4 w-full">
           <div>
             <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-              Total Balance
+              <TranslatedText text="Total Balance" />
             </label>
             <input
               type="text"
@@ -50,7 +51,7 @@ export default function WalletModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                Total Deposit
+                <TranslatedText text="Total Deposit" />
               </label>
               <input
                 type="text"
@@ -61,7 +62,7 @@ export default function WalletModal({
             </div>
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                Total Withdrawal
+                <TranslatedText text="Total Withdrawal" />
               </label>
               <input
                 type="text"
@@ -75,7 +76,7 @@ export default function WalletModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                Total Winning
+                <TranslatedText text="Total Winning" />
               </label>
               <input
                 type="text"
@@ -86,7 +87,7 @@ export default function WalletModal({
             </div>
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                Total Deduction
+                <TranslatedText text="Total Deduction" />
               </label>
               <input
                 type="text"

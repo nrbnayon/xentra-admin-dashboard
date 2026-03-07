@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { Prediction } from "@/types/users";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface PredictionModalProps {
   isOpen: boolean;
@@ -24,11 +25,11 @@ export default function PredictionModal({
       <div className="relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 pb-2 shrink-0">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Prediction Details
+            <TranslatedText text="Prediction Details" />
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500 transition-colors"
+            className="text-gray-500 hover:text-red-500 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
           </button>
@@ -36,12 +37,12 @@ export default function PredictionModal({
 
         <div className="p-6 pt-2 space-y-4 w-full">
           <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-4">
-            Prediction 1
+            <TranslatedText text="Prediction 1" />
           </h3>
 
           <div>
             <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-              Sport Name
+              <TranslatedText text="Sport Name" />
             </label>
             <input
               type="text"
@@ -53,7 +54,7 @@ export default function PredictionModal({
 
           <div>
             <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-              League Name
+              <TranslatedText text="League Name" />
             </label>
             <input
               type="text"
@@ -66,7 +67,7 @@ export default function PredictionModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Match Date
+                <TranslatedText text="Match Date" />
               </label>
               <input
                 type="text"
@@ -77,7 +78,7 @@ export default function PredictionModal({
             </div>
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Match Time Start
+                <TranslatedText text="Match Time Start" />
               </label>
               <input
                 type="text"
@@ -91,7 +92,7 @@ export default function PredictionModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Team A
+                <TranslatedText text="Team A" />
               </label>
               <input
                 type="text"
@@ -102,7 +103,7 @@ export default function PredictionModal({
             </div>
             <div>
               <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-                Team B
+                <TranslatedText text="Team B" />
               </label>
               <input
                 type="text"
@@ -115,7 +116,7 @@ export default function PredictionModal({
 
           <div>
             <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-              Prediction
+              <TranslatedText text="Prediction" />
             </label>
             <input
               type="text"
