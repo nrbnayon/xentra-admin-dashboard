@@ -112,7 +112,7 @@ export const CountryDropdown = ({
                       "text-sm font-medium transition-colors",
                       selectedCountry.code === country.code
                         ? "text-primary font-bold"
-                        : "text-gray-700",
+                        : "text-foreground",
                     )}
                   >
                     {country.name}

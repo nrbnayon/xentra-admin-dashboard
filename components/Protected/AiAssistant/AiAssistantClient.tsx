@@ -388,7 +388,7 @@ export default function AiAssistantClient() {
                   <FileSpreadsheet className="w-4 h-4 text-green-600" />
                 </div>
                 <div className="flex flex-col min-w-0 pr-6">
-                  <span className="text-xs font-semibold text-gray-700 truncate max-w-[120px]">
+                  <span className="text-xs font-semibold text-foreground truncate max-w-[120px]">
                     {file.name}
                   </span>
                   {file.status === "uploading" ? (
