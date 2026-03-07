@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import Image from "next/image";
-import { useLanguage } from "@/context/LanguageContext";
+import { useLanguage, Language } from "@/context/LanguageContext";
 import TranslatedText from "@/components/Shared/TranslatedText";
 
 export default function SettingsClient() {
@@ -82,7 +82,13 @@ export default function SettingsClient() {
   const handleSaveLanguage = () => {
     setIsEditingLanguage(false);
     toast.success(
-      `Language set to ${language === "en" ? "English" : "Portuguese"}`,
+      `Language set to ${
+        language === "en"
+          ? "English"
+          : language === "fr"
+            ? "French"
+            : "Haitian Kreyòl"
+      }`,
     );
   };
 
@@ -465,12 +471,13 @@ export default function SettingsClient() {
                       <select
                         value={language}
                         onChange={(e) =>
-                          setLanguage(e.target.value as "en" | "pt")
+                          setLanguage(e.target.value as Language)
                         }
                         className="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer"
                       >
                         <option value="en">English</option>
-                        <option value="pt">Portuguese</option>
+                        <option value="fr">French</option>
+                        <option value="ht">Haitian Kreyòl</option>
                       </select>
                       <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                     </div>
@@ -490,7 +497,11 @@ export default function SettingsClient() {
                     <TranslatedText text="Selected Language" />
                   </p>
                   <p className="text-sm text-[#4B5563] font-medium">
-                    {language === "en" ? "English" : "Portuguese"}
+                    {language === "en"
+                      ? "English"
+                      : language === "fr"
+                        ? "French"
+                        : "Haitian Kreyòl"}
                   </p>
                 </div>
               )}

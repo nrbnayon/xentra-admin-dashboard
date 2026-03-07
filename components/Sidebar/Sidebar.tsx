@@ -24,6 +24,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import LogoutModal from "../Shared/LogoutModal";
+import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface SubLink {
   label: string;
@@ -400,7 +401,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                             }}
                             className="text-sm md:text-base"
                           >
-                            {link.label}
+                            <TranslatedText text={link.label} />
                           </motion.span>
 
                           {/* Expand/Collapse Button */}
@@ -469,7 +470,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                                 )}
                               >
                                 <span className="text-sm whitespace-pre">
-                                  {subLink.label}
+                                  <TranslatedText text={subLink.label} />
                                 </span>
                               </Link>
                             );
@@ -520,7 +521,9 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                           getRoleBadgeColor(role || "admin"),
                         )}
                       >
-                        {getRoleDisplayName(role || "admin")}
+                        <TranslatedText
+                          text={getRoleDisplayName(role || "admin")}
+                        />
                       </p>
                     </motion.div>
                   </Link>

@@ -23,7 +23,11 @@ function LanguageSwitcher() {
         <div className="hidden md:flex items-center justify-between px-3 py-2 border rounded-md min-w-30 cursor-pointer hover:bg-gray-50 bg-white transition-colors">
           <div className="flex items-center gap-2">
             <span className="text-sm">
-              {language === "en" ? "English" : "Portuguese"}
+              {language === "en"
+                ? "English"
+                : language === "fr"
+                  ? "French"
+                  : "Haitian Kreyòl"}
             </span>
           </div>
           <ChevronDown className="h-4 w-4 text-gray-500" />
@@ -33,8 +37,11 @@ function LanguageSwitcher() {
         <DropdownMenuItem onClick={() => setLanguage("en")}>
           English
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setLanguage("pt")}>
-          Portuguese
+        <DropdownMenuItem onClick={() => setLanguage("fr")}>
+          French
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setLanguage("ht")}>
+          Haitian Kreyòl
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

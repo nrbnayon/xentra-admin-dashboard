@@ -1,6 +1,6 @@
-// components/Dashboard/Shared/StatsCard.tsx
 import { cn } from "@/lib/utils";
 import { LucideIcon, TrendingUp } from "lucide-react";
+import TranslatedText from "./TranslatedText";
 
 interface StatsCardProps {
   title: string | React.ReactNode;
@@ -38,7 +38,9 @@ export function StatsCard({
       )}
     >
       <div className="flex flex-col justify-center gap-2">
-        <h3 className="text-foreground text-sm font-semibold">{title}</h3>
+        <h3 className="text-foreground text-sm font-semibold">
+          {typeof title === "string" ? <TranslatedText text={title} /> : title}
+        </h3>
         <div className="text-3xl font-bold text-foreground">{value}</div>
         {subtitle && (
           <div className="flex items-center gap-1 text-xs">
@@ -48,7 +50,9 @@ export function StatsCard({
                 <span className="text-primary font-medium">{percentage}%</span>
               </>
             )}
-            <span className="text-secondary">{subtitleText}</span>
+            <span className="text-secondary">
+              <TranslatedText text={subtitleText} />
+            </span>
           </div>
         )}
       </div>
