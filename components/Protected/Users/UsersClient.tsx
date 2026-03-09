@@ -248,6 +248,14 @@ export default function UsersClient() {
             : "Are you sure you want to activate this user? This will restore their access to the platform."
         }
         confirmText={targetStatus === "suspended" ? "Suspend" : "Activate"}
+        variant={targetStatus === "suspended" ? "danger" : "success"}
+        icon={
+          targetStatus === "suspended" ? (
+            <UserX size={24} />
+          ) : (
+            <UserCheck size={24} />
+          )
+        }
       />
 
       <PredictionModal
