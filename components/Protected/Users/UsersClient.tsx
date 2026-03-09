@@ -15,7 +15,7 @@ import {
   dummyWallet,
 } from "@/data/usersData";
 import { User, Transaction, Prediction, Wallet } from "@/types/users";
-import { UserX, MoreVertical } from "lucide-react";
+import { UserX, UserCheck, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,7 +26,10 @@ import TranslatedText from "@/components/Shared/TranslatedText";
 
 export default function UsersClient() {
   const [users, setUsers] = useState<User[]>(usersData);
-  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [targetStatus, setTargetStatus] = useState<"active" | "suspended">(
+    "suspended",
+  );
   const [isAdjustBalanceModalOpen, setIsAdjustBalanceModalOpen] =
     useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -40,14 +43,14 @@ export default function UsersClient() {
   const [walletData, setWalletData] = useState<Wallet | null>(null);
   const [transactionData, setTransactionData] = useState<Transaction[]>([]);
 
-  const handleSuspendUser = () => {
+  const handleToggleStatus = () => {
     if (selectedUser) {
       setUsers(
         users.map((u) =>
-          u.id === selectedUser.id ? { ...u, status: "suspended" } : u,
+          u.id === selectedUser.id ? { ...u, status: targetStatus } : u,
         ),
       );
-      setIsSuspendModalOpen(false);
+      setIsStatusModalOpen(false);
     }
   };
 
@@ -57,9 +60,10 @@ export default function UsersClient() {
     );
   };
 
-  const openSuspendModal = (user: User) => {
+  const openStatusModal = (user: User, status: "active" | "suspended") => {
     setSelectedUser(user);
-    setIsSuspendModalOpen(true);
+    setTargetStatus(status);
+    setIsStatusModalOpen(true);
   };
 
   const openPredictionView = (user: User) => {
@@ -148,7 +152,16 @@ export default function UsersClient() {
       icon: (
         <UserX className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
       ),
-      onClick: (user: User) => openSuspendModal(user),
+      onClick: (user: User) => openStatusModal(user, "suspended"),
+      show: (user: User) => user.status !== "suspended",
+    },
+    {
+      label: "Activate",
+      icon: (
+        <UserCheck className="w-5 h-5 text-green-500 hover:text-green-700 transition" />
+      ),
+      onClick: (user: User) => openStatusModal(user, "active"),
+      show: (user: User) => user.status === "suspended",
     },
     {
       label: "More",
@@ -225,12 +238,16 @@ export default function UsersClient() {
       </main>
 
       <DeleteConfirmationModal
-        isOpen={isSuspendModalOpen}
-        onClose={() => setIsSuspendModalOpen(false)}
-        onConfirm={handleSuspendUser}
-        title="Suspend User"
-        description="Are you sure you want to suspend this user? This will restrict their access but preserve their history."
-        confirmText="Suspend"
+        isOpen={isStatusModalOpen}
+        onClose={() => setIsStatusModalOpen(false)}
+        onConfirm={handleToggleStatus}
+        title={targetStatus === "suspended" ? "Suspend User" : "Activate User"}
+        description={
+          targetStatus === "suspended"
+            ? "Are you sure you want to suspend this user? This will restrict their access but preserve their history."
+            : "Are you sure you want to activate this user? This will restore their access to the platform."
+        }
+        confirmText={targetStatus === "suspended" ? "Suspend" : "Activate"}
       />
 
       <PredictionModal
