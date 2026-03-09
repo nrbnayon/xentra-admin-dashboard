@@ -1,4 +1,9 @@
-export type UserStatus = "active" | "inactive" | "pending" | "removed";
+export type UserStatus =
+  | "active"
+  | "inactive"
+  | "pending"
+  | "removed"
+  | "suspended";
 
 export interface User {
   id: string;

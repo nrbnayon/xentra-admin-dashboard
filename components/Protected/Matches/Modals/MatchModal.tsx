@@ -323,7 +323,7 @@ export default function MatchModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                <TranslatedText text="Platform fee" />{" "}
+                <TranslatedText text="Platform fee (%)" />{" "}
                 <span className="text-red-500">*</span>
               </label>
               <input
@@ -333,7 +333,7 @@ export default function MatchModal({
                   setFormData({ ...formData, platformFee: e.target.value })
                 }
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.platformFee ? "border-red-500" : ""}`}
-                placeholder="10"
+                placeholder="e.g. 25"
               />
               {errors.platformFee && (
                 <p className="text-red-500 text-xs mt-1">

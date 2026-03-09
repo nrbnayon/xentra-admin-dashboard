@@ -11,6 +11,7 @@ interface DeleteConfirmationModalProps {
   onConfirm: () => void;
   title?: string;
   description?: string;
+  confirmText?: string;
 }
 
 export function DeleteConfirmationModal({
@@ -20,6 +21,7 @@ export function DeleteConfirmationModal({
   isLoading = false,
   title = "Delete User",
   description = "Are you sure you want to delete this user? This action cannot be undone.",
+  confirmText = "Delete",
 }: DeleteConfirmationModalProps & { isLoading?: boolean }) {
   if (!isOpen) return null;
 
@@ -84,7 +86,7 @@ export function DeleteConfirmationModal({
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                <TranslatedText text="Delete" />
+                <TranslatedText text={confirmText} />
               )}
             </button>
           </div>

@@ -7,6 +7,7 @@ import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationM
 import PredictionModal from "./Modals/PredictionModal";
 import WalletModal from "./Modals/WalletModal";
 import TransactionHistoryModal from "./Modals/TransactionHistoryModal";
+import AdjustBalanceModal from "./Modals/AdjustBalanceModal";
 import {
   usersData,
   dummyTransactions,
@@ -14,7 +15,7 @@ import {
   dummyWallet,
 } from "@/data/usersData";
 import { User, Transaction, Prediction, Wallet } from "@/types/users";
-import { Trash2, MoreVertical } from "lucide-react";
+import { UserX, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +26,9 @@ import TranslatedText from "@/components/Shared/TranslatedText";
 
 export default function UsersClient() {
   const [users, setUsers] = useState<User[]>(usersData);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+  const [isAdjustBalanceModalOpen, setIsAdjustBalanceModalOpen] =
+    useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Modal States
@@ -37,16 +40,26 @@ export default function UsersClient() {
   const [walletData, setWalletData] = useState<Wallet | null>(null);
   const [transactionData, setTransactionData] = useState<Transaction[]>([]);
 
-  const handleDeleteUser = () => {
+  const handleSuspendUser = () => {
     if (selectedUser) {
-      setUsers(users.filter((u) => u.id !== selectedUser.id));
-      setIsDeleteModalOpen(false);
+      setUsers(
+        users.map((u) =>
+          u.id === selectedUser.id ? { ...u, status: "suspended" } : u,
+        ),
+      );
+      setIsSuspendModalOpen(false);
     }
   };
 
-  const openDeleteModal = (user: User) => {
+  const handleAdjustBalance = (userId: string, newBalance: number) => {
+    setUsers(
+      users.map((u) => (u.id === userId ? { ...u, balance: newBalance } : u)),
+    );
+  };
+
+  const openSuspendModal = (user: User) => {
     setSelectedUser(user);
-    setIsDeleteModalOpen(true);
+    setIsSuspendModalOpen(true);
   };
 
   const openPredictionView = (user: User) => {
@@ -115,7 +128,9 @@ export default function UsersClient() {
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
             status === "active"
               ? "bg-[#D1FADF] text-[#027A48]"
-              : "bg-[#FEE2E2] text-[#B91C1C]"
+              : status === "suspended"
+                ? "bg-[#FEF0C7] text-[#B54708]"
+                : "bg-[#FEE2E2] text-[#B91C1C]"
           }`}
         >
           <TranslatedText
@@ -129,11 +144,11 @@ export default function UsersClient() {
 
   const actions = [
     {
-      label: "Delete",
+      label: "Suspend",
       icon: (
-        <Trash2 className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
+        <UserX className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
       ),
-      onClick: (user: User) => openDeleteModal(user),
+      onClick: (user: User) => openSuspendModal(user),
     },
     {
       label: "More",
@@ -165,6 +180,15 @@ export default function UsersClient() {
               onClick={() => openTransactionHistory(selectedUser as User)}
             >
               <TranslatedText text="Transaction History" />
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 flex items-center justify-center outline-none focus:text-black rounded-b-xl"
+              onClick={() => {
+                setSelectedUser(selectedUser as User);
+                setIsAdjustBalanceModalOpen(true);
+              }}
+            >
+              <TranslatedText text="Adjust Balance" />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -201,11 +225,12 @@ export default function UsersClient() {
       </main>
 
       <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleDeleteUser}
-        title="Delete User"
-        description="Are you sure you want to delete this user? This action cannot be undone."
+        isOpen={isSuspendModalOpen}
+        onClose={() => setIsSuspendModalOpen(false)}
+        onConfirm={handleSuspendUser}
+        title="Suspend User"
+        description="Are you sure you want to suspend this user? This will restrict their access but preserve their history."
+        confirmText="Suspend"
       />
 
       <PredictionModal
@@ -224,6 +249,13 @@ export default function UsersClient() {
         isOpen={isTransactionModalOpen}
         onClose={() => setIsTransactionModalOpen(false)}
         transactions={transactionData}
+      />
+
+      <AdjustBalanceModal
+        isOpen={isAdjustBalanceModalOpen}
+        onClose={() => setIsAdjustBalanceModalOpen(false)}
+        user={selectedUser}
+        onSave={handleAdjustBalance}
       />
     </div>
   );
