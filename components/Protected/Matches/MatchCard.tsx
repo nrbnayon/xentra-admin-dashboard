@@ -2,6 +2,7 @@ import { Match } from "@/types/matches";
 import { SquarePen, X, Circle } from "lucide-react";
 import Image from "next/image";
 import TranslatedText from "@/components/Shared/TranslatedText";
+import { useTranslate } from "@/hooks/useTranslate";
 
 interface MatchCardProps {
   match: Match;
@@ -9,6 +10,7 @@ interface MatchCardProps {
   onDelete: (match: Match) => void;
   onEnterResult: (match: Match) => void;
   onViewLeaderboard: (match: Match) => void;
+  onToggleFeatured?: (matchId: string, isFeatured: boolean) => void;
 }
 
 export default function MatchCard({
@@ -17,7 +19,11 @@ export default function MatchCard({
   onDelete,
   onEnterResult,
   onViewLeaderboard,
+  onToggleFeatured,
 }: MatchCardProps) {
+  const { translatedText: featuredText } = useTranslate("Featured");
+  const { translatedText: notFeaturedText } = useTranslate("Not Featured");
+
   const isActionable =
     match.status === "Completed" || match.status === "Latest";
 
@@ -86,6 +92,27 @@ export default function MatchCard({
           </div>
           <div className="flex gap-2">
             <button
+              onClick={() => onToggleFeatured?.(match.id, !match.isFeatured)}
+              className={`p-1.5 rounded-full transition-colors cursor-pointer flex items-center justify-center ${
+                match.isFeatured
+                  ? "bg-white text-primary"
+                  : "bg-white text-foreground hover:bg-gray-100"
+              }`}
+              title={match.isFeatured ? featuredText : notFeaturedText}
+            >
+              <div
+                className={`w-8 h-4 rounded-full relative transition-colors ${
+                  match.isFeatured ? "bg-primary" : "bg-gray-400"
+                }`}
+              >
+                <div
+                  className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${
+                    match.isFeatured ? "left-4.5" : "left-0.5"
+                  }`}
+                />
+              </div>
+            </button>
+            <button
               onClick={() => onEdit(match)}
               className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors cursor-pointer"
             >
@@ -106,7 +133,7 @@ export default function MatchCard({
             <TranslatedText text={match.title} />
           </h3>
 
-          <div className="flex justify-between w-full max-w-64 px-2 text-center gap-2">
+          <div className="flex justify-between w-full max-w-96 px-2 text-center gap-2">
             <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
               <p className="font-medium whitespace-nowrap">
                 {formatDate(match.date)}
@@ -119,6 +146,14 @@ export default function MatchCard({
               </p>
               <p className="font-semibold">{match.entryFee} HTG</p>
             </div>
+            {match.winUpTo && (
+              <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
+                <p className="font-medium text-[10px] uppercase tracking-wider text-yellow-400">
+                  <TranslatedText text="Win up to" />
+                </p>
+                <p className="font-bold whitespace-nowrap">{match.winUpTo}</p>
+              </div>
+            )}
           </div>
 
           <div className="mt-4 font-bold text-white text-lg flex items-center justify-center gap-2 bg-[#24242480] px-6 py-1 rounded-full">

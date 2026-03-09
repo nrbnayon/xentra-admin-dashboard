@@ -12,6 +12,7 @@ import { matchesData, leaderboardData } from "@/data/matchesData";
 import { Match } from "@/types/matches";
 import { Plus } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
+import { toast } from "sonner";
 
 type TabType = "All" | "Upcoming" | "Latest" | "Completed";
 type FilterType = "All" | "Football" | "Basketball";
@@ -75,6 +76,13 @@ export default function MatchesClient() {
         m.id === matchId ? { ...m, status: "Completed" } : m,
       ),
     );
+  };
+
+  const handleToggleFeatured = (matchId: string, isFeatured: boolean) => {
+    setMatches(
+      matches.map((m) => (m.id === matchId ? { ...m, isFeatured } : m)),
+    );
+    toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
   };
 
   const openMatchModalForCreation = () => {
@@ -183,6 +191,7 @@ export default function MatchesClient() {
               onDelete={openDeleteModal}
               onEnterResult={openResultModal}
               onViewLeaderboard={openLeaderboardModal}
+              onToggleFeatured={handleToggleFeatured}
             />
           ))}
           {paginatedMatches.length === 0 && (

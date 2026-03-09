@@ -28,6 +28,8 @@ export default function MatchModal({
     teamB: "",
     entryFee: 50,
     platformFee: "",
+    isFeatured: false,
+    winUpTo: "",
     image: null as File | null,
     imagePreview: "" as string,
   });
@@ -48,6 +50,8 @@ export default function MatchModal({
         teamB: match.teamB,
         entryFee: match.entryFee,
         platformFee: match.platformFee.toString(),
+        isFeatured: match.isFeatured || false,
+        winUpTo: match.winUpTo || "",
         image: null,
         imagePreview: match.image || "",
       });
@@ -62,6 +66,8 @@ export default function MatchModal({
         teamB: "",
         entryFee: 50,
         platformFee: "",
+        isFeatured: false,
+        winUpTo: "",
         image: null,
         imagePreview: "",
       });
@@ -139,6 +145,8 @@ export default function MatchModal({
       ...restData,
       sport: restData.sport as Match["sport"],
       platformFee: Number(restData.platformFee),
+      isFeatured: restData.isFeatured,
+      winUpTo: restData.winUpTo,
       image: imagePreview || "/images/match1.png", // In a real app, this would be the uploaded URL
     });
     toast.success(
@@ -314,32 +322,6 @@ export default function MatchModal({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">
-                <TranslatedText text="Entry Fee" />{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="flex flex-wrap gap-4 items-center">
-                {[50, 100, 250, 500].map((fee) => (
-                  <label
-                    key={fee}
-                    className="flex items-center gap-2 cursor-pointer text-sm dark:text-white"
-                  >
-                    <input
-                      type="radio"
-                      name="entryFee"
-                      value={fee}
-                      checked={formData.entryFee === fee}
-                      onChange={() =>
-                        setFormData({ ...formData, entryFee: fee })
-                      }
-                      className="w-4 h-4 text-blue-600"
-                    />
-                    {fee} HTG
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
                 <TranslatedText text="Platform fee" />{" "}
                 <span className="text-red-500">*</span>
@@ -358,6 +340,67 @@ export default function MatchModal({
                   <TranslatedText text={errors.platformFee} />
                 </p>
               )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
+                <TranslatedText text="Promotional Amount (Win Up To)" />
+              </label>
+              <input
+                type="text"
+                value={formData.winUpTo}
+                onChange={(e) =>
+                  setFormData({ ...formData, winUpTo: e.target.value })
+                }
+                className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. 500,000 HTG"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 py-2">
+            <button
+              onClick={() =>
+                setFormData({ ...formData, isFeatured: !formData.isFeatured })
+              }
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                formData.isFeatured
+                  ? "bg-primary"
+                  : "bg-gray-200 dark:bg-gray-700"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  formData.isFeatured ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+            <span className="text-sm font-medium text-foreground dark:text-gray-300">
+              <TranslatedText text="Featured Match" />
+            </span>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-2">
+              <TranslatedText text="Entry Fee" />{" "}
+              <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-wrap gap-4 items-center">
+              {[50, 100, 250, 500].map((fee) => (
+                <label
+                  key={fee}
+                  className="flex items-center gap-2 cursor-pointer text-sm dark:text-white"
+                >
+                  <input
+                    type="radio"
+                    name="entryFee"
+                    value={fee}
+                    checked={formData.entryFee === fee}
+                    onChange={() => setFormData({ ...formData, entryFee: fee })}
+                    className="w-4 h-4 text-blue-600"
+                  />
+                  {fee} HTG
+                </label>
+              ))}
             </div>
           </div>
 

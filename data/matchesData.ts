@@ -15,6 +15,8 @@ export const matchesData: Match[] = [
     platformFee: 10,
     image: "/images/match1.png",
     participants: 100,
+    isFeatured: true,
+    winUpTo: "500,000 HTG",
   },
   {
     id: "2",
@@ -30,6 +32,8 @@ export const matchesData: Match[] = [
     platformFee: 10,
     image: "/images/match1.png",
     participants: 100,
+    isFeatured: false,
+    winUpTo: "200,000 HTG",
   },
   {
     id: "3",
@@ -45,6 +49,8 @@ export const matchesData: Match[] = [
     platformFee: 15,
     image: "/images/match3.png",
     participants: 150,
+    isFeatured: true,
+    winUpTo: "1,000,000 HTG",
   },
   {
     id: "4",

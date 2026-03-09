@@ -140,9 +140,9 @@ export default function UsersClient() {
       icon: (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="p-1 hover:bg-gray-100 rounded-full transition outline-none border-none cursor-pointer">
+            <div className="p-1 hover:bg-gray-100 rounded-full transition outline-none border-none cursor-pointer inline-flex items-center justify-center">
               <MoreVertical className="w-5 h-5 text-gray-600" />
-            </button>
+            </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"

@@ -15,6 +15,8 @@ export interface Match {
   platformFee: number;
   image: string;
   participants: number;
+  isFeatured?: boolean;
+  winUpTo?: string;
 }
 
 export interface LeaderboardEntry {
