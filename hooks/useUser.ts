@@ -73,9 +73,7 @@ export function useUser(): UseUserReturn {
         loginSuccess({
           access_token: accessToken,
           refresh_token: tokenStorage.getRefreshToken() ?? "",
-          role: userRole,
-          user_id: "", // unknown until profile fetch
-          access_token_valid_till: 0, // don't overwrite expiry
+          user_role: userRole,
         }),
       );
     }
@@ -92,11 +90,11 @@ export function useUser(): UseUserReturn {
     fetchProfile()
       .unwrap()
       .then((res) => {
-        if (res.success && res.data) {
-          dispatch(setProfile(res.data));
+        if (res && res.id) {
+          dispatch(setProfile(res));
         }
       })
-      .catch(() => {
+      .catch((error) => {
         // Profile fetch failed — non-fatal, user stays logged in
         // Token refresh is handled automatically by baseQueryWithReauth
       });

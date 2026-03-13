@@ -94,7 +94,7 @@ export default function NotificationsClient() {
                 <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
                   <Image
                     src={notification.user?.image || "/images/user.webp"}
-                    alt="User"
+                    alt="Admin"
                     width={48}
                     height={48}
                     className="object-cover w-full h-full"

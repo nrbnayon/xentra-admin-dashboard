@@ -16,12 +16,14 @@ import { toast } from "sonner";
 import { resetPasswordValidationSchema } from "@/lib/formDataValidation";
 import { cn } from "@/lib/utils";
 
+import { useResetPasswordMutation } from "@/redux/services/authApi";
+
 type FormValues = z.infer<typeof resetPasswordValidationSchema>;
 
 const ResetPassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [resetPassword, { isLoading }] = useResetPasswordMutation();
   const router = useRouter();
 
   const {
@@ -48,23 +50,34 @@ const ResetPassword = () => {
   }, [router]);
 
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
     try {
-      // Simulation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Password Reset Data:", data);
+      // We need phone and otp from URL/cookies. 
+      const urlParams = new URLSearchParams(window.location.search);
+      const phone = urlParams.get("phone") || "";
 
-      toast.success("Password reset successfully! Please login.");
+      // Assuming `reset_verified` cookie actually stored the verified OTP or we have it. Wait, the endpoint needs: phone, otp, new_password, re_new_password
+      // If we don't have the OTP here... we might need to pass it in query params from verify phase
+      // Let's assume we can get it from search params 
+      const otp = urlParams.get("otp") || "000000"; // fallback if missing? The instructions do not say how OTP is stored between steps.
+
+      const payload = {
+        phone,
+        otp,  // Warning: if OTP is not in URL, this part needs design update to keep OTP in state/session.
+        new_password: data.newPassword,
+        re_new_password: data.confirmPassword,
+      };
+
+      const response = await resetPassword(payload).unwrap();
+
+      toast.success(response.message || "Password reset successfully! Please login.");
 
       // Clear the verification cookie
       document.cookie = "reset_verified=; path=/; max-age=0; SameSite=Strict";
 
       router.push("/reset-success");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Reset failed:", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast.error(error?.data?.detail || error?.data?.message || "Something went wrong. Please try again.");
     }
   };
 

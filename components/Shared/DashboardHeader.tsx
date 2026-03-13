@@ -55,7 +55,7 @@ export default function DashboardHeader({
   title: string;
   description?: string;
 }) {
-  const { name, role, image } = useUser();
+  const { fullName, role, image } = useUser();
 
   return (
     <div className="bg-white flex flex-row justify-between items-center py-2 px-4 md:px-8 border-b border-border gap-4">
@@ -91,7 +91,7 @@ export default function DashboardHeader({
           <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden shrink-0 border border-border">
             <Image
               src={image || "/images/user.webp"}
-              alt={name || "User"}
+              alt={fullName || "Admin"}
               width={40}
               height={40}
               className="object-cover w-full h-full"
@@ -99,10 +99,10 @@ export default function DashboardHeader({
           </div>
           <div className="hidden md:flex flex-col">
             <p className="text-sm font-bold text-foreground font-nunito">
-              {name || "User"}
+              {fullName || "Admin"}
             </p>
             <p className="text-xs text-secondary font-bold capitalize">
-              {role || "User"}
+              {role || "Admin"}
             </p>
           </div>
         </Link>

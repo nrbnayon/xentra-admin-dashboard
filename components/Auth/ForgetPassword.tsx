@@ -18,10 +18,12 @@ import { CountryDropdown } from "./CountryDropdown";
 import { COUNTRIES } from "@/lib/countries";
 import { cn } from "@/lib/utils";
 
+import { useForgotPasswordMutation } from "@/redux/services/authApi";
+
 type FormValues = z.infer<typeof forgetPasswordValidationSchema>;
 
 const ForgetPassword = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
   const router = useRouter();
 
   const [selectedCountry, setSelectedCountry] = useState(
@@ -42,23 +44,27 @@ const ForgetPassword = () => {
   });
 
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
     try {
-      // Simulation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Just sending phone number up; if they specify dial code maybe backend handles it
+      // Standard is to string together or just use phone_number if backend handles it
+      const payload = {
+        phone: data.phone_number,
+      };
 
-      const fullPhoneNumber = `${selectedCountry.dial}${data.phone_number}`;
-      console.log("Phone for reset:", fullPhoneNumber);
+      const response = await forgotPassword(payload).unwrap();
 
-      toast.success("OTP sent to your phone number.");
+      toast.success(response.message || "OTP sent to your phone number.");
+      // Hint from backend? (response.mock_otp_hint)
+      if (response.mock_otp_hint) {
+        toast.info(`Hint: ${response.mock_otp_hint}`);
+      }
+
       router.push(
         `/verify-otp?flow=reset&phone=${encodeURIComponent(data.phone_number)}&country=${data.country_code}`,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to send OTP:", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast.error(error?.data?.detail || error?.data?.message || "Something went wrong. Please try again.");
     }
   };
 

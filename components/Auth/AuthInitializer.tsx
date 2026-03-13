@@ -28,9 +28,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
         loginSuccess({
           access_token: accessToken,
           refresh_token: tokenStorage.getRefreshToken() ?? "",
-          role,
-          user_id: "", // will be enriched by profile fetch
-          access_token_valid_till: 0,
+          user_role: role,
         })
       );
     }
@@ -42,8 +40,8 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
       fetchProfile()
         .unwrap()
         .then((res) => {
-          if (res.success && res.data) {
-            dispatch(setProfile(res.data));
+          if (res && res.id) {
+            dispatch(setProfile(res));
           }
         })
         .catch((err) => {

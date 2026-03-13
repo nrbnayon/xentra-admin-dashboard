@@ -62,21 +62,27 @@ export const tokenStorage = {
     accessToken: string,
     refreshToken: string,
     role: string,
-    accessTokenValidTill: number,
   ) => {
     const refreshExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-    setCookie("accessToken", accessToken, accessTokenValidTill);
+    const accessExpiry = Date.now() + 12 * 60 * 60 * 1000; // 12 hours
+    setCookie("accessToken", accessToken, accessExpiry);
     setCookie("refreshToken", refreshToken, refreshExpiry);
     // userRole cookie uses same expiry as access token
     // proxy.ts reads this cookie for route protection
-    setCookie("userRole", role, accessTokenValidTill);
+    setCookie("userRole", role, accessExpiry);
   },
 
-  // Called on refresh — only updates the access token
-  updateAccessToken: (accessToken: string) => {
-    const oneHour = Date.now() + 60 * 60 * 1000;
-    setCookie("accessToken", accessToken, oneHour);
-    setCookie("userRole", getCookie("userRole") ?? "", oneHour);
+  // Called on refresh — updates tokens
+  updateTokens: (accessToken: string, refreshToken: string, role?: string) => {
+    const accessExpiry = Date.now() + 12 * 60 * 60 * 1000; // 12 hours
+    const refreshExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
+    setCookie("accessToken", accessToken, accessExpiry);
+    setCookie("refreshToken", refreshToken, refreshExpiry);
+    if (role) {
+      setCookie("userRole", role, accessExpiry);
+    } else {
+      setCookie("userRole", getCookie("userRole") ?? "", accessExpiry);
+    }
   },
 
   // Called on logout or auth failure
@@ -152,14 +158,14 @@ export const baseQueryWithReauth: BaseQueryFn<
 
   isRefreshing = true;
 
-  // POST /auth/refresh-token/ with Bearer refresh token
-  // API body field is "refresh"
+  // POST /auth/refresh-token with Bearer refresh token
+  // API body field is "refresh_token"
   const refreshResult = await rawBaseQuery(
     {
-      url: "/auth/refresh-token/",
-      method: "GET",
-      headers: { Authorization: `Bearer ${refreshToken}` },
-      body: { refresh: refreshToken },
+      url: "/auth/refresh-token",
+      method: "POST",
+      headers: { Authorization: `Bearer ${refreshToken}` }, // or without Bearer depending on API. Standard is Bearer
+      body: { refresh_token: refreshToken },
     },
     api,
     extraOptions,
@@ -167,18 +173,18 @@ export const baseQueryWithReauth: BaseQueryFn<
 
   const refreshData = refreshResult.data as RefreshTokenApiResponse | undefined;
 
-  if (refreshData?.success && refreshData?.data?.access_token) {
-    const newToken = refreshData.data.access_token;
+  if ((refreshData?.status === "success" || refreshData?.success) && refreshData?.data?.access_token) {
+    const { access_token, refresh_token, user_role } = refreshData.data;
 
-    // Update cookie
-    tokenStorage.updateAccessToken(newToken);
+    // Update cookies
+    tokenStorage.updateTokens(access_token, refresh_token, user_role);
 
-    // Update Redux state — setCredentials only updates access token
-    const { setCredentials } = await import("../features/authSlice");
-    api.dispatch(setCredentials({ access_token: newToken }));
+    // Update Redux state
+    const { loginSuccess } = await import("../features/authSlice");
+    api.dispatch(loginSuccess(refreshData.data));
 
     // Notify all waiting requests
-    onTokenRefreshed(newToken);
+    onTokenRefreshed(access_token);
     isRefreshing = false;
 
     // Retry original request

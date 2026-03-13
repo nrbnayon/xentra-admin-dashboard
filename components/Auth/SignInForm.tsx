@@ -16,13 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { useAppDispatch } from "@/redux/hooks";
-import { setCredentials } from "@/redux/features/authSlice";
 import { toast } from "sonner";
 import { loginValidationSchema } from "@/lib/formDataValidation";
 import { CountryDropdown } from "./CountryDropdown";
 import { COUNTRIES } from "@/lib/countries";
-import { useLoginMutation } from "@/redux/services/authApi";
+import { loginSuccess } from "@/redux/features/authSlice";
 import { cn } from "@/lib/utils";
+import { useLoginMutation } from "@/redux/services/authApi";
 
 type FormValues = z.infer<typeof loginValidationSchema>;
 
@@ -54,25 +54,25 @@ export const SignInForm = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // Using dummy authentication via authApi
-      const response = await login(data).unwrap();
+      // API expects "phone", pass phone_number directly
+      // Adjust format if needed by your backend (e.g. including dial code)
+      const payload = {
+        phone: data.phone_number,
+        password: data.password,
+      };
 
-      dispatch(
-        setCredentials({
-          user: response.user,
-          token: response.accessToken,
-        }),
-      );
+      const response = await login(payload).unwrap();
 
-      const maxAge = data.rememberMe ? 86400 * 30 : undefined; // 30 days or session
-      document.cookie = `accessToken=${response.accessToken}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
-      document.cookie = `userRole=${response.user.role}; path=/; ${maxAge ? `max-age=${maxAge};` : ""} samesite=lax`;
-
-      toast.success("Logged in successfully!");
-      router.push("/");
-    } catch (error) {
+      if (response && response.data) {
+        dispatch(loginSuccess(response.data));
+        toast.success(response.message || "Logged in successfully!");
+        router.push("/");
+      } else {
+        toast.error(response.message || "Login failed.");
+      }
+    } catch (error: any) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please check your credentials.");
+      toast.error(error?.data?.detail || error?.data?.message || "Login failed. Please check your credentials.");
     }
   };
 

@@ -52,20 +52,17 @@ const authSlice = createSlice({
       const {
         access_token,
         refresh_token,
-        role,
-        user_id,
-        access_token_valid_till,
+        user_role,
       } = action.payload;
 
       // Persist to cookies (proxy.ts reads these for route protection)
       tokenStorage.setAll(
         access_token,
         refresh_token,
-        role,
-        access_token_valid_till,
+        user_role,
       );
 
-      state.user = { user_id, role };
+      state.user = { user_id: "", role: user_role };
       state.isAuthenticated = true;
       state.isLoading = false;
     },
@@ -76,12 +73,14 @@ const authSlice = createSlice({
      */
     setProfile: (state, action: PayloadAction<ProfileResponseData>) => {
       if (!state.user) return;
-      const { full_name, email, profile_picture, phone_number, address } =
+      const { id, full_name, email, profile_photo, phone, address, role } =
         action.payload;
+      state.user.user_id = id.toString();
+      state.user.role = role;
       state.user.full_name = full_name;
       state.user.email = email;
-      state.user.profile_picture = profile_picture;
-      state.user.phone_number = phone_number;
+      state.user.profile_picture = profile_photo;
+      state.user.phone_number = phone;
       state.user.address = address;
     },
 

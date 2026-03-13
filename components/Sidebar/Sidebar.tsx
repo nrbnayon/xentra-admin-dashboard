@@ -47,7 +47,7 @@ interface DashboardWrapperProps {
 export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   const pathname = usePathname();
   // Use centralized user hook
-  const { name, role, isAuthenticated, logout } = useUser();
+  const { fullName, role, isAuthenticated, logout, profilePicture } = useUser();
 
   // State management
   const [open, setOpen] = useState(true);
@@ -296,7 +296,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
       case "admin":
         return "Admin";
       case "user":
-        return "User";
+        return "Admin";
       default:
         return "Admin";
     }
@@ -497,12 +497,13 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                     }}
                     className="flex items-center gap-3 flex-1 min-w-0 hover:opacity-80 transition-opacity"
                   >
-                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0 overflow-hidden border border-border">
                       <Image
-                        src="/images/user.webp"
-                        alt="User"
+                        src={profilePicture || "/images/user.webp"}
+                        alt={fullName || "Admin"}
                         width={40}
                         height={40}
+                        className="object-cover w-full h-full"
                       />
                     </div>
                     <motion.div
@@ -513,7 +514,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
                       className="flex-1 min-w-0"
                     >
                       <p className="text-base font-medium truncate">
-                        {name || "User"}
+                        {fullName || "Admin"}
                       </p>
                       <p
                         className={cn(
