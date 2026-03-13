@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { Toaster } from "sonner";
 import StoreProvider from "@/redux/StoreProvider";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { AuthInitializer } from "@/components/Auth/AuthInitializer";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -131,7 +132,9 @@ export default function RootLayout({
             forcedTheme="light"
           >
             <StoreProvider>
-              {children}
+               <AuthInitializer>
+                {children}
+               </AuthInitializer>
               <Toaster richColors position="top-center" />
             </StoreProvider>
           </ThemeProvider>
