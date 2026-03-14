@@ -123,10 +123,8 @@ const rawBaseQuery = fetchBaseQuery({
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
-    // Do NOT set Content-Type for FormData — browser sets it with boundary
-    if (!headers.get("Content-Type")) {
-      headers.set("Content-Type", "application/json");
-    }
+    // Note: We don't set Content-Type: application/json here globally because it breaks FormData.
+    // fetchBaseQuery automatically sets correctly for JSON objects.
     return headers;
   },
 });

@@ -11,8 +11,11 @@ import SecuritySection from "./components/SecuritySection";
 import LanguageSection from "./components/LanguageSection";
 import LegalPoliciesSection from "./components/LegalPoliciesSection";
 import PolicyModal from "./components/PolicyModal";
+import { useAppDispatch } from "@/redux/hooks";
+import { setProfile } from "@/redux/features/authSlice";
 
 export default function SettingsClient() {
+  const dispatch = useAppDispatch();
   // Section Edit Modes
   const [isEditingAccount, setIsEditingAccount] = useState(false);
   const [isEditingSecurity, setIsEditingSecurity] = useState(false);
@@ -37,14 +40,16 @@ export default function SettingsClient() {
   useEffect(() => {
     if (apiProfile) {
       setAccountInfo({
-        image: apiProfile.profile_photo || "/images/user.webp",
+        image: apiProfile.profile_photo || apiProfile.file || "/images/user.webp",
         name: apiProfile.full_name || "",
         email: apiProfile.email || "",
         phone: apiProfile.phone || "",
         address: apiProfile.address || "",
       });
+      // Sync global auth state
+      dispatch(setProfile(apiProfile));
     }
-  }, [apiProfile]);
+  }, [apiProfile, dispatch]);
 
   // Setting the actual content back for completeness
   const fullTerms = `1. Eligibility

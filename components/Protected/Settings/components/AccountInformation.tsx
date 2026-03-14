@@ -9,6 +9,8 @@ import {
   useUpdateProfileMutation,
   useUpdateAvatarMutation,
 } from "@/redux/services/authApi";
+import { useAppDispatch } from "@/redux/hooks";
+import { setProfile } from "@/redux/features/authSlice";
 
 interface AccountInformationProps {
   isEditing: boolean;
@@ -30,6 +32,7 @@ export default function AccountInformation({
   setAccountInfo,
 }: AccountInformationProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dispatch = useAppDispatch();
 
   const [updateAvatar, { isLoading: isUploading }] = useUpdateAvatarMutation();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
@@ -46,7 +49,7 @@ export default function AccountInformation({
     }));
 
     const formData = new FormData();
-    formData.append("profile_photo", file);
+    formData.append("file", file); // Changed from profile_photo to file
 
     try {
       const result = await updateAvatar(formData).unwrap();
@@ -57,6 +60,10 @@ export default function AccountInformation({
           ...prev,
           image: updatedPhoto,
         }));
+        // Update global auth state so Sidebar/Header see the change
+        if (result?.data) {
+          dispatch(setProfile(result.data));
+        }
       }
       toast.success("Profile image updated");
     } catch (error: any) {
@@ -90,12 +97,17 @@ export default function AccountInformation({
 
   const handleSave = async () => {
     try {
-      await updateProfile({
+      const result = await updateProfile({
         full_name: accountInfo.name,
         email: accountInfo.email || null,
         address: accountInfo.address || null,
         phone: accountInfo.phone || null,
       }).unwrap();
+
+      // Sync global state
+      if (result?.data) {
+        dispatch(setProfile(result.data));
+      }
 
       setIsEditing(false);
       toast.success("Account information updated");

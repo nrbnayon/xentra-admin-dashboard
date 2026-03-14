@@ -82,10 +82,11 @@ export function useUser(): UseUserReturn {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // run once on mount only
 
-  // ── Step 2: Fetch profile once authenticated and not yet loaded ─────────────
+  // ── Step 2: Fetch profile once authenticated ──────────────────────────────
+  // We fetch every time this hook mounts while authenticated to ensure 
+  // persisted state (from localStorage) is synchronized with the server.
   useEffect(() => {
     if (!isAuthenticated) return;
-    if (user?.full_name) return; // already enriched — skip
 
     fetchProfile()
       .unwrap()
@@ -95,10 +96,9 @@ export function useUser(): UseUserReturn {
         }
       })
       .catch((error) => {
-        // Profile fetch failed — non-fatal, user stays logged in
-        // Token refresh is handled automatically by baseQueryWithReauth
+        console.error("Failed to sync profile:", error);
       });
-  }, [isAuthenticated, user?.full_name, fetchProfile, dispatch]);
+  }, [isAuthenticated, fetchProfile, dispatch]);
 
   // ── Logout ──────────────────────────────────────────────────────────────────
   const logout = () => {
@@ -108,6 +108,8 @@ export function useUser(): UseUserReturn {
 
   // ── Role check ───────────────────────────────────────────────────────────────
   const hasRole = (r: UserRole): boolean => user?.role === r;
+
+  console.log("User from hook:: ", user);
 
   return {
     userId: user?.user_id ?? null,

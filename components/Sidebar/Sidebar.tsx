@@ -49,6 +49,8 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   // Use centralized user hook
   const { fullName, role, isAuthenticated, logout, profilePicture } = useUser();
 
+  console.log("Profile image:: ", profilePicture);
+
   // State management
   const [open, setOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(290);

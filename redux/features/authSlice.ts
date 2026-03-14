@@ -72,17 +72,17 @@ const authSlice = createSlice({
      * setProfile — called after GET /auth/admin/profile/ succeeds.
      * Enriches the user object with display data.
      */
-    setProfile: (state, action: PayloadAction<ProfileResponseData>) => {
+    setProfile: (state, action: PayloadAction<any>) => {
       if (!state.user) return;
-      const { id, full_name, email, profile_photo, phone, address, role } =
+      const { id, full_name, email, profile_photo, file, phone, address, role } =
         action.payload;
-      state.user.user_id = id.toString();
-      state.user.role = role;
-      state.user.full_name = full_name;
-      state.user.email = email;
-      state.user.profile_picture = profile_photo;
-      state.user.phone_number = phone;
-      state.user.address = address;
+      state.user.user_id = id?.toString() || state.user.user_id;
+      state.user.role = role || state.user.role;
+      state.user.full_name = full_name || state.user.full_name;
+      state.user.email = email || state.user.email;
+      state.user.profile_picture = profile_photo || file || state.user.profile_picture;
+      state.user.phone_number = phone || state.user.phone_number;
+      state.user.address = address || state.user.address;
     },
 
     /**
