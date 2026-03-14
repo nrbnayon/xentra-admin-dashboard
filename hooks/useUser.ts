@@ -109,7 +109,7 @@ export function useUser(): UseUserReturn {
   // ── Role check ───────────────────────────────────────────────────────────────
   const hasRole = (r: UserRole): boolean => user?.role === r;
 
-  console.log("User from hook:: ", user);
+  // console.log("User from hook:: ", user);
 
   return {
     userId: user?.user_id ?? null,

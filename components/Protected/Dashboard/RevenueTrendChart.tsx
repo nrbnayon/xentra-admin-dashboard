@@ -1,6 +1,6 @@
 "use client";
 
-import { RevenueData } from "@/types/dashboard";
+import { RevenueData } from "@/types/dashboard.types";
 import {
   LineChart,
   Line,

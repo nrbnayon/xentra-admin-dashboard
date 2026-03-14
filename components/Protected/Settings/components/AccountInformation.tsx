@@ -129,7 +129,7 @@ export default function AccountInformation({
     }
   };
 
-  console.log("accountInfo from api call: ", accountInfo);
+  // console.log("accountInfo from api call: ", accountInfo);
 
   return (
     <div className="bg-white rounded-[24px] border border-gray-100 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">

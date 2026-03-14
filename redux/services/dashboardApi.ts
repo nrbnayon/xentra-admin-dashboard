@@ -1,10 +1,11 @@
 import { apiSlice } from "../features/apiSlice";
+import { DashboardOverview } from "@/types/dashboard.types";
 
 export const dashboardApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAdminDashboardOverview: builder.query<void, void>({
+    getAdminDashboardOverview: builder.query<DashboardOverview, void>({
       query: () => ({
-        url: "/api/admin/deshboard/",
+        url: "/admin/dashboard",
         method: "GET",
       }),
       providesTags: ["Dashboard"],

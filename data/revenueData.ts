@@ -1,5 +1,5 @@
 import { TrendingUp, ShoppingBag } from "lucide-react";
-import { DashboardStatItem } from "@/types/dashboard";
+import { DashboardStatItem } from "@/types/dashboard.types";
 
 export interface ChartDataPoint {
   label: string;
