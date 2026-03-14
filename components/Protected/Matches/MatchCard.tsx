@@ -68,21 +68,21 @@ export default function MatchCard({
   };
 
   return (
-    <div className="relative w-full h-72 rounded-xl overflow-hidden shadow-lg group">
+    <div className="relative w-full min-h-[280px] h-full rounded-xl overflow-hidden shadow-lg group flex flex-col">
       {/* Background Image & Overlay */}
       <Image
         src={match.image || "/images/match2.png"}
         alt={match.title}
-        layout="fill"
+        fill
         className="object-cover z-0"
       />
-      <div className="absolute inset-0 bg-[#0000004D] z-10" />
+      <div className="absolute inset-0 bg-[#0000005d] z-10" />
 
       {/* Content */}
-      <div className="relative z-20 p-4 h-full flex flex-col justify-between">
+      <div className="relative z-20 p-4 h-full flex flex-col justify-between flex-1">
         {/* Header */}
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-1.5 bg-white rounded-full px-3 py-1">
+        <div className="flex justify-between items-start gap-2">
+          <div className="flex items-center gap-1.5 bg-white rounded-full px-3 py-1 shrink-0">
             <Circle
               className={`w-3 h-3 fill-current ${getStatusColor(match.status)}`}
             />
@@ -90,7 +90,7 @@ export default function MatchCard({
               <TranslatedText text={match.status} />
             </span>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 shrink-0">
             <button
               onClick={() => onToggleFeatured?.(match.id, !match.isFeatured)}
               className={`p-1.5 rounded-full transition-colors cursor-pointer flex items-center justify-center ${
@@ -128,55 +128,57 @@ export default function MatchCard({
         </div>
 
         {/* Center Details */}
-        <div className="flex flex-col items-center justify-center text-center mt-2">
-          <h3 className="text-white text-xl md:text-2xl font-bold mb-3 bg-[#00000080] px-4 py-2 rounded-full">
+        <div className="flex flex-col items-center justify-center text-center my-4 py-2">
+          <h3 className="text-white text-lg md:text-xl font-bold mb-4 bg-[#00000099] px-5 py-2 rounded-full inline-block shadow-md">
             <TranslatedText text={match.title} />
           </h3>
 
-          <div className="flex justify-between w-full max-w-96 px-2 text-center gap-2">
-            <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
-              <p className="font-medium whitespace-nowrap">
+          <div className="flex flex-wrap justify-between w-full max-w-[420px] px-1 gap-2">
+            <div className="flex-1 min-w-[100px] flex flex-col justify-center items-center bg-[#242424a6] px-2 py-2 rounded text-white backdrop-blur-sm">
+              <p className="font-medium text-[11px] leading-tight opacity-90">
                 {formatDate(match.date)}
               </p>
-              <p className="font-semibold">{formatTime(match.time)}</p>
+              <p className="font-semibold text-xs">{formatTime(match.time)}</p>
             </div>
-            <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
-              <p className="font-medium">
+            <div className="flex-1 min-w-[100px] flex flex-col justify-center items-center bg-[#242424a6] px-2 py-2 rounded text-white backdrop-blur-sm">
+              <p className="font-medium text-[11px] leading-tight opacity-90">
                 <TranslatedText text="Entry fee" />
               </p>
-              <p className="font-semibold">{match.entryFee} HTG</p>
+              <p className="font-semibold text-xs">{match.entryFee} HTG</p>
             </div>
             {match.winUpTo && (
-              <div className="flex-1 text-center bg-[#24242480] px-3 py-1.5 rounded text-white text-[13px]">
-                <p className="font-medium text-[10px] uppercase tracking-wider text-yellow-400">
+              <div className="flex-1 min-w-[100px] flex flex-col justify-center items-center bg-[#242424a6] px-2 py-2 rounded text-white backdrop-blur-sm">
+                <p className="font-medium text-[10px] uppercase tracking-wider text-yellow-400 leading-tight">
                   <TranslatedText text="Win up to" />
                 </p>
-                <p className="font-bold whitespace-nowrap">{match.winUpTo}</p>
+                <p className="font-bold text-xs truncate max-w-full">
+                  {match.winUpTo}
+                </p>
               </div>
             )}
           </div>
 
-          <div className="mt-4 font-bold text-white text-lg flex items-center justify-center gap-2 bg-[#24242480] px-6 py-1 rounded-full">
-            <span>{match.teamA}</span>
-            <span>
+          <div className="mt-5 font-bold text-white text-base md:text-lg flex items-center justify-center gap-3 bg-[#242424a6] px-6 py-2 rounded-full border border-white/10 backdrop-blur-sm max-w-full">
+            <span className="truncate">{match.teamA}</span>
+            <span className="text-sm font-medium opacity-80">
               <TranslatedText text="V/S" />
             </span>
-            <span>{match.teamB}</span>
+            <span className="truncate">{match.teamB}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-center gap-3 mt-4">
+        <div className="flex flex-wrap justify-center gap-3 mt-auto pt-2">
           <button
             onClick={() => onEnterResult(match)}
-            className="flex-1 max-w-35 bg-primary hover:bg-[#2a4365] text-white text-sm font-medium py-2 rounded-full transition-colors cursor-pointer"
+            className="flex-1 min-w-[120px] max-w-[150px] bg-primary hover:bg-[#2a4365] text-white text-xs sm:text-sm font-medium py-2.5 rounded-full transition-all active:scale-95 cursor-pointer shadow-lg"
           >
             <TranslatedText text="Enter Result" />
           </button>
           {isActionable && (
             <button
               onClick={() => onViewLeaderboard(match)}
-              className="flex-1 max-w-40 bg-white hover:bg-gray-100 text-primary text-sm font-medium px-4 py-2 rounded-full transition-colors cursor-pointer"
+              className="flex-1 min-w-[140px] max-w-[170px] bg-white hover:bg-gray-100 text-primary text-xs sm:text-sm font-medium py-2.5 rounded-full transition-all active:scale-95 cursor-pointer shadow-lg"
             >
               <TranslatedText text="View Leaderboard" />
             </button>

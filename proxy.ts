@@ -368,10 +368,10 @@ const UNIVERSAL_PROTECTED_ROUTES = ["/profile", "/settings", "/notifications"];
 const ROLE_ROUTES: Record<Role, string[]> = {
   [ROLES.ADMIN]: [
     "/dashboard",
-    "/commission-tracking",
-    "/order-management",
-    "/payment-history",
-    "/products",
+    "/matches",
+    "/users",
+    "/withdrawals",
+    "/revenue",
     "/user-management",
   ],
 };
