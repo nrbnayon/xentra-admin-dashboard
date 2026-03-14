@@ -439,8 +439,9 @@ export async function proxy(request: NextRequest) {
   // STEP 1: Read auth state from cookies
   // ============================================
   const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
   const userRole = request.cookies.get("userRole")?.value ?? "";
-  const isAuthenticated = !!accessToken;
+  const isAuthenticated = !!accessToken || !!refreshToken;
   const isAdmin = isAuthenticated && userRole === ROLES.ADMIN;
 
   // ============================================

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { toast } from "sonner";
+import { useGetProfileQuery } from "@/redux/services/authApi";
 
 // Separate Components
 import AccountInformation from "./components/AccountInformation";
@@ -24,13 +25,26 @@ export default function SettingsClient() {
   const [isEditingRules, setIsEditingRules] = useState(false);
 
   // Form States
+  const { data: apiProfile, isLoading: isFetching } = useGetProfileQuery();
   const [accountInfo, setAccountInfo] = useState({
     image: "/images/user.webp",
-    name: "Nayon II",
-    email: "example@gmail.com",
-    phone: "000-0000-000",
-    address: "123 Admin Street, Dhaka",
+    name: "User",
+    email: "",
+    phone: "",
+    address: "",
   });
+
+  useEffect(() => {
+    if (apiProfile) {
+      setAccountInfo({
+        image: apiProfile.profile_photo || "/images/user.webp",
+        name: apiProfile.full_name || "",
+        email: apiProfile.email || "",
+        phone: apiProfile.phone || "",
+        address: apiProfile.address || "",
+      });
+    }
+  }, [apiProfile]);
 
   // Setting the actual content back for completeness
   const fullTerms = `1. Eligibility

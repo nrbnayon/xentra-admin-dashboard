@@ -62,26 +62,31 @@ export const tokenStorage = {
     accessToken: string,
     refreshToken: string,
     role: string,
+    // refreshExpiresAt: number, // if server provides expiry time
   ) => {
     const refreshExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-    const accessExpiry = Date.now() + 12 * 60 * 60 * 1000; // 12 hours
-    setCookie("accessToken", accessToken, accessExpiry);
+    setCookie("accessToken", accessToken, refreshExpiry);
     setCookie("refreshToken", refreshToken, refreshExpiry);
-    // userRole cookie uses same expiry as access token
-    // proxy.ts reads this cookie for route protection
-    setCookie("userRole", role, accessExpiry);
+    // setCookie("accessToken", accessToken, Date.now() + 60 * 60 * 1000); // 1hr
+    // setCookie("refreshToken", refreshToken, refreshExpiresAt); // server-controlled
+    // setCookie(
+    //   "userRole",
+    //   role ?? getCookie("userRole") ?? "",
+    //   refreshExpiresAt,
+    // );
+    // userRole cookie uses same expiry as refresh token
+    setCookie("userRole", role, refreshExpiry);
   },
 
   // Called on refresh — updates tokens
   updateTokens: (accessToken: string, refreshToken: string, role?: string) => {
-    const accessExpiry = Date.now() + 12 * 60 * 60 * 1000; // 12 hours
     const refreshExpiry = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-    setCookie("accessToken", accessToken, accessExpiry);
+    setCookie("accessToken", accessToken, refreshExpiry);
     setCookie("refreshToken", refreshToken, refreshExpiry);
     if (role) {
-      setCookie("userRole", role, accessExpiry);
+      setCookie("userRole", role, refreshExpiry);
     } else {
-      setCookie("userRole", getCookie("userRole") ?? "", accessExpiry);
+      setCookie("userRole", getCookie("userRole") ?? "", refreshExpiry);
     }
   },
 
@@ -173,7 +178,10 @@ export const baseQueryWithReauth: BaseQueryFn<
 
   const refreshData = refreshResult.data as RefreshTokenApiResponse | undefined;
 
-  if ((refreshData?.status === "success" || refreshData?.success) && refreshData?.data?.access_token) {
+  if (
+    (refreshData?.status === "success" || refreshData?.success) &&
+    refreshData?.data?.access_token
+  ) {
     const { access_token, refresh_token, user_role } = refreshData.data;
 
     // Update cookies

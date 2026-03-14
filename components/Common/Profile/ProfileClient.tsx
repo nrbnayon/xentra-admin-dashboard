@@ -1,4 +1,3 @@
-// components\Dashboard\Profile\ProfileClient.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -9,6 +8,7 @@ import { Eye, EyeOff, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotificationsClient from "@/components/Notifications/NotificationsClient";
+import { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation, useUpdateAvatarMutation } from "@/redux/services/authApi";
 
 interface UserProfile {
   name: string;
@@ -20,18 +20,20 @@ interface UserProfile {
   avatar?: string;
 }
 
-const MOCK_USER: UserProfile = {
-  name: "Nayon",
-  fullName: "Nrb Nayon",
-  email: "nrbnayon@gmail.com",
+const DEFAULT_USER: UserProfile = {
+  name: "User",
+  fullName: "User Name",
+  email: "user@example.com",
   role: "Admin",
-  phone: "000-0000-000",
-  address: "123 Admin Street, Dhaka",
+  phone: "",
+  address: "",
 };
 
 export default function ProfileClient() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const { data: apiProfile, isLoading: isFetching, refetch } = useGetProfileQuery();
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+  const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
+
   const [activeSection, setActiveSection] = useState<
     "account" | "notifications" | "language"
   >("account");
@@ -42,7 +44,7 @@ export default function ProfileClient() {
   const [showEmail, setShowEmail] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const [user, setUser] = useState<UserProfile>(MOCK_USER);
+  const [user, setUser] = useState<UserProfile>(DEFAULT_USER);
   const [editNameValue, setEditNameValue] = useState(user.fullName);
   const [editPhoneValue, setEditPhoneValue] = useState(user.phone);
   const [editAddressValue, setEditAddressValue] = useState(user.address);
@@ -56,15 +58,24 @@ export default function ProfileClient() {
   const [chatNotification, setChatNotification] = useState(true);
   const [newUpdateNotification, setNewUpdateNotification] = useState(false);
 
+  // Sync state with API data
   useEffect(() => {
-    // Simulate loading user data
-    const timer = setTimeout(() => {
-      setUser(MOCK_USER);
-      setEditNameValue(MOCK_USER.fullName);
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (apiProfile) {
+      const profile = {
+        name: apiProfile.full_name?.split(" ")[0] || "User",
+        fullName: apiProfile.full_name || "",
+        email: apiProfile.email || "",
+        role: apiProfile.role || "Admin",
+        phone: apiProfile.phone || "",
+        address: apiProfile.address || "",
+        avatar: apiProfile.profile_photo || undefined,
+      };
+      setUser(profile);
+      if (!isEditingName) setEditNameValue(profile.fullName);
+      if (!isEditingPhone) setEditPhoneValue(profile.phone);
+      if (!isEditingAddress) setEditAddressValue(profile.address);
+    }
+  }, [apiProfile, isEditingName, isEditingPhone, isEditingAddress]);
 
   const handleSaveName = () => {
     if (!editNameValue.trim()) {
@@ -130,7 +141,7 @@ export default function ProfileClient() {
     setIsEditingAddress(false);
   };
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async () => {
     if (!passwordData.current || !passwordData.new || !passwordData.confirm) {
       toast.error("All fields required", {
         description: "Please fill in all password fields.",
@@ -152,12 +163,22 @@ export default function ProfileClient() {
       return;
     }
 
-    setIsEditingPassword(false);
-    setPasswordData({ current: "", new: "", confirm: "" });
-    setHasChanges(true);
-    toast.success("Password changed", {
-      description: "Your password has been updated successfully.",
-    });
+    try {
+      await changePassword({
+        current_password: passwordData.current,
+        new_password: passwordData.new,
+        confirm_password: passwordData.confirm,
+      }).unwrap();
+
+      setIsEditingPassword(false);
+      setPasswordData({ current: "", new: "", confirm: "" });
+      toast.success("Password changed", {
+        description: "Your password has been updated successfully.",
+      });
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.data?.detail || err.data?.message || "Failed to change password");
+    }
   };
 
   const handleCancelPassword = () => {
@@ -166,26 +187,58 @@ export default function ProfileClient() {
   };
 
   const handleGlobalSave = async () => {
-    setIsSaving(true);
+    if (!apiProfile) return;
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const payload: any = {};
+      if (editNameValue !== apiProfile.full_name) payload.full_name = editNameValue;
+      if (editPhoneValue !== apiProfile.phone) payload.phone = editPhoneValue;
+      if (editAddressValue !== apiProfile.address) payload.address = editAddressValue;
+
+      if (Object.keys(payload).length === 0) {
+        setHasChanges(false);
+        return;
+      }
+
+      await updateProfile(payload).unwrap();
 
       toast.success("Profile saved", {
         description: "All changes have been saved successfully.",
       });
       setHasChanges(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       toast.error("Failed to save", {
-        description: "Please try again.",
+        description: error.data?.detail || error.data?.message || "Please try again.",
       });
-    } finally {
-      setIsSaving(false);
+    }
+  };
+
+  const [updateAvatar, { isLoading: isUploadingAvatar }] = useUpdateAvatarMutation();
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create local preview URL for instant feedback
+    const localPreviewUrl = URL.createObjectURL(file);
+    setUser(prev => ({ ...prev, avatar: localPreviewUrl }));
+
+    const formData = new FormData();
+    formData.append("profile_photo", file);
+
+    try {
+      await updateAvatar(formData).unwrap();
+      toast.success("Avatar updated successfully");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.data?.detail || error.data?.message || "Failed to upload avatar");
+      // Clean up on error
+      URL.revokeObjectURL(localPreviewUrl);
     }
   };
 
   const handleGlobalCancel = () => {
+    if (!apiProfile) return;
     if (hasChanges) {
       const confirm = window.confirm(
         "You have unsaved changes. Are you sure you want to cancel?",
@@ -198,13 +251,12 @@ export default function ProfileClient() {
     setIsEditingPhone(false);
     setIsEditingAddress(false);
     setIsEditingPassword(false);
-    setEditNameValue(user.fullName);
-    setEditPhoneValue(user.phone);
-    setEditAddressValue(user.address);
+    
+    setEditNameValue(apiProfile.full_name || "");
+    setEditPhoneValue(apiProfile.phone || "");
+    setEditAddressValue(apiProfile.address || "");
+    
     setPasswordData({ current: "", new: "", confirm: "" });
-    setPopUpNotification(true);
-    setChatNotification(true);
-    setNewUpdateNotification(false);
     setHasChanges(false);
 
     toast.info("Changes discarded", {
@@ -212,7 +264,7 @@ export default function ProfileClient() {
     });
   };
 
-  if (isLoading) {
+  if (isFetching) {
     return (
       <div className="w-full flex-1 flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -242,22 +294,22 @@ export default function ProfileClient() {
             Manage your profile information here.
           </p>
         </div>
-
+ 
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
             onClick={handleGlobalCancel}
-            disabled={isSaving}
+            disabled={isUpdating || isChangingPassword}
             className="text-foreground border-gray-300 bg-transparent hover:bg-primary/30 hover:text-foreground"
           >
             Cancel
           </Button>
           <Button
             onClick={handleGlobalSave}
-            disabled={isSaving || !hasChanges}
+            disabled={isUpdating || isChangingPassword || !hasChanges}
             className="bg-foreground text-white hover:bg-foreground"
           >
-            {isSaving ? "Saving..." : "Save"}
+            {isUpdating ? "Saving..." : "Save"}
           </Button>
         </div>
       </div>
@@ -266,13 +318,14 @@ export default function ProfileClient() {
       <div className="bg-white rounded-xl p-8 border border-gray-200 dark:border-gray-700">
         {/* User Info Header */}
         <div className="flex items-center gap-5 mb-10">
-          <div className="relative w-18 h-18 rounded-full overflow-hidden shrink-0 bg-gray-200">
+          <div className="relative group w-18 h-18 rounded-full overflow-hidden shrink-0 bg-gray-200 border border-border">
             <Image
+              key={user.avatar}
               src={user.avatar || "/images/user.webp"}
               alt="Profile"
               width={72}
               height={72}
-              className="object-cover"
+              className="object-cover w-full h-full"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
@@ -280,6 +333,24 @@ export default function ProfileClient() {
                 )}&background=random&size=72`;
               }}
             />
+            <div 
+              className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              onClick={() => document.getElementById("avatar-upload")?.click()}
+            >
+              <Pencil className="w-6 h-6 text-white" />
+            </div>
+            <input 
+              type="file" 
+              id="avatar-upload" 
+              className="hidden" 
+              accept="image/*"
+              onChange={handleAvatarChange}
+            />
+            {isUploadingAvatar && (
+              <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              </div>
+            )}
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground">{user.name}</h2>
@@ -503,9 +574,13 @@ export default function ProfileClient() {
                         Email
                       </label>
                       <div className="text-foreground">
-                        {showEmail
-                          ? user.email
-                          : user.email.replace(/(.{3})(.*)(@.*)/, "$1***$3")}
+                        {user.email ? (
+                          showEmail
+                            ? user.email
+                            : user.email.replace(/(.{3})(.*)(@.*)/, "$1***$3")
+                        ) : (
+                          "No email added"
+                        )}
                       </div>
                     </div>
                     <button

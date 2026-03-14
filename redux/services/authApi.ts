@@ -17,6 +17,11 @@ import type {
   RefreshTokenRequest,
   RefreshTokenApiResponse,
   ProfileApiResponse,
+  UpdateProfileRequest,
+  UpdateProfileApiResponse,
+  ChangePasswordRequest,
+  ChangePasswordApiResponse,
+  UpdateAvatarApiResponse,
 } from "@/types/auth.types";
 
 export const authApi = apiSlice.injectEndpoints({
@@ -99,6 +104,42 @@ export const authApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Profile"],
     }),
+ 
+    // ── 8. Update Profile ─────────────────────────────────────────────────────
+    updateProfile: builder.mutation<UpdateProfileApiResponse, UpdateProfileRequest>(
+      {
+        query: (body) => ({
+          url: "/users/me/profile",
+          method: "PUT",
+          body,
+        }),
+        invalidatesTags: ["Profile"],
+      },
+    ),
+ 
+    // ── 9. Change Password ────────────────────────────────────────────────────
+    changePassword: builder.mutation<
+      ChangePasswordApiResponse,
+      ChangePasswordRequest
+    >({
+      query: (body) => ({
+        url: "/users/me/password",
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    // ── 10. Update Avatar ─────────────────────────────────────────────────────
+    updateAvatar: builder.mutation<UpdateAvatarApiResponse, FormData>({
+      query: (body) => ({
+        url: "/users/me/avatar",
+        method: "POST",
+        body,
+        // FormData headers are handled automatically by fetchBaseQuery 
+        // if we don't set Content-Type: application/json in apiSlice
+      }),
+      invalidatesTags: ["Profile"],
+    }),
   }),
 });
 
@@ -111,4 +152,7 @@ export const {
   useRefreshTokenMutation,
   useGetProfileQuery,
   useLazyGetProfileQuery,
+  useUpdateProfileMutation,
+  useChangePasswordMutation,
+  useUpdateAvatarMutation,
 } = authApi;

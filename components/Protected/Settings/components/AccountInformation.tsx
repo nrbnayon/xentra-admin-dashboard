@@ -5,6 +5,10 @@ import Image from "next/image";
 import { Camera, Trash2, PencilLine } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { toast } from "sonner";
+import {
+  useUpdateProfileMutation,
+  useUpdateAvatarMutation,
+} from "@/redux/services/authApi";
 
 interface AccountInformationProps {
   isEditing: boolean;
@@ -27,18 +31,55 @@ export default function AccountInformation({
 }: AccountInformationProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [updateAvatar, { isLoading: isUploading }] = useUpdateAvatarMutation();
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
+    if (!file) return;
+
+    // 1. Create a local preview URL for instant feedback
+    const localPreviewUrl = URL.createObjectURL(file);
+    setAccountInfo((prev: any) => ({
+      ...prev,
+      image: localPreviewUrl,
+    }));
+
+    const formData = new FormData();
+    formData.append("profile_photo", file);
+
+    try {
+      const result = await updateAvatar(formData).unwrap();
+      const updatedPhoto = result?.data?.profile_photo;
+      
+      if (updatedPhoto) {
         setAccountInfo((prev: any) => ({
           ...prev,
-          image: reader.result as string,
+          image: updatedPhoto,
         }));
-        toast.success("Profile image updated");
-      };
-      reader.readAsDataURL(file);
+      }
+      toast.success("Profile image updated");
+    } catch (error: any) {
+      console.error("Avatar upload error:", error);
+      
+      // Handle the 422 error detail if it's an object/array (common in FastAPI)
+      let errorMessage = "Failed to update avatar";
+      if (error.data?.detail) {
+        if (typeof error.data.detail === "string") {
+          errorMessage = error.data.detail;
+        } else if (Array.isArray(error.data.detail)) {
+          errorMessage = error.data.detail[0]?.msg || JSON.stringify(error.data.detail[0]);
+        } else if (typeof error.data.detail === "object") {
+          errorMessage = error.data.detail.message || JSON.stringify(error.data.detail);
+        }
+      } else if (error.data?.message) {
+        errorMessage = error.data.message;
+      }
+
+      toast.error(errorMessage);
+      
+      // We don't revoke the URL here so the local preview persists 
+      // even if the server rejected it, letting the user see what happened.
     }
   };
 
@@ -47,10 +88,36 @@ export default function AccountInformation({
     toast.info("Profile image removed");
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    toast.success("Account information updated");
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        full_name: accountInfo.name,
+        email: accountInfo.email || null,
+        address: accountInfo.address || null,
+        phone: accountInfo.phone || null,
+      }).unwrap();
+
+      setIsEditing(false);
+      toast.success("Account information updated");
+    } catch (error: any) {
+      console.error("Profile update error:", error);
+      let errorMessage = "Failed to update profile";
+      if (error.data?.detail) {
+        if (typeof error.data.detail === "string") {
+          errorMessage = error.data.detail;
+        } else if (Array.isArray(error.data.detail)) {
+          errorMessage = error.data.detail[0]?.msg || JSON.stringify(error.data.detail[0]);
+        } else if (typeof error.data.detail === "object") {
+          errorMessage = error.data.detail.message || JSON.stringify(error.data.detail);
+        }
+      } else if (error.data?.message) {
+        errorMessage = error.data.message;
+      }
+      toast.error(errorMessage);
+    }
   };
+
+  console.log("accountInfo from api call: ", accountInfo);
 
   return (
     <div className="bg-white rounded-[24px] border border-gray-100 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
@@ -80,11 +147,18 @@ export default function AccountInformation({
               <div className="relative group">
                 <div className="w-24 h-24 rounded-full bg-gray-100 overflow-hidden border-2 border-primary/20 p-1 flex items-center justify-center shrink-0">
                   <Image
-                    src={accountInfo.image}
+                    key={accountInfo.image}
+                    src={accountInfo.image || "/images/user.webp"}
                     alt="Profile"
                     width={96}
                     height={96}
                     className="w-full h-full object-cover rounded-full"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        accountInfo.name || "User",
+                      )}&background=random&size=96`;
+                    }}
                   />
                 </div>
                 {isEditing && (
@@ -157,8 +231,13 @@ export default function AccountInformation({
                 <input
                   type="email"
                   value={accountInfo.email}
-                  disabled
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium text-gray-500 cursor-not-allowed transition-all outline-none"
+                  onChange={(e) =>
+                    setAccountInfo((prev: any) => ({
+                      ...prev,
+                      email: e.target.value,
+                    }))
+                  }
+                  className="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none"
                 />
               </div>
               <div className="space-y-2">
@@ -196,9 +275,12 @@ export default function AccountInformation({
               <div className="flex justify-end pt-2">
                 <button
                   onClick={handleSave}
-                  className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer"
+                  disabled={isUpdating}
+                  className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <TranslatedText text="Save Changes" />
+                  <TranslatedText
+                    text={isUpdating ? "Saving..." : "Save Changes"}
+                  />
                 </button>
               </div>
             </div>

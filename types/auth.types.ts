@@ -84,10 +84,34 @@ export interface ProfileResponseData {
   address: string | null;
   is_active: boolean;
   role: UserRole;
+  file?: string | null;
   created_at: string;
 }
 
 export type ProfileApiResponse = ProfileResponseData;
+
+// ─── 8. Update Profile ──────────────────────────────────────────────────────
+export interface UpdateProfileRequest {
+  full_name?: string;
+  email?: string | null;
+  address?: string | null;
+  profile_photo?: string | null;
+  phone?: string | null;
+}
+
+export type UpdateProfileApiResponse = ApiResponse<ProfileResponseData>;
+
+// ─── 9. Change Password ─────────────────────────────────────────────────────
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+export type ChangePasswordApiResponse = ApiResponse<null>;
+
+// ─── 10. Update Avatar ──────────────────────────────────────────────────────
+export type UpdateAvatarApiResponse = ApiResponse<ProfileResponseData>;
 
 // ─── Auth State (Redux slice shape) ──────────────────────────────────────────
 export interface AuthUser {

@@ -95,6 +95,12 @@ export default function DashboardHeader({
               width={40}
               height={40}
               className="object-cover w-full h-full"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  fullName || "Admin",
+                )}&background=random&size=40`;
+              }}
             />
           </div>
           <div className="hidden md:flex flex-col">
