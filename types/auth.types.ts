@@ -113,6 +113,22 @@ export type ChangePasswordApiResponse = ApiResponse<null>;
 // ─── 10. Update Avatar ──────────────────────────────────────────────────────
 export type UpdateAvatarApiResponse = ApiResponse<ProfileResponseData>;
 
+// ─── 11. Update Policies ────────────────────────────────────────────────────
+export interface UpdatePoliciesRequest {
+  terms_and_conditions?: string;
+  contest_rules?: string;
+  privacy_policy?: string;
+}
+
+export interface PoliciesResponseData {
+  terms_and_conditions: string;
+  contest_rules: string;
+  privacy_policy: string;
+}
+
+export type UpdatePoliciesApiResponse = ApiResponse<null>;
+export type GetPoliciesApiResponse = ApiResponse<PoliciesResponseData>;
+
 // ─── Auth State (Redux slice shape) ──────────────────────────────────────────
 export interface AuthUser {
   user_id: string; // using string to keep compatibility or stringified ID

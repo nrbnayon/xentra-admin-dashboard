@@ -22,6 +22,9 @@ import type {
   ChangePasswordRequest,
   ChangePasswordApiResponse,
   UpdateAvatarApiResponse,
+  UpdatePoliciesRequest,
+  UpdatePoliciesApiResponse,
+  GetPoliciesApiResponse,
 } from "@/types/auth.types";
 
 export const authApi = apiSlice.injectEndpoints({
@@ -104,26 +107,27 @@ export const authApi = apiSlice.injectEndpoints({
       }),
       providesTags: ["Profile"],
     }),
- 
+
     // ── 8. Update Profile ─────────────────────────────────────────────────────
-    updateProfile: builder.mutation<UpdateProfileApiResponse, UpdateProfileRequest>(
-      {
-        query: (body) => ({
-          url: "/users/me/profile",
-          method: "PUT",
-          body,
-        }),
-        invalidatesTags: ["Profile"],
-      },
-    ),
- 
+    updateProfile: builder.mutation<
+      UpdateProfileApiResponse,
+      UpdateProfileRequest
+    >({
+      query: (body) => ({
+        url: "/admin/settings/account",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+
     // ── 9. Change Password ────────────────────────────────────────────────────
     changePassword: builder.mutation<
       ChangePasswordApiResponse,
       ChangePasswordRequest
     >({
       query: (body) => ({
-        url: "/users/me/password",
+        url: "/admin/settings/security",
         method: "PUT",
         body,
       }),
@@ -135,10 +139,31 @@ export const authApi = apiSlice.injectEndpoints({
         url: "/users/me/avatar",
         method: "POST",
         body,
-        // FormData headers are handled automatically by fetchBaseQuery 
+        // FormData headers are handled automatically by fetchBaseQuery
         // if we don't set Content-Type: application/json in apiSlice
       }),
       invalidatesTags: ["Profile"],
+    }),
+
+    // ── 11. Update Policies ────────────────────────────────────────────────────
+    updatePolicies: builder.mutation<
+      UpdatePoliciesApiResponse,
+      UpdatePoliciesRequest
+    >({
+      query: (body) => ({
+        url: "/admin/settings/policies",
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    // ── 12. Get Policies ──────────────────────────────────────────────────────
+    getPolicies: builder.query<GetPoliciesApiResponse, void>({
+      query: () => ({
+        url: "/admin/settings/policies",
+        method: "GET",
+      }),
+      providesTags: ["Profile"],
     }),
   }),
 });
@@ -155,4 +180,6 @@ export const {
   useUpdateProfileMutation,
   useChangePasswordMutation,
   useUpdateAvatarMutation,
+  useUpdatePoliciesMutation,
+  useGetPoliciesQuery,
 } = authApi;

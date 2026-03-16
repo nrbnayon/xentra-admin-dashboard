@@ -34,7 +34,7 @@ export default function AccountInformation({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dispatch = useAppDispatch();
 
-  const [updateAvatar, { isLoading: isUploading }] = useUpdateAvatarMutation();
+  const [updateAvatar] = useUpdateAvatarMutation();
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -212,7 +212,7 @@ export default function AccountInformation({
                   </button>
                 </div>
                 <p className="text-[10px] text-[#4B5563] font-medium uppercase tracking-wider">
-                  JPG, PNG, WEBP (MAX 2MB)
+                  JPG, PNG, WEBP (MAX 5MB)
                 </p>
               </div>
             </div>
@@ -226,7 +226,8 @@ export default function AccountInformation({
                 </label>
                 <input
                   type="text"
-                  value={accountInfo.name}
+                  placeholder="e.g. John Doe"
+                  value={accountInfo.name || ""}
                   onChange={(e) =>
                     setAccountInfo((prev: any) => ({
                       ...prev,
@@ -242,7 +243,8 @@ export default function AccountInformation({
                 </label>
                 <input
                   type="email"
-                  value={accountInfo.email}
+                  placeholder="e.g. john@example.com"
+                  value={accountInfo.email || ""}
                   onChange={(e) =>
                     setAccountInfo((prev: any) => ({
                       ...prev,
@@ -258,15 +260,14 @@ export default function AccountInformation({
                 </label>
                 <input
                   type="text"
-                  value={accountInfo.phone}
-                  onChange={(e) =>
-                    setAccountInfo((prev: any) => ({
-                      ...prev,
-                      phone: e.target.value,
-                    }))
-                  }
-                  className="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                  value={accountInfo.phone || ""}
+                  readOnly
+                  placeholder="e.g. +1 234 567 890"
+                  className="w-full bg-gray-50 border border-gray-100 rounded-xl py-3 px-4 text-sm font-medium text-gray-400 outline-none cursor-not-allowed"
                 />
+                <p className="text-[10px] text-gray-400 mt-1">
+                  <TranslatedText text="Phone number cannot be changed" />
+                </p>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-bold text-[#1F2937]">
@@ -274,7 +275,8 @@ export default function AccountInformation({
                 </label>
                 <input
                   type="text"
-                  value={accountInfo.address}
+                  placeholder="e.g. Port-au-Prince, Haiti"
+                  value={accountInfo.address || ""}
                   onChange={(e) =>
                     setAccountInfo((prev: any) => ({
                       ...prev,
@@ -303,7 +305,7 @@ export default function AccountInformation({
                   <TranslatedText text="Full Name" />
                 </p>
                 <p className="text-sm text-[#4B5563] font-medium">
-                  {accountInfo.name}
+                  {accountInfo.name || <span className="text-gray-300 italic">Not set</span>}
                 </p>
               </div>
               <div className="space-y-1">
@@ -311,7 +313,7 @@ export default function AccountInformation({
                   <TranslatedText text="Email Address" />
                 </p>
                 <p className="text-sm text-[#4B5563] font-medium">
-                  {accountInfo.email}
+                  {accountInfo.email || <span className="text-gray-300 italic">Not set</span>}
                 </p>
               </div>
               <div className="space-y-1">
@@ -327,7 +329,7 @@ export default function AccountInformation({
                   <TranslatedText text="Address" />
                 </p>
                 <p className="text-sm text-[#4B5563] font-medium">
-                  <TranslatedText text={accountInfo.address} />
+                  {accountInfo.address || <span className="text-gray-300 italic">Not set</span>}
                 </p>
               </div>
             </div>

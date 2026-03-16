@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { toast } from "sonner";
-import { useGetProfileQuery } from "@/redux/services/authApi";
+import { useGetProfileQuery, useUpdatePoliciesMutation, useGetPoliciesQuery } from "@/redux/services/authApi";
 
 // Separate Components
 import AccountInformation from "./components/AccountInformation";
@@ -218,6 +218,43 @@ If you have any questions regarding your privacy, please contact our support tea
   const [currentRules, setCurrentRules] = useState(fullRules);
   const [currentPrivacy, setCurrentPrivacy] = useState(fullPrivacy);
 
+  const { data: policiesData } = useGetPoliciesQuery();
+  const [updatePolicies] = useUpdatePoliciesMutation();
+
+  useEffect(() => {
+    if (policiesData?.data) {
+      if (policiesData.data.terms_and_conditions) {
+        setCurrentTerms(policiesData.data.terms_and_conditions);
+      }
+      if (policiesData.data.contest_rules) {
+        setCurrentRules(policiesData.data.contest_rules);
+      }
+      if (policiesData.data.privacy_policy) {
+        setCurrentPrivacy(policiesData.data.privacy_policy);
+      }
+    }
+  }, [policiesData]);
+
+  const handleUpdatePolicy = async (type: "terms" | "rules" | "privacy", content: string) => {
+    try {
+      const payload: any = {};
+      if (type === "terms") payload.terms_and_conditions = content;
+      if (type === "rules") payload.contest_rules = content;
+      if (type === "privacy") payload.privacy_policy = content;
+
+      await updatePolicies(payload).unwrap();
+      
+      if (type === "terms") setIsEditingTerms(false);
+      if (type === "rules") setIsEditingRules(false);
+      if (type === "privacy") setIsEditingPrivacy(false);
+      
+      toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} updated successfully`);
+    } catch (error: any) {
+      console.error(`Failed to update ${type}:`, error);
+      toast.error(`Failed to update ${type}`);
+    }
+  };
+
   return (
     <div className="pb-10">
       <DashboardHeader
@@ -263,10 +300,7 @@ If you have any questions regarding your privacy, please contact our support tea
         setContent={setCurrentTerms}
         isEditing={isEditingTerms}
         setIsEditing={setIsEditingTerms}
-        onSave={() => {
-          setIsEditingTerms(false);
-          toast.success("Terms & Conditions updated");
-        }}
+        onSave={() => handleUpdatePolicy("terms", currentTerms)}
       />
 
       {/* Rules Modal */}
@@ -282,10 +316,7 @@ If you have any questions regarding your privacy, please contact our support tea
         setContent={setCurrentRules}
         isEditing={isEditingRules}
         setIsEditing={setIsEditingRules}
-        onSave={() => {
-          setIsEditingRules(false);
-          toast.success("Contest Rules updated");
-        }}
+        onSave={() => handleUpdatePolicy("rules", currentRules)}
       />
 
       {/* Privacy Modal */}
@@ -301,10 +332,7 @@ If you have any questions regarding your privacy, please contact our support tea
         setContent={setCurrentPrivacy}
         isEditing={isEditingPrivacy}
         setIsEditing={setIsEditingPrivacy}
-        onSave={() => {
-          setIsEditingPrivacy(false);
-          toast.success("Privacy Policy updated");
-        }}
+        onSave={() => handleUpdatePolicy("privacy", currentPrivacy)}
       />
     </div>
   );
