@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface PolicyModalProps {

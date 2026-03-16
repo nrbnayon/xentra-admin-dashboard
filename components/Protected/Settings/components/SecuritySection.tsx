@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Eye, EyeOff, PencilLine } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { toast } from "sonner";

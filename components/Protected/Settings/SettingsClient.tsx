@@ -24,8 +24,10 @@ export default function SettingsClient() {
   // Policy Modals States
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isEditingTerms, setIsEditingTerms] = useState(false);
   const [isEditingRules, setIsEditingRules] = useState(false);
+  const [isEditingPrivacy, setIsEditingPrivacy] = useState(false);
 
   // Form States
   const { data: apiProfile, isLoading: isFetching } = useGetProfileQuery();
@@ -53,107 +55,168 @@ export default function SettingsClient() {
 
   // Setting the actual content back for completeness
   const fullTerms = `1. Eligibility
-- You must be 18 years or older to use XENTRA.
-- By registering, you confirm you meet the legal age.
+• You must be 18 years or older to use XENTRA.
+• By registering, you confirm you meet the legal age.
 
 2. Account Registration
-- Registration is completed using your phone number.
-- You are responsible for keeping your login information secure.
-- Each person is allowed only one account.
-- XENTRA reserves the right to suspend or close accounts involved in fraud, abuse, or suspicious activity.
+• Registration is completed using your phone number.
+• You are responsible for keeping your login information secure.
+• Each person is allowed only one account.
+• XENTRA reserves the right to suspend or close accounts involved in fraud, abuse, or suspicious activity.
 
 3. Nature of the Platform
-- XENTRA is a skill-based prediction platform, not a traditional sportsbook.
-- Users participate in contests with a shared prize pool.
-- XENTRA does not provide betting odds.
+• XENTRA is a skill-based sports prediction platform operated by Xentra Sports.
+• Participants compete against other players by predicting match outcomes as exact scores.
+• Contest rankings are determined based on prediction accuracy and performance.
+• Contest outcomes depend on participant skill, knowledge, and analysis of sporting events.
+• All contests are entertainment-based competitions designed for sports fans.
+• XENTRA does not provide betting odds and is not a sportsbook.
 
 4. Wallet & Payments
-- Deposits are made via MonCash or Natcash.
-- Wallet funds are used only within the app.
-- Withdrawals are subject to verification.
-- XENTRA may delay or cancel withdrawals if fraud is suspected.
+• A platform service fee is deducted from contest entry fees.
+• The remaining amount forms the contest prize pool that is distributed to qualifying winners.
 
 5. Platform Fees
-- A service fee is deducted before distributing prizes.
-- The remaining amount forms the prize pool.
+• A service fee is deducted before distributing prizes.
+• The remaining amount forms the prize pool.
 
 6. Winners & Rankings
-- Winners are determined based on prediction accuracy.
-- Only the top players receive payouts.
-- Detailed rules are in the Contest Rules section.
+• XENTRA is committed to maintaining a fair and competitive environment for all participants.
+• Users must participate honestly and respect the integrity of the platform and its contests.
+Activities prohibited:
+• Manipulating contest results or attempting to influence outcomes unfairly
+• Creating or using multiple accounts
+• Using another person’s identity or account
+• Colluding with other users to gain an unfair advantage
+• Exploiting software bugs, technical errors, or system vulnerabilities
+• Using automated tools, bots, or scripts to participate in contests
+• Engaging in any fraudulent or abusive behavior
 
 7. Fair Play
-Any attempt to:
-- Manipulate results
-- Abuse the system
-- Use multiple accounts
-- Exploit technical errors
-May result in:
-- Account suspension
-- Loss of funds
-- Permanent ban
+Any attempt to manipulate results, abuse the system, use multiple accounts, or exploit technical errors may result in:
+• Account suspension
+• Loss of funds
+• Permanent ban
 
 8. No Profit Guarantee
-- Participation involves risk.
-- XENTRA does not guarantee profits.
+• Participation in contests involves risk and does not guarantee winnings.
+• Prizes are awarded only to top-ranked participants based on contest results.
+• XENTRA does not guarantee profits or financial gains from participation.
 
 9. Service Availability
-- XENTRA may modify or suspend services at any time.
+• XENTRA may modify or suspend services at any time.
 
 10. Changes to Conditions
-- These conditions may change at any time.
-- Continued use of the app indicates acceptance of changes.
+• These conditions may change at any time.
+• Continued use of the app indicates acceptance of changes.
 
 11. Contact
-- For assistance, contact XENTRA through the app.`;
+• For assistance, contact XENTRA through the app.
+
+12. Platform Operator
+• XENTRA is a digital platform operated by Xentra Sports.
+• The platform provides skill-based sports prediction contests where participants compete for prizes based on prediction accuracy.
+
+13. Withdrawal Processing
+• Withdrawal requests are subject to review and verification by the platform.
+• XENTRA processes withdrawal requests within 24 to 48 hours after approval.
+• In certain cases, additional verification may be required before withdrawals are completed.
+• XENTRA reserves the right to delay or refuse withdrawals if suspicious or fraudulent activity is detected.`;
 
   const fullRules = `1. Qualification
-- Players must be 18 years or older to participate.
+• Players must be 18 years or older to participate.
 
 2. How to Participate
 Each contest requires players to:
-- Choose the team they think will win (Team A / Team B / Draw).
-- Predict the exact final score of the match
+• Choose the team they think will win (Team A / Team B / Draw).
+• Predict the exact final score of the match
 
 3. Ranking System
 Rankings are determined as follows:
-- Exact score + correct winning team = highest score.
-- If no player predicts the exact score, rankings are based on the closest difference, using this formula:
-- (|Predicted Team A score – Actual Team A score| + |Predicted Team B score – Actual Team B score|)
-- The smallest total difference gives the best rank.
+• Exact score + correct winning team = highest score.
+If no player predicts the exact score, rankings are based on the closest difference, using this formula:
+• (|Predicted Team A score – Actual Team A score| + |Predicted Team B score – Actual Team B score|)
+• The smallest total difference gives the best rank.
 
 4. Payment Structure
-- Only the Top 5 players for each match receive payment.
-- The distribution of payments is based on the position in the ranking.
+• Only the Top 5 players for each match receive payment.
+• The distribution of payments is based on the position in the ranking.
 
 5. Prize Fund
-- The total prize fund is calculated after deducting platform service fees.
-- The remaining amount is distributed to the qualifying winners.
+• The total prize fund is calculated after deducting platform service fees.
+• The remaining amount is distributed to the qualifying winners.
 
 6. Jackpot Rules
-If no player predicts the exact score:
-- The prize fund may be transferred to the next qualifying match as a jackpot.
+• If no participant correctly predicts the exact final score of a match, the contest winners will be determined based on the closest score prediction according to the ranking rules.
+• If no qualifying predictions meet the criteria defined by the platform, XENTRA reserves the right to roll over the remaining prize pool to a future contest or jackpot.
+• The platform may also apply the rollover to selected upcoming matches or special contests.
+• Rolled-over prize pools may increase the total prize available in future contests.
 
 7. Match Results
-- The administrator enters official results after the match ends.
-- Rankings are automatically calculated based on the final results.
+• The administrator enters official results after the match ends.
+• Rankings are automatically calculated based on the final results.
 
 8. Wallet Updates
-- Wallet balances are automatically updated once results are confirmed.
+• Wallet balances are automatically updated once results are confirmed.
 
 9. Fraud & Abuse
 XENTRA reserves the right to suspend or close accounts involved in:
-- Fraud
-- Collusion
-- System abuse
-- Manipulation of contests
+• Fraud
+• Collusion
+• System abuse
+• Manipulation of contests
 
 10. Nature of Contests
-- All contests on XENTRA are skill-based prediction games and are not sports betting.
-- By participating, you agree to these Contest Rules.`;
+• All contests on XENTRA are skill-based precision competitions where players compete against each other.
+• Contest outcomes are determined by precision accuracy and ranking performance.
+• XENTRA contests are not sports betting activities.
+
+11. Special & Featured Contests
+• XENTRA may organize special or featured contests for selected matches, tournaments, or promotional events.
+• These contests may include increased prize pools, promotional rewards, or special conditions.
+• Details of each featured contest, including entry requirements and prize distribution, will be displayed within the contest before participation.
+• By entering a featured contest, participants agree to the specific rules and prize structure displayed for that contest.`;
+
+  const fullPrivacy = `Last Updated: March 04, 2026
+
+1. Information We Collect
+XENTRA collects necessary information to provide our skill-based prediction services:
+• Phone Number: Used for account identification and security.
+• Display Name: To identify you on leaderboards.
+• Device Information: To ensure platform integrity and prevent fraud.
+• Transaction History: Keeping track of your wallet activities.
+
+2. How We Use Your Data
+Your data is used specifically for:
+• Authenticating and securing your account.
+• Processing wallet deposits and withdrawals.
+• Calculating and displaying contest rankings.
+• Improving app features and user experience.
+
+3. Data Security
+• We use industry-standard encryption and security protocols to protect your information.
+• Your phone number is never shared with third parties for marketing purposes.
+
+4. User Rights & Account Deletion
+You have full control over your data. You can request a summary of the data we hold or request its permanent removal.
+
+To Permanently Delete Your Account & Data:
+1. Open the XENTRA app
+2. Go to Profile Settings
+3. Select 'Delete Account'
+4. Confirm the deletion
+Please note: Account deletion is permanent and will result in the loss of all wallet balances and history.
+
+5. Compliance
+XENTRA complies with applicable data protection regulations. We do not participate in unauthorized data sharing or selling.
+
+6. Contact Us
+If you have any questions regarding your privacy, please contact our support team:
+• Email: support@xentrasports.com`;
 
   const [currentTerms, setCurrentTerms] = useState(fullTerms);
   const [currentRules, setCurrentRules] = useState(fullRules);
+  const [currentPrivacy, setCurrentPrivacy] = useState(fullPrivacy);
 
   return (
     <div className="pb-10">
@@ -183,6 +246,7 @@ XENTRA reserves the right to suspend or close accounts involved in:
         <LegalPoliciesSection
           onOpenTerms={() => setIsTermsModalOpen(true)}
           onOpenRules={() => setIsRulesModalOpen(true)}
+          onOpenPrivacy={() => setIsPrivacyModalOpen(true)}
         />
       </main>
 
@@ -221,6 +285,25 @@ XENTRA reserves the right to suspend or close accounts involved in:
         onSave={() => {
           setIsEditingRules(false);
           toast.success("Contest Rules updated");
+        }}
+      />
+
+      {/* Privacy Modal */}
+      <PolicyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => {
+          setIsPrivacyModalOpen(false);
+          setIsEditingPrivacy(false);
+        }}
+        title="Privacy Policy"
+        description="Update your Privacy Policy details"
+        content={currentPrivacy}
+        setContent={setCurrentPrivacy}
+        isEditing={isEditingPrivacy}
+        setIsEditing={setIsEditingPrivacy}
+        onSave={() => {
+          setIsEditingPrivacy(false);
+          toast.success("Privacy Policy updated");
         }}
       />
     </div>
