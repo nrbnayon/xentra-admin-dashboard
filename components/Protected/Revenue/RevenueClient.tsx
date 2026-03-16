@@ -1,17 +1,116 @@
 "use client";
 
+import { useMemo } from "react";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { StatsCard } from "@/components/Shared/StatsCard";
 import RevenueChart from "./RevenueChart";
-import {
-  revenueStatsRow1,
-  revenueStatsRow2,
-  monthlyRevenueData,
-  weeklyRevenueData,
-  dailyRevenueData,
-} from "@/data/revenueData";
+import { TrendingUp, ShoppingBag } from "lucide-react";
+import { useGetRevenueQuery } from "@/redux/services/revenueApi";
 
 export default function RevenueClient() {
+  const { data: apiData, isLoading } = useGetRevenueQuery();
+
+  // Transform Stats Data
+  const statsRow1 = useMemo(() => {
+    if (!apiData) return [];
+    return [
+      {
+        title: "Today's Revenue",
+        value: `${apiData.todays_revenue} HTG`,
+        iconBgColor: "#E8F5E9",
+        iconColor: "#4CAF50",
+        icon: TrendingUp,
+      },
+      {
+        title: "This Week's Revenue",
+        value: `${apiData.this_weeks_revenue} HTG`,
+        iconBgColor: "#E8F5E9",
+        iconColor: "#4CAF50",
+        icon: TrendingUp,
+      },
+      {
+        title: "This Month's Revenue",
+        value: `${apiData.this_months_revenue} HTG`,
+        iconBgColor: "#E8F5E9",
+        iconColor: "#4CAF50",
+        icon: TrendingUp,
+      },
+      {
+        title: "Total Revenue",
+        value: `${apiData.total_revenue} HTG`,
+        iconBgColor: "#E8F5E9",
+        iconColor: "#4CAF50",
+        icon: TrendingUp,
+      },
+    ];
+  }, [apiData]);
+
+  const statsRow2 = useMemo(() => {
+    if (!apiData) return [];
+    return [
+      {
+        title: "Total Entry Collected",
+        value: `${apiData.total_entry_collected} HTG`,
+        iconBgColor: "#FCE4EC",
+        iconColor: "#E91E63",
+        icon: ShoppingBag,
+      },
+      {
+        title: "Total Prize Distributed",
+        value: `${apiData.total_prize_distributed} HTG`,
+        iconBgColor: "#FCE4EC",
+        iconColor: "#E91E63",
+        icon: ShoppingBag,
+      },
+    ];
+  }, [apiData]);
+
+  // Transform Chart Data
+  const monthlyData = useMemo(() => {
+    if (!apiData?.monthly_revenue) return [];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return apiData.monthly_revenue.map((val, i) => ({
+      label: months[i] || `M${i + 1}`,
+      revenue: parseFloat(val) || 0,
+    }));
+  }, [apiData]);
+
+  const weeklyData = useMemo(() => {
+    if (!apiData?.weekly_revenue) return [];
+    return apiData.weekly_revenue.map((val, i) => ({
+      label: `Week ${i + 1}`,
+      revenue: parseFloat(val) || 0,
+    }));
+  }, [apiData]);
+
+  const dailyData = useMemo(() => {
+    if (!apiData?.daily_revenue) return [];
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    return apiData.daily_revenue.map((val, i) => ({
+      label: days[i] || `D${i + 1}`,
+      revenue: parseFloat(val) || 0,
+    }));
+  }, [apiData]);
+
+  // Helper to calculate smart Y-axis ticks
+  const getSmartTicks = (data: any[]) => {
+    if (!data.length) return [0, 1000];
+    const max = Math.max(...data.map(d => d.revenue));
+    const step = Math.max(Math.ceil(max / 4 / 1000) * 1000, 100);
+    return [0, step, step * 2, step * 3, step * 4];
+  };
+
+  if (isLoading) {
+    return (
+      <div className="pb-10 min-h-screen">
+        <DashboardHeader title="Revenue" description="Loading revenue details..." />
+        <div className="p-4 md:p-6 lg:p-8 flex justify-center items-center h-[50vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="pb-10 min-h-screen">
       <DashboardHeader
@@ -19,10 +118,10 @@ export default function RevenueClient() {
         description="Here is the revenue details"
       />
 
-      <main className="p-4 md:p-6 lg:p-8 space-y-8">
+      <main className="p-4 md:p-6 lg:p-8 space-y-8 animate-in fade-in duration-500">
         {/* Top Stats Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {revenueStatsRow1.map((item, index) => (
+          {statsRow1.map((item, index) => (
             <StatsCard
               key={index}
               title={item.title}
@@ -37,14 +136,14 @@ export default function RevenueClient() {
 
         {/* Second Stats Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full ">
-          {revenueStatsRow2.map((item, index) => (
+          {statsRow2.map((item, index) => (
             <StatsCard
               key={index}
               title={item.title}
               value={item.value}
               icon={item.icon}
-              iconBgColor={item.iconBgColor}
               iconColor={item.iconColor}
+              iconBgColor={item.iconBgColor}
               className="border-none shadow-[0px_0px_45px_0px_#6565652E] flex-1"
             />
           ))}
@@ -53,31 +152,32 @@ export default function RevenueClient() {
         {/* Monthly Revenue (Top Chart) */}
         <div className="w-full">
           <RevenueChart
-            data={monthlyRevenueData}
+            data={monthlyData}
             title="Monthly Revenue"
             description="Monthly revenue overview"
             lineColor="#0190FE"
             dotColor="#0190FE"
+            yAxisTicks={getSmartTicks(monthlyData)}
           />
         </div>
 
         {/* Bottom charts row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <RevenueChart
-            data={weeklyRevenueData}
+            data={weeklyData}
             title="Weekly Revenue"
             description="Weekly revenue overview"
             lineColor="#E53935"
             dotColor="#E53935"
-            yAxisTicks={[0, 35000, 70000, 105000, 140000]}
+            yAxisTicks={getSmartTicks(weeklyData)}
           />
           <RevenueChart
-            data={dailyRevenueData}
+            data={dailyData}
             title="Daily Revenue"
             description="Daily revenue overview"
             lineColor="#4CAF50"
             dotColor="#4CAF50"
-            yAxisTicks={[0, 35000, 70000, 105000, 140000]}
+            yAxisTicks={getSmartTicks(dailyData)}
           />
         </div>
       </main>
