@@ -5,8 +5,6 @@ export const metadata = {
   description: "Manage withdrawals for Xentra",
 };
 
-export default async function WithdrawalsPage() {
-  await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate fetch delay for loading skeleton
-
+export default function WithdrawalsPage() {
   return <WithdrawalsClient />;
 }
