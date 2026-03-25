@@ -85,6 +85,10 @@ export default function MatchesClient() {
     toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
   };
 
+  const handleNotifyUser = (match: Match) => {
+    toast.success(`Notification sent to users for match: ${match.title}`);
+  };
+ 
   const openMatchModalForCreation = () => {
     setSelectedMatch(null);
     setIsMatchModalOpen(true);
@@ -192,6 +196,7 @@ export default function MatchesClient() {
               onEnterResult={openResultModal}
               onViewLeaderboard={openLeaderboardModal}
               onToggleFeatured={handleToggleFeatured}
+              onNotifyUser={handleNotifyUser}
             />
           ))}
           {paginatedMatches.length === 0 && (

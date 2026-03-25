@@ -214,6 +214,71 @@ export default function MatchModal({
         </div>
 
         <div className="p-6 space-y-4">
+          {/* Banner Image - Now at Top */}
+          <div>
+            <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
+              <span>
+                <TranslatedText text="Banner Image" />
+              </span>
+              {formData.imagePreview && (
+                <button
+                  className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFormData({ ...formData, image: null, imagePreview: "" });
+                  }}
+                >
+                  <X className="w-4 h-4" /> <TranslatedText text="Remove" />
+                </button>
+              )}
+            </label>
+            <div
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={(e) => handleDrop(e, "image")}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[160px] relative overflow-hidden ${
+                dragActive
+                  ? "border-primary bg-primary/10"
+                  : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
+              } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
+            >
+              {formData.imagePreview ? (
+                <div className="absolute inset-0 w-full h-full">
+                  <Image
+                    src={formData.imagePreview}
+                    alt="Preview"
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <p className="text-white text-sm font-medium">
+                      <TranslatedText text="Click to change" />
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <UploadCloud className="w-8 h-8 text-gray-500 dark:text-gray-400 mb-2" />
+                  <p className="text-sm font-medium text-foreground dark:text-gray-300">
+                    <TranslatedText text="Click to upload or drag and drop" />
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <TranslatedText text="Max. File Size" />: 10MB
+                  </p>
+                </>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => handleFileChange(e, "image")}
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
@@ -316,49 +381,184 @@ export default function MatchModal({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                <TranslatedText text="Team A" />{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.teamA}
-                onChange={(e) =>
-                  setFormData({ ...formData, teamA: e.target.value })
-                }
-                placeholder="Team A Name"
-                className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamA ? "border-red-500" : ""}`}
-              />
-              {errors.teamA && (
-                <p className="text-red-500 text-xs mt-1">
-                  <TranslatedText text={errors.teamA} />
-                </p>
-              )}
+            {/* Team A Section */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
+                  <TranslatedText text="Team A" />{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.teamA}
+                  onChange={(e) =>
+                    setFormData({ ...formData, teamA: e.target.value })
+                  }
+                  placeholder="Team A Name"
+                  className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamA ? "border-red-500" : ""}`}
+                />
+                {errors.teamA && (
+                  <p className="text-red-500 text-xs mt-1">
+                    <TranslatedText text={errors.teamA} />
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
+                  <span>
+                    <TranslatedText text="Team A Flag" />
+                  </span>
+                  {formData.teamAFlagPreview && (
+                    <button
+                      className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormData({
+                          ...formData,
+                          teamAFlag: null,
+                          teamAFlagPreview: "",
+                        });
+                      }}
+                    >
+                      <X className="w-4 h-4" /> <TranslatedText text="Remove" />
+                    </button>
+                  )}
+                </label>
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={(e) => handleDrop(e, "teamAFlag")}
+                  onClick={() => teamAFlagRef.current?.click()}
+                  className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
+                    dragActive
+                      ? "border-primary bg-primary/10"
+                      : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
+                  } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
+                >
+                  {formData.teamAFlagPreview ? (
+                    <div className="absolute inset-0 w-full h-full">
+                      <Image
+                        src={formData.teamAFlagPreview}
+                        alt="Team A Flag"
+                        fill
+                        className="object-contain p-2"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                        <p className="text-white text-xs font-medium">
+                          <TranslatedText text="Change" />
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-6 h-6 text-gray-500 mb-1" />
+                      <p className="text-xs font-medium text-foreground dark:text-gray-300">
+                        <TranslatedText text="Upload Team A Flag" />
+                      </p>
+                    </>
+                  )}
+                </div>
+                <input
+                  ref={teamAFlagRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e, "teamAFlag")}
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                <TranslatedText text="Team B" />{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.teamB}
-                onChange={(e) =>
-                  setFormData({ ...formData, teamB: e.target.value })
-                }
-                placeholder="Team B Name"
-                className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamB ? "border-red-500" : ""}`}
-              />
-              {errors.teamB && (
-                <p className="text-red-500 text-xs mt-1">
-                  <TranslatedText text={errors.teamB} />
-                </p>
-              )}
+
+            {/* Team B Section */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
+                  <TranslatedText text="Team B" />{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.teamB}
+                  onChange={(e) =>
+                    setFormData({ ...formData, teamB: e.target.value })
+                  }
+                  placeholder="Team B Name"
+                  className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamB ? "border-red-500" : ""}`}
+                />
+                {errors.teamB && (
+                  <p className="text-red-500 text-xs mt-1">
+                    <TranslatedText text={errors.teamB} />
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
+                  <span>
+                    <TranslatedText text="Team B Flag" />
+                  </span>
+                  {formData.teamBFlagPreview && (
+                    <button
+                      className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormData({
+                          ...formData,
+                          teamBFlag: null,
+                          teamBFlagPreview: "",
+                        });
+                      }}
+                    >
+                      <X className="w-4 h-4" /> <TranslatedText text="Remove" />
+                    </button>
+                  )}
+                </label>
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={(e) => handleDrop(e, "teamBFlag")}
+                  onClick={() => teamBFlagRef.current?.click()}
+                  className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
+                    dragActive
+                      ? "border-primary bg-primary/10"
+                      : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
+                  } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
+                >
+                  {formData.teamBFlagPreview ? (
+                    <div className="absolute inset-0 w-full h-full">
+                      <Image
+                        src={formData.teamBFlagPreview}
+                        alt="Team B Flag"
+                        fill
+                        className="object-contain p-2"
+                      />
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                        <p className="text-white text-xs font-medium">
+                          <TranslatedText text="Change" />
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-6 h-6 text-gray-500 mb-1" />
+                      <p className="text-xs font-medium text-foreground dark:text-gray-300">
+                        <TranslatedText text="Upload Team B Flag" />
+                      </p>
+                    </>
+                  )}
+                </div>
+                <input
+                  ref={teamBFlagRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e, "teamBFlag")}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-6 pt-4">
             <div>
               <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-3">
                 <TranslatedText text="Platform fee" />{" "}
@@ -493,202 +693,6 @@ export default function MatchModal({
                 }
                 className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="e.g. 500,000 HTG"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
-              <span>
-                <TranslatedText text="Banner Image" />
-              </span>
-              {formData.imagePreview && (
-                <button
-                  className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setFormData({ ...formData, image: null, imagePreview: "" });
-                  }}
-                >
-                  <X className="w-4 h-4" /> <TranslatedText text="Remove" />
-                </button>
-              )}
-            </label>
-            <div
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={(e) => handleDrop(e, "image")}
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[160px] relative overflow-hidden ${
-                dragActive
-                  ? "border-primary bg-primary/10"
-                  : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
-              } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
-            >
-              {formData.imagePreview ? (
-                <div className="absolute inset-0 w-full h-full">
-                  <Image
-                    src={formData.imagePreview}
-                    alt="Preview"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <p className="text-white text-sm font-medium">
-                      <TranslatedText text="Click to change" />
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <UploadCloud className="w-8 h-8 text-gray-500 dark:text-gray-400 mb-2" />
-                  <p className="text-sm font-medium text-foreground dark:text-gray-300">
-                    <TranslatedText text="Click to upload or drag and drop" />
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    <TranslatedText text="Max. File Size" />: 10MB
-                  </p>
-                </>
-              )}
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleFileChange(e, "image")}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
-                <span>
-                  <TranslatedText text="Team A Flag" />
-                </span>
-                {formData.teamAFlagPreview && (
-                  <button
-                    className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setFormData({
-                        ...formData,
-                        teamAFlag: null,
-                        teamAFlagPreview: "",
-                      });
-                    }}
-                  >
-                    <X className="w-4 h-4" /> <TranslatedText text="Remove" />
-                  </button>
-                )}
-              </label>
-              <div
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={(e) => handleDrop(e, "teamAFlag")}
-                onClick={() => teamAFlagRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
-                  dragActive
-                    ? "border-primary bg-primary/10"
-                    : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
-                } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
-              >
-                {formData.teamAFlagPreview ? (
-                  <div className="absolute inset-0 w-full h-full">
-                    <Image
-                      src={formData.teamAFlagPreview}
-                      alt="Team A Flag"
-                      fill
-                      className="object-contain p-2"
-                    />
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                      <p className="text-white text-xs font-medium">
-                        <TranslatedText text="Change" />
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <UploadCloud className="w-6 h-6 text-gray-500 mb-1" />
-                    <p className="text-xs font-medium text-foreground dark:text-gray-300">
-                      <TranslatedText text="Upload Team A Flag" />
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                ref={teamAFlagRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileChange(e, "teamAFlag")}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
-                <span>
-                  <TranslatedText text="Team B Flag" />
-                </span>
-                {formData.teamBFlagPreview && (
-                  <button
-                    className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setFormData({
-                        ...formData,
-                        teamBFlag: null,
-                        teamBFlagPreview: "",
-                      });
-                    }}
-                  >
-                    <X className="w-4 h-4" /> <TranslatedText text="Remove" />
-                  </button>
-                )}
-              </label>
-              <div
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={(e) => handleDrop(e, "teamBFlag")}
-                onClick={() => teamBFlagRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
-                  dragActive
-                    ? "border-primary bg-primary/10"
-                    : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
-                } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
-              >
-                {formData.teamBFlagPreview ? (
-                  <div className="absolute inset-0 w-full h-full">
-                    <Image
-                      src={formData.teamBFlagPreview}
-                      alt="Team B Flag"
-                      fill
-                      className="object-contain p-2"
-                    />
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                      <p className="text-white text-xs font-medium">
-                        <TranslatedText text="Change" />
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <UploadCloud className="w-6 h-6 text-gray-500 mb-1" />
-                    <p className="text-xs font-medium text-foreground dark:text-gray-300">
-                      <TranslatedText text="Upload Team B Flag" />
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                ref={teamBFlagRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => handleFileChange(e, "teamBFlag")}
               />
             </div>
           </div>
