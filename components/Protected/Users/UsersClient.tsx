@@ -164,7 +164,7 @@ export default function UsersClient() {
     },
     {
       label: "More",
-      icon: (
+      icon: (row: User) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="p-1 hover:bg-gray-100 rounded-full transition outline-none border-none cursor-pointer inline-flex items-center justify-center">
@@ -177,26 +177,26 @@ export default function UsersClient() {
           >
             <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none focus:text-black"
-              onClick={() => openPredictionView(selectedUser as User)}
+              onClick={() => openPredictionView(row)}
             >
               <TranslatedText text="View Prediction" />
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 border-b border-[#2a4365]/50 flex items-center justify-center outline-none focus:text-black"
-              onClick={() => openWalletView(selectedUser as User)}
+              onClick={() => openWalletView(row)}
             >
               <TranslatedText text="View Wallet" />
             </DropdownMenuItem>
             <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 flex items-center justify-center outline-none focus:text-black"
-              onClick={() => openTransactionHistory(selectedUser as User)}
+              onClick={() => openTransactionHistory(row)}
             >
               <TranslatedText text="Transaction History" />
             </DropdownMenuItem>
             {/* <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 flex items-center justify-center outline-none focus:text-black rounded-b-xl"
               onClick={() => {
-                setSelectedUser(selectedUser as User);
+                setSelectedUser(row);
                 setIsAdjustBalanceModalOpen(true);
               }}
             >
@@ -205,7 +205,8 @@ export default function UsersClient() {
           </DropdownMenuContent>
         </DropdownMenu>
       ),
-      onClick: (user: User) => setSelectedUser(user), // just prime the state for dropdown menu actions if needed
+      onClick: () => {}, // Handled directly inside dropdown icons
+
     },
   ];
 

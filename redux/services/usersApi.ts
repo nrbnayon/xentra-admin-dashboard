@@ -39,6 +39,21 @@ export const usersApi = apiSlice.injectEndpoints({
         method: "POST",
       }),
       invalidatesTags: ["Users"],
+      async onQueryStarted(id, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(
+            usersApi.util.updateQueryData("getUsers", undefined, (draft) => {
+              const user = draft.data?.find((u) => u.id === id);
+              if (user) {
+                user.is_active = !user.is_active;
+              }
+            })
+          );
+        } catch {
+          // Error handled in component
+        }
+      },
     }),
   }),
   overrideExisting: true,

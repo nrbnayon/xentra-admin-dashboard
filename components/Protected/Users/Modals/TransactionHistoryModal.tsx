@@ -68,7 +68,7 @@ export default function TransactionHistoryModal({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-transparent">
-                  <tr className="h-2"></tr> {/* Spacer after header */}
+                  <tr className="h-2" />
                   {transactions?.map((t, idx) => (
                     <tr
                       key={idx}

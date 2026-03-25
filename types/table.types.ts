@@ -16,7 +16,7 @@ export interface TableColumn<T = any> {
 
 // Action configuration
 export interface TableAction<T = any> {
-  icon?: ReactNode;
+  icon?: ReactNode | ((row: T) => ReactNode);
   label?: string;
   onClick: (row: T, index: number) => void;
   variant?: "primary" | "secondary" | "danger" | "success" | "warning";
