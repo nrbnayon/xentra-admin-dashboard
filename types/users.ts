@@ -6,20 +6,23 @@ export type UserStatus =
   | "suspended";
 
 export interface User {
-  id: string;
-  name: string;
-  phone_number?: string;
-  role: "admin" | "user" | "guest" | "creator";
+  id: number;
+  full_name: string;
+  phone: string;
+  balance: string;
+  contest_joined: number;
+  total_win: number;
+  total_lose: number;
+  is_active: boolean;
+  role?: "admin" | "user" | "guest" | "creator";
   email_address?: string;
   image?: string;
   status?: UserStatus;
   location?: string;
   date?: string;
-  phone?: string;
-  balance?: number;
-  contest_joined?: number;
-  total_win?: number;
-  total_lose?: number;
+  // Fallbacks for earlier mappings if needed
+  name?: string;
+  phone_number?: string;
   [key: string]: any;
 }
 
@@ -32,28 +35,32 @@ export interface UserFormData {
 }
 
 export interface Transaction {
-  id: string;
   date: string;
-  type: "Deposit" | "Win" | "Withdraw" | "Deduction";
-  amount: number;
-  match?: string;
+  type: string;
+  amount: string;
+  match_name: string;
+  id?: string;
 }
 
 export interface Prediction {
-  id: string;
-  sportName: string;
-  leagueName: string;
-  matchDate: string;
-  matchTimeStart: string;
-  teamA: string;
-  teamB: string;
+  sport_name: string;
+  league_name: string;
+  match_date: string;
+  match_time_start: string;
+  team_a: string;
+  team_b: string;
   prediction: string;
+  id?: string;
 }
 
 export interface Wallet {
-  totalBalance: number;
-  totalDeposit: number;
-  totalWithdrawal: number;
-  totalWinning: number;
-  totalDeduction: number;
+  total_balance: string;
+  total_deposit: string;
+  total_withdrawal: string;
+  total_winning: string;
+  total_deduction: string;
+}
+
+export interface ToggleStatusResponse {
+  message: string;
 }

@@ -8,13 +8,7 @@ import PredictionModal from "./Modals/PredictionModal";
 import WalletModal from "./Modals/WalletModal";
 import TransactionHistoryModal from "./Modals/TransactionHistoryModal";
 import AdjustBalanceModal from "./Modals/AdjustBalanceModal";
-import {
-  usersData,
-  dummyTransactions,
-  dummyPrediction,
-  dummyWallet,
-} from "@/data/usersData";
-import { User, Transaction, Prediction, Wallet } from "@/types/users";
+import { User } from "@/types/users";
 import { UserX, UserCheck, MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -23,9 +17,19 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import TranslatedText from "@/components/Shared/TranslatedText";
+import {
+  useGetUsersQuery,
+  useToggleUserStatusMutation,
+} from "@/redux/services/usersApi";
+import { TableSkeleton } from "@/components/Skeleton/TableSkeleton";
+import { toast } from "sonner";
 
 export default function UsersClient() {
-  const [users, setUsers] = useState<User[]>(usersData);
+  const { data: usersData, isLoading, refetch } = useGetUsersQuery();
+  const [toggleUserStatus] = useToggleUserStatusMutation();
+
+  const users = usersData?.data || [];
+
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [targetStatus, setTargetStatus] = useState<"active" | "suspended">(
     "suspended",
@@ -39,25 +43,26 @@ export default function UsersClient() {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
 
-  const [predictionData, setPredictionData] = useState<Prediction | null>(null);
-  const [walletData, setWalletData] = useState<Wallet | null>(null);
-  const [transactionData, setTransactionData] = useState<Transaction[]>([]);
+  // Instead of passing data, we pass userId
+  const [selectedUserId, setSelectedUserId] = useState<string | number | null>(
+    null,
+  );
 
-  const handleToggleStatus = () => {
+  const handleToggleStatus = async () => {
     if (selectedUser) {
-      setUsers(
-        users.map((u) =>
-          u.id === selectedUser.id ? { ...u, status: targetStatus } : u,
-        ),
-      );
+      try {
+        const res = await toggleUserStatus(selectedUser.id).unwrap();
+        toast.success(res.message || "User status updated successfully");
+      } catch (err: any) {
+        toast.error(err?.data?.message || "Failed to update user status");
+      }
       setIsStatusModalOpen(false);
     }
   };
 
-  const handleAdjustBalance = (userId: string, newBalance: number) => {
-    setUsers(
-      users.map((u) => (u.id === userId ? { ...u, balance: newBalance } : u)),
-    );
+  const handleAdjustBalance = (userId: string | number, newBalance: number) => {
+    // API not provided yet
+    toast.info("Balance adjustment feature will be available soon.");
   };
 
   const openStatusModal = (user: User, status: "active" | "suspended") => {
@@ -67,31 +72,29 @@ export default function UsersClient() {
   };
 
   const openPredictionView = (user: User) => {
-    // In real app, fetch user prediction
-    setPredictionData(dummyPrediction);
+    setSelectedUserId(user.id);
     setIsPredictionModalOpen(true);
   };
 
   const openWalletView = (user: User) => {
-    // In a real app, fetch user wallet data
-    setWalletData(dummyWallet);
+    setSelectedUserId(user.id);
     setIsWalletModalOpen(true);
   };
 
   const openTransactionHistory = (user: User) => {
-    setTransactionData(dummyTransactions);
+    setSelectedUserId(user.id);
     setIsTransactionModalOpen(true);
   };
 
   const columns = [
     {
-      key: "name",
+      key: "full_name",
       header: <TranslatedText text="Name" />,
       sortable: true,
       className: "font-medium text-foreground",
     },
     {
-      key: "phone_number",
+      key: "phone",
       header: <TranslatedText text="Phone Number" />,
       sortable: true,
       className: "text-foreground font-medium",
@@ -99,7 +102,7 @@ export default function UsersClient() {
     {
       key: "balance",
       header: <TranslatedText text="Balance" />,
-      render: (val: number) => `${val} HTG`,
+      render: (val: string | number) => `${val} HTG`,
       sortable: true,
       className: "text-foreground font-medium",
     },
@@ -125,21 +128,17 @@ export default function UsersClient() {
       className: "text-foreground font-medium",
     },
     {
-      key: "status",
+      key: "is_active",
       header: <TranslatedText text="Status" />,
-      render: (status: string) => (
+      render: (is_active: boolean) => (
         <span
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            status === "active"
+            is_active
               ? "bg-[#D1FADF] text-[#027A48]"
-              : status === "suspended"
-                ? "bg-[#FEF0C7] text-[#B54708]"
-                : "bg-[#FEE2E2] text-[#B91C1C]"
+              : "bg-[#FEE2E2] text-[#B91C1C]"
           }`}
         >
-          <TranslatedText
-            text={status.charAt(0).toUpperCase() + status.slice(1)}
-          />
+          <TranslatedText text={is_active ? "Active" : "Suspended"} />
         </span>
       ),
       sortable: true,
@@ -153,7 +152,7 @@ export default function UsersClient() {
         <UserX className="w-5 h-5 text-red-500 hover:text-red-700 transition" />
       ),
       onClick: (user: User) => openStatusModal(user, "suspended"),
-      show: (user: User) => user.status !== "suspended",
+      show: (user: User) => user.is_active === true,
     },
     {
       label: "Activate",
@@ -161,7 +160,7 @@ export default function UsersClient() {
         <UserCheck className="w-5 h-5 text-green-500 hover:text-green-700 transition" />
       ),
       onClick: (user: User) => openStatusModal(user, "active"),
-      show: (user: User) => user.status === "suspended",
+      show: (user: User) => user.is_active === false,
     },
     {
       label: "More",
@@ -194,7 +193,7 @@ export default function UsersClient() {
             >
               <TranslatedText text="Transaction History" />
             </DropdownMenuItem>
-            <DropdownMenuItem
+            {/* <DropdownMenuItem
               className="text-white bg-primary hover:bg-primary/80 mt-2 cursor-pointer text-sm p-3 flex items-center justify-center outline-none focus:text-black rounded-b-xl"
               onClick={() => {
                 setSelectedUser(selectedUser as User);
@@ -202,7 +201,7 @@ export default function UsersClient() {
               }}
             >
               <TranslatedText text="Adjust Balance" />
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -218,23 +217,27 @@ export default function UsersClient() {
       />
 
       <main className="p-4 md:px-6 lg:px-8">
-        <DynamicTable<User>
-          data={users}
-          config={{
-            columns: columns as any,
-            actions: actions,
-            showActions: true,
-            actionsLabel: "Action",
-            actionsAlign: "center",
-          }}
-          filter={{
-            enabled: true,
-            searchKeys: ["name", "phone_number"],
-          }}
-          pagination={{ enabled: true, pageSize: 10 }}
-          className="shadow-[0px_0px_35px_0px_rgba(0,0,0,0.05)] border-none rounded-2xl overflow-hidden"
-          headerClassName="bg-[#E6F4FF] text-foreground font-medium"
-        />
+        {isLoading ? (
+          <TableSkeleton rowCount={10} />
+        ) : (
+          <DynamicTable<User>
+            data={users}
+            config={{
+              columns: columns as any,
+              actions: actions,
+              showActions: true,
+              actionsLabel: "Action",
+              actionsAlign: "center",
+            }}
+            filter={{
+              enabled: true,
+              searchKeys: ["full_name", "phone"],
+            }}
+            pagination={{ enabled: true, pageSize: 10 }}
+            className="shadow-[0px_0px_35px_0px_rgba(0,0,0,0.05)] border-none rounded-2xl overflow-hidden"
+            headerClassName="bg-[#E6F4FF] text-foreground font-medium"
+          />
+        )}
       </main>
 
       <DeleteConfirmationModal
@@ -261,19 +264,19 @@ export default function UsersClient() {
       <PredictionModal
         isOpen={isPredictionModalOpen}
         onClose={() => setIsPredictionModalOpen(false)}
-        prediction={predictionData}
+        userId={selectedUserId}
       />
 
       <WalletModal
         isOpen={isWalletModalOpen}
         onClose={() => setIsWalletModalOpen(false)}
-        wallet={walletData}
+        userId={selectedUserId}
       />
 
       <TransactionHistoryModal
         isOpen={isTransactionModalOpen}
         onClose={() => setIsTransactionModalOpen(false)}
-        transactions={transactionData}
+        userId={selectedUserId}
       />
 
       <AdjustBalanceModal
