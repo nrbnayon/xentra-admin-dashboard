@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { RevenueData } from "@/types/dashboard.types";
 import {
   LineChart,
@@ -17,12 +18,17 @@ interface RevenueTrendChartProps {
 }
 
 const CustomDot = (props: any) => {
-  const { cx, cy, stroke, payload } = props;
-
+  const { cx, cy } = props;
   return <circle cx={cx} cy={cy} r={5} fill="#0190FE" stroke="none" />;
 };
 
 export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="bg-white p-6 md:p-8 rounded-xl shadow-[0px_0px_45px_0px_#6565652E] w-full mb-8 border-none">
       <div className="mb-8">
@@ -34,62 +40,66 @@ export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
         </p>
       </div>
 
-      <div className="h-[400px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              vertical={true}
-              horizontal={true}
-              stroke="#E5E7EB"
-            />
-            <XAxis
-              dataKey="month"
-              axisLine={{ stroke: "#9CA3AF" }}
-              tickLine={true}
-              tick={{ fontSize: 12, fill: "#6B7280" }}
-              dy={15}
-            />
-            <YAxis
-              axisLine={{ stroke: "#9CA3AF" }}
-              tickLine={true}
-              tick={{ fontSize: 12, fill: "#6B7280" }}
-              ticks={[0, 35000, 70000, 105000, 140000]}
-              domain={[0, 140000]}
-              dx={-15}
-            />
-            <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <div className="bg-white p-3 rounded-lg shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] border-none">
-                      <p className="text-sm font-semibold text-foreground">
-                        {payload[0].payload.month}
-                      </p>
-                      <p className="text-sm text-[#0190FE] font-bold">
-                        ${payload[0].value.toLocaleString()}
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-              cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
-            />
-            <Line
-              type="linear"
-              dataKey="revenue"
-              stroke="#0190FE"
-              strokeWidth={2}
-              dot={<CustomDot />}
-              activeDot={{ r: 7 }}
-              isAnimationActive={true}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+      <div className="h-[400px] w-full" style={{ minHeight: 400 }}>
+        {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data}
+              margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                vertical={true}
+                horizontal={true}
+                stroke="#E5E7EB"
+              />
+              <XAxis
+                dataKey="month"
+                axisLine={{ stroke: "#9CA3AF" }}
+                tickLine={true}
+                tick={{ fontSize: 12, fill: "#6B7280" }}
+                dy={15}
+              />
+              <YAxis
+                axisLine={{ stroke: "#9CA3AF" }}
+                tickLine={true}
+                tick={{ fontSize: 12, fill: "#6B7280" }}
+                ticks={[0, 35000, 70000, 105000, 140000]}
+                domain={[0, 140000]}
+                dx={-15}
+              />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-white p-3 rounded-lg shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] border-none">
+                        <p className="text-sm font-semibold text-foreground">
+                          {payload[0].payload.month}
+                        </p>
+                        <p className="text-sm text-[#0190FE] font-bold">
+                          ${payload[0].value.toLocaleString()}
+                        </p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+                cursor={{ stroke: "#E5E7EB", strokeWidth: 1 }}
+              />
+              <Line
+                type="linear"
+                dataKey="revenue"
+                stroke="#0190FE"
+                strokeWidth={2}
+                dot={<CustomDot />}
+                activeDot={{ r: 7 }}
+                isAnimationActive={true}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="h-full w-full" />
+        )}
       </div>
 
       {/* Legend at bottom */}

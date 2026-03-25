@@ -3,10 +3,7 @@
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { StatsCard } from "@/components/Shared/StatsCard";
 import RevenueTrendChart from "./RevenueTrendChart";
-import {
-  dashboardStatsTop,
-  dashboardStatsBottom,
-} from "@/data/dashboardData";
+import { dashboardStatsTop, dashboardStatsBottom } from "@/data/dashboardData";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { useGetAdminDashboardOverviewQuery } from "@/redux/services/dashboardApi";
 import { DashboardSkeleton } from "@/components/Skeleton/DashboardSkeleton";
@@ -61,11 +58,25 @@ export default function DashboardClient() {
   ];
 
   // Map chart data
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const chartData = apiData?.monthly_revenue?.map((val, idx) => ({
-    month: months[idx],
-    revenue: parseFloat(val) || 0,
-  })) || [];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  const chartData =
+    apiData?.monthly_revenue?.map((val, idx) => ({
+      month: months[idx],
+      revenue: parseFloat(val) || 0,
+    })) || [];
 
   return (
     <div className="pb-10 min-h-screen">
