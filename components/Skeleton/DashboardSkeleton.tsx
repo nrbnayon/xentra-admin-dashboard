@@ -17,6 +17,18 @@ export function DashboardStatSkeleton() {
   );
 }
 
+export function ChartSkeleton({ height = "300px" }: { height?: string }) {
+  return (
+    <div className="bg-white p-8 rounded-xl shadow-[0px_0px_45px_0px_#6565652E] w-full">
+      <div className="space-y-4">
+        <Skeleton className="w-48 h-8 bg-gray-200" />
+        <Skeleton className="w-64 h-4 bg-gray-100" />
+        <Skeleton style={{ height }} className="w-full bg-gray-50 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
 export function DashboardSkeleton() {
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -35,13 +47,7 @@ export function DashboardSkeleton() {
       </div>
 
       {/* Chart Skeleton */}
-      <div className="bg-white p-8 rounded-xl shadow-[0px_0px_45px_0px_#6565652E] w-full">
-        <div className="space-y-4">
-          <Skeleton className="w-48 h-8 bg-gray-200" />
-          <Skeleton className="w-64 h-4 bg-gray-100" />
-          <Skeleton className="w-full h-[300px] bg-gray-50 rounded-xl" />
-        </div>
-      </div>
+      <ChartSkeleton height="300px" />
     </div>
   );
 }

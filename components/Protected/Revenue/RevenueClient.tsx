@@ -6,6 +6,7 @@ import { StatsCard } from "@/components/Shared/StatsCard";
 import RevenueChart from "./RevenueChart";
 import { TrendingUp, ShoppingBag } from "lucide-react";
 import { useGetRevenueQuery } from "@/redux/services/revenueApi";
+import { DashboardStatSkeleton, ChartSkeleton } from "@/components/Skeleton/DashboardSkeleton";
 
 export default function RevenueClient() {
   const { data: apiData, isLoading } = useGetRevenueQuery();
@@ -104,9 +105,32 @@ export default function RevenueClient() {
     return (
       <div className="pb-10 min-h-screen">
         <DashboardHeader title="Revenue" description="Loading revenue details..." />
-        <div className="p-4 md:p-6 lg:p-8 flex justify-center items-center h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-        </div>
+        <main className="p-4 md:p-6 lg:p-8 space-y-8 animate-in fade-in duration-500">
+          {/* Top Stats Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <DashboardStatSkeleton key={i} />
+            ))}
+          </div>
+
+          {/* Second Stats Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full ">
+            {[1, 2].map((i) => (
+              <DashboardStatSkeleton key={i} />
+            ))}
+          </div>
+
+          {/* Monthly Revenue (Top Chart) */}
+          <div className="w-full">
+            <ChartSkeleton height="400px" />
+          </div>
+
+          {/* Bottom charts row */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <ChartSkeleton height="350px" />
+            <ChartSkeleton height="350px" />
+          </div>
+        </main>
       </div>
     );
   }
