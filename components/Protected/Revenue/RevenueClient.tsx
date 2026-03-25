@@ -1,12 +1,19 @@
 "use client";
 
 import { useMemo } from "react";
+import dynamic from "next/dynamic";
 import DashboardHeader from "@/components/Shared/DashboardHeader";
 import { StatsCard } from "@/components/Shared/StatsCard";
-import RevenueChart from "./RevenueChart";
 import { TrendingUp, ShoppingBag } from "lucide-react";
 import { useGetRevenueQuery } from "@/redux/services/revenueApi";
 import { DashboardStatSkeleton, ChartSkeleton } from "@/components/Skeleton/DashboardSkeleton";
+
+// Dynamically import the chart — `ssr: false` prevents Recharts from trying
+// to measure DOM dimensions before hydration (which causes width/height = -1 warnings).
+const RevenueChart = dynamic(() => import("./RevenueChart"), {
+  ssr: false,
+  loading: () => <ChartSkeleton height="400px" />,
+});
 
 export default function RevenueClient() {
   const { data: apiData, isLoading } = useGetRevenueQuery();

@@ -5,7 +5,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -55,6 +55,9 @@ export function useUser(): UseUserReturn {
   // True only during the first-render cookie-rehydration check
   const [isLoading, setIsLoading] = useState(true);
 
+  // Guard: only fetch profile once per mount to avoid spamming the API
+  const hasFetchedRef = useRef(false);
+
   // Lazy profile query — fired manually once we confirm authentication
   const [fetchProfile] = useLazyGetProfileQuery();
 
@@ -83,10 +86,16 @@ export function useUser(): UseUserReturn {
   }, []); // run once on mount only
 
   // ── Step 2: Fetch profile once authenticated ──────────────────────────────
-  // We fetch every time this hook mounts while authenticated to ensure 
-  // persisted state (from localStorage) is synchronized with the server.
+  // Guard with a ref so this only fires once per authentication session,
+  // preventing console spam when fetchProfile identity changes between renders.
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      hasFetchedRef.current = false; // reset so next login re-fetches
+      return;
+    }
+
+    if (hasFetchedRef.current) return; // already fetched this session
+    hasFetchedRef.current = true;
 
     fetchProfile()
       .unwrap()
@@ -98,7 +107,8 @@ export function useUser(): UseUserReturn {
       .catch((error) => {
         console.error("Failed to sync profile:", error);
       });
-  }, [isAuthenticated, fetchProfile, dispatch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]); // intentionally omit fetchProfile — it changes every render
 
   // ── Logout ──────────────────────────────────────────────────────────────────
   const logout = () => {
