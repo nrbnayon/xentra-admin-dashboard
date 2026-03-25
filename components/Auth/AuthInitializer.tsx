@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { 
-  selectIsAuthenticated, 
-  selectCurrentUser, 
-  loginSuccess, 
-  setProfile 
+import {
+  selectIsAuthenticated,
+  selectCurrentUser,
+  loginSuccess,
+  setProfile,
 } from "@/redux/features/authSlice";
 import { tokenStorage } from "@/redux/features/apiSlice";
 import { useLazyGetProfileQuery } from "@/redux/services/authApi";
@@ -23,13 +23,17 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
     const accessToken = tokenStorage.getAccessToken();
     const role = tokenStorage.getUserRole() as UserRole | null;
 
+    // console.log("accessToken", accessToken);
+    // console.log("role", role);
+    // console.log("isAuthenticated", isAuthenticated);
+
     if (!isAuthenticated && accessToken && role) {
       dispatch(
         loginSuccess({
           access_token: accessToken,
           refresh_token: tokenStorage.getRefreshToken() ?? "",
           user_role: role,
-        })
+        }),
       );
     }
   }, [dispatch, isAuthenticated]);

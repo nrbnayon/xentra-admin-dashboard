@@ -10,6 +10,7 @@ interface MatchCardProps {
   onDelete: (match: Match) => void;
   onEnterResult: (match: Match) => void;
   onViewLeaderboard: (match: Match) => void;
+  onNotifyUser?: (match: Match) => void;
   onToggleFeatured?: (matchId: string, isFeatured: boolean) => void;
 }
 
@@ -19,6 +20,7 @@ export default function MatchCard({
   onDelete,
   onEnterResult,
   onViewLeaderboard,
+  onNotifyUser,
   onToggleFeatured,
 }: MatchCardProps) {
   const { translatedText: featuredText } = useTranslate("Featured");
@@ -96,7 +98,7 @@ export default function MatchCard({
               className={`p-1.5 rounded-full transition-colors cursor-pointer flex items-center justify-center ${
                 match.isFeatured
                   ? "bg-white text-primary"
-                  : "bg-white text-foreground hover:bg-gray-100"
+                  : "bg-white text-foreground hover:bg-gray-300"
               }`}
               title={match.isFeatured ? featuredText : notFeaturedText}
             >
@@ -114,15 +116,21 @@ export default function MatchCard({
             </button>
             <button
               onClick={() => onEdit(match)}
-              className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors cursor-pointer"
+              className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
             >
               <SquarePen className="w-4 h-4 text-foreground" />
             </button>
             <button
               onClick={() => onDelete(match)}
-              className="bg-white hover:bg-gray-100 p-1.5 rounded-full transition-colors cursor-pointer"
+              className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
             >
               <X className="w-4 h-4 text-red-500" />
+            </button>
+            <button
+              onClick={() => onNotifyUser?.(match)}
+              className="bg-white hover:bg-gray-300 px-4 py-1.5 rounded-full transition-colors cursor-pointer text-primary text-[10px] md:text-xs font-semibold whitespace-nowrap"
+            >
+              <TranslatedText text="Notify User" />
             </button>
           </div>
         </div>

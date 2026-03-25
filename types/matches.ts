@@ -11,6 +11,8 @@ export interface Match {
   time: string;
   teamA: string;
   teamB: string;
+  teamAFlag?: string;
+  teamBFlag?: string;
   entryFee: number;
   platformFee: number;
   image: string;

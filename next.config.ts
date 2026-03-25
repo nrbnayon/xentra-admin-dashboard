@@ -13,6 +13,8 @@ const apiHostname = getHostname(process.env.NEXT_PUBLIC_API_URL);
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // @ts-ignore
+  allowedDevOrigins: ["10.10.12.11"],
   images: {
     unoptimized: true,
     remotePatterns: [

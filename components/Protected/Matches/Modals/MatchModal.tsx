@@ -32,11 +32,17 @@ export default function MatchModal({
     winUpTo: "",
     image: null as File | null,
     imagePreview: "" as string,
+    teamAFlag: null as File | null,
+    teamAFlagPreview: "" as string,
+    teamBFlag: null as File | null,
+    teamBFlagPreview: "" as string,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const teamAFlagRef = useRef<HTMLInputElement>(null);
+  const teamBFlagRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (match) {
@@ -54,6 +60,10 @@ export default function MatchModal({
         winUpTo: match.winUpTo || "",
         image: null,
         imagePreview: match.image || "",
+        teamAFlag: null,
+        teamAFlagPreview: match.teamAFlag || "",
+        teamBFlag: null,
+        teamBFlagPreview: match.teamBFlag || "",
       });
     } else {
       setFormData({
@@ -70,6 +80,10 @@ export default function MatchModal({
         winUpTo: "",
         image: null,
         imagePreview: "",
+        teamAFlag: null,
+        teamAFlagPreview: "",
+        teamBFlag: null,
+        teamBFlagPreview: "",
       });
     }
     setErrors({});
@@ -87,34 +101,48 @@ export default function MatchModal({
     }
   };
 
-  const handleFile = (file: File) => {
+  const handleFile = (file: File, type: "image" | "teamAFlag" | "teamBFlag") => {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setFormData((prev) => ({
-          ...prev,
-          image: file,
-          imagePreview: e.target?.result as string,
-        }));
+        if (type === "image") {
+          setFormData((prev) => ({
+            ...prev,
+            image: file,
+            imagePreview: e.target?.result as string,
+          }));
+        } else if (type === "teamAFlag") {
+          setFormData((prev) => ({
+            ...prev,
+            teamAFlag: file,
+            teamAFlagPreview: e.target?.result as string,
+          }));
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            teamBFlag: file,
+            teamBFlagPreview: e.target?.result as string,
+          }));
+        }
       };
       reader.readAsDataURL(file);
     } else {
       toast.error("Please upload an image file.");
     }
   };
-
-  const handleDrop = (e: React.DragEvent) => {
+ 
+  const handleDrop = (e: React.DragEvent, type: "image" | "teamAFlag" | "teamBFlag") => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      handleFile(e.dataTransfer.files[0]);
+      handleFile(e.dataTransfer.files[0], type);
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+ 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "teamAFlag" | "teamBFlag") => {
     if (e.target.files && e.target.files[0]) {
-      handleFile(e.target.files[0]);
+      handleFile(e.target.files[0], type);
     }
   };
 
@@ -139,7 +167,15 @@ export default function MatchModal({
       return;
     }
 
-    const { image, imagePreview, ...restData } = formData;
+    const {
+      image,
+      imagePreview,
+      teamAFlag,
+      teamAFlagPreview,
+      teamBFlag,
+      teamBFlagPreview,
+      ...restData
+    } = formData;
 
     onSave({
       ...restData,
@@ -148,6 +184,8 @@ export default function MatchModal({
       isFeatured: restData.isFeatured,
       winUpTo: restData.winUpTo,
       image: imagePreview || "/images/match1.png", // In a real app, this would be the uploaded URL
+      teamAFlag: teamAFlagPreview || "",
+      teamBFlag: teamBFlagPreview || "",
     });
     toast.success(
       match ? "Match updated successfully!" : "Match created successfully!",
@@ -462,7 +500,7 @@ export default function MatchModal({
           <div>
             <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
               <span>
-                <TranslatedText text="Upload Image" />
+                <TranslatedText text="Banner Image" />
               </span>
               {formData.imagePreview && (
                 <button
@@ -480,7 +518,7 @@ export default function MatchModal({
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
-              onDrop={handleDrop}
+              onDrop={(e) => handleDrop(e, "image")}
               onClick={() => fileInputRef.current?.click()}
               className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[160px] relative overflow-hidden ${
                 dragActive
@@ -519,8 +557,140 @@ export default function MatchModal({
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={handleFileChange}
+              onChange={(e) => handleFileChange(e, "image")}
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
+                <span>
+                  <TranslatedText text="Team A Flag" />
+                </span>
+                {formData.teamAFlagPreview && (
+                  <button
+                    className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setFormData({
+                        ...formData,
+                        teamAFlag: null,
+                        teamAFlagPreview: "",
+                      });
+                    }}
+                  >
+                    <X className="w-4 h-4" /> <TranslatedText text="Remove" />
+                  </button>
+                )}
+              </label>
+              <div
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={(e) => handleDrop(e, "teamAFlag")}
+                onClick={() => teamAFlagRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
+                  dragActive
+                    ? "border-primary bg-primary/10"
+                    : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
+                } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
+              >
+                {formData.teamAFlagPreview ? (
+                  <div className="absolute inset-0 w-full h-full">
+                    <Image
+                      src={formData.teamAFlagPreview}
+                      alt="Team A Flag"
+                      fill
+                      className="object-contain p-2"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                      <p className="text-white text-xs font-medium">
+                        <TranslatedText text="Change" />
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <UploadCloud className="w-6 h-6 text-gray-500 mb-1" />
+                    <p className="text-xs font-medium text-foreground dark:text-gray-300">
+                      <TranslatedText text="Upload Team A Flag" />
+                    </p>
+                  </>
+                )}
+              </div>
+              <input
+                ref={teamAFlagRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileChange(e, "teamAFlag")}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1 flex justify-between">
+                <span>
+                  <TranslatedText text="Team B Flag" />
+                </span>
+                {formData.teamBFlagPreview && (
+                  <button
+                    className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setFormData({
+                        ...formData,
+                        teamBFlag: null,
+                        teamBFlagPreview: "",
+                      });
+                    }}
+                  >
+                    <X className="w-4 h-4" /> <TranslatedText text="Remove" />
+                  </button>
+                )}
+              </label>
+              <div
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={(e) => handleDrop(e, "teamBFlag")}
+                onClick={() => teamBFlagRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
+                  dragActive
+                    ? "border-primary bg-primary/10"
+                    : "border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/10"
+                } hover:bg-blue-100 dark:hover:bg-blue-900/20`}
+              >
+                {formData.teamBFlagPreview ? (
+                  <div className="absolute inset-0 w-full h-full">
+                    <Image
+                      src={formData.teamBFlagPreview}
+                      alt="Team B Flag"
+                      fill
+                      className="object-contain p-2"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                      <p className="text-white text-xs font-medium">
+                        <TranslatedText text="Change" />
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <UploadCloud className="w-6 h-6 text-gray-500 mb-1" />
+                    <p className="text-xs font-medium text-foreground dark:text-gray-300">
+                      <TranslatedText text="Upload Team B Flag" />
+                    </p>
+                  </>
+                )}
+              </div>
+              <input
+                ref={teamBFlagRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => handleFileChange(e, "teamBFlag")}
+              />
+            </div>
           </div>
         </div>
 
