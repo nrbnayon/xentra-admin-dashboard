@@ -101,7 +101,10 @@ export default function MatchModal({
     }
   };
 
-  const handleFile = (file: File, type: "image" | "teamAFlag" | "teamBFlag") => {
+  const handleFile = (
+    file: File,
+    type: "image" | "teamAFlag" | "teamBFlag",
+  ) => {
     if (file && file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -130,8 +133,11 @@ export default function MatchModal({
       toast.error("Please upload an image file.");
     }
   };
- 
-  const handleDrop = (e: React.DragEvent, type: "image" | "teamAFlag" | "teamBFlag") => {
+
+  const handleDrop = (
+    e: React.DragEvent,
+    type: "image" | "teamAFlag" | "teamBFlag",
+  ) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -139,8 +145,11 @@ export default function MatchModal({
       handleFile(e.dataTransfer.files[0], type);
     }
   };
- 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "teamAFlag" | "teamBFlag") => {
+
+  const handleFileChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "image" | "teamAFlag" | "teamBFlag",
+  ) => {
     if (e.target.files && e.target.files[0]) {
       handleFile(e.target.files[0], type);
     }
@@ -266,6 +275,9 @@ export default function MatchModal({
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     <TranslatedText text="Max. File Size" />: 10MB
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    <TranslatedText text="(Optional) Min dimensions: 450x350px" />
                   </p>
                 </>
               )}
@@ -559,141 +571,152 @@ export default function MatchModal({
           </div>
 
           <div className="space-y-6 pt-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-3">
-                <TranslatedText text="Platform fee" />{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="flex flex-wrap gap-8 items-center">
-                {[25, 50, 75, 100].map((fee) => (
-                  <label
-                    key={fee}
-                    className="flex items-center gap-2.5 cursor-pointer group"
-                  >
-                    <div className="relative flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={Number(formData.platformFee) === fee}
-                        onChange={() =>
-                          setFormData({
-                            ...formData,
-                            platformFee: fee.toString(),
-                          })
-                        }
-                        className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 appearance-none checked:bg-gray-500 checked:border-gray-500 transition-all cursor-pointer"
-                      />
-                      {Number(formData.platformFee) === fee && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <svg
-                            className="w-3.5 h-3.5 text-white"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-foreground transition-colors">
-                      {fee}%
-                    </span>
-                  </label>
-                ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Platform Fee */}
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-3">
+                  <TranslatedText text="Platform fee" />{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <div className="flex flex-wrap gap-4 lg:gap-8 items-center">
+                  {[25, 50, 75, 100].map((fee) => (
+                    <label
+                      key={fee}
+                      className="flex items-center gap-2.5 cursor-pointer group"
+                    >
+                      <div className="relative flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={Number(formData.platformFee) === fee}
+                          onChange={() =>
+                            setFormData({
+                              ...formData,
+                              platformFee: fee.toString(),
+                            })
+                          }
+                          className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 appearance-none checked:bg-gray-500 checked:border-gray-500 transition-all cursor-pointer"
+                        />
+                        {Number(formData.platformFee) === fee && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <svg
+                              className="w-3.5 h-3.5 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-foreground transition-colors">
+                        {fee}%
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                {errors.platformFee && (
+                  <p className="text-red-500 text-xs mt-1">
+                    <TranslatedText text={errors.platformFee} />
+                  </p>
+                )}
               </div>
-              {errors.platformFee && (
-                <p className="text-red-500 text-xs mt-1">
-                  <TranslatedText text={errors.platformFee} />
-                </p>
-              )}
+
+              {/* Entry Fee */}
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-3">
+                  <TranslatedText text="Entry Fee" />{" "}
+                  <span className="text-red-500">*</span>
+                </label>
+                <div className="flex flex-wrap gap-4 items-center">
+                  {[50, 100, 250, 500].map((fee) => (
+                    <label
+                      key={fee}
+                      className="flex items-center gap-1.5 cursor-pointer group"
+                    >
+                      <div className="relative flex items-center">
+                        <input
+                          type="checkbox"
+                          checked={formData.entryFee === fee}
+                          onChange={() =>
+                            setFormData({ ...formData, entryFee: fee })
+                          }
+                          className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 appearance-none checked:bg-gray-500 checked:border-gray-500 transition-all cursor-pointer"
+                        />
+                        {formData.entryFee === fee && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <svg
+                              className="w-3.5 h-3.5 text-white"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-foreground transition-colors">
+                        {fee} HTG
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 py-1">
-              <button
-                onClick={() =>
-                  setFormData({ ...formData, isFeatured: !formData.isFeatured })
-                }
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                  formData.isFeatured
-                    ? "bg-primary"
-                    : "bg-gray-200 dark:bg-gray-700"
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    formData.isFeatured ? "translate-x-6" : "translate-x-1"
-                  }`}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+              {/* Promotional Amount */}
+              <div>
+                <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
+                  <TranslatedText text="Promotional Amount (Win Up To)" />
+                </label>
+                <input
+                  type="text"
+                  value={formData.winUpTo}
+                  onChange={(e) =>
+                    setFormData({ ...formData, winUpTo: e.target.value })
+                  }
+                  className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g. 500,000 HTG"
                 />
-              </button>
-              <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                <TranslatedText text="Featured Match" />
-              </span>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-3">
-                <TranslatedText text="Entry Fee" />{" "}
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="flex flex-wrap gap-8 items-center">
-                {[50, 100, 250, 500].map((fee) => (
-                  <label
-                    key={fee}
-                    className="flex items-center gap-2.5 cursor-pointer group"
-                  >
-                    <div className="relative flex items-center">
-                      <input
-                        type="checkbox"
-                        checked={formData.entryFee === fee}
-                        onChange={() =>
-                          setFormData({ ...formData, entryFee: fee })
-                        }
-                        className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 appearance-none checked:bg-gray-500 checked:border-gray-500 transition-all cursor-pointer"
-                      />
-                      {formData.entryFee === fee && (
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          <svg
-                            className="w-3.5 h-3.5 text-white"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 group-hover:text-foreground transition-colors">
-                      {fee} HTG
-                    </span>
-                  </label>
-                ))}
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground dark:text-gray-300 mb-1">
-                <TranslatedText text="Promotional Amount (Win Up To)" />
-              </label>
-              <input
-                type="text"
-                value={formData.winUpTo}
-                onChange={(e) =>
-                  setFormData({ ...formData, winUpTo: e.target.value })
-                }
-                className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g. 500,000 HTG"
-              />
+              {/* Featured Match */}
+              <div className="flex items-center gap-2 py-2.5">
+                <button
+                  onClick={() =>
+                    setFormData({
+                      ...formData,
+                      isFeatured: !formData.isFeatured,
+                    })
+                  }
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                    formData.isFeatured
+                      ? "bg-primary"
+                      : "bg-gray-200 dark:bg-gray-700"
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      formData.isFeatured ? "translate-x-6" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  <TranslatedText text="Featured Match" />
+                </span>
+              </div>
             </div>
           </div>
         </div>
