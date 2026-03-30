@@ -8,22 +8,31 @@ import ResultModal from "./Modals/ResultModal";
 import LeaderboardModal from "./Modals/LeaderboardModal";
 import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
 import { Pagination } from "@/components/Shared/Pagination";
-import { matchesData, leaderboardData } from "@/data/matchesData";
+import { leaderboardData } from "@/data/matchesData";
 import { Match } from "@/types/matches";
 import { Plus } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { toast } from "sonner";
+import { DashboardSkeleton } from "@/components/Skeleton/DashboardSkeleton";
+import {
+  useGetMatchesQuery,
+  useCreateMatchMutation,
+  useUpdateMatchMutation,
+  useSubmitMatchResultMutation,
+  useToggleMatchFeatureMutation,
+  useDeleteMatchMutation,
+} from "@/redux/services/matchesApi";
 
 type TabType = "All" | "Upcoming" | "Latest" | "Completed";
 type FilterType = "All" | "Football" | "Basketball";
 
 export default function MatchesClient() {
-  const [matches, setMatches] = useState<Match[]>(matchesData);
   const [activeTab, setActiveTab] = useState<TabType>("All");
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
+  // Modals state
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [isLeaderboardModalOpen, setIsLeaderboardModalOpen] = useState(false);
@@ -31,62 +40,68 @@ export default function MatchesClient() {
 
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 
-  // Filter matches
-  const filteredMatches = matches.filter((match) => {
-    if (activeTab !== "All" && match.status !== activeTab) return false;
-    if (activeFilter !== "All" && match.sport !== activeFilter) return false;
-    return true;
+  const { data, isLoading } = useGetMatchesQuery({
+    page: currentPage,
+    pageSize: itemsPerPage,
+    tab: activeTab !== "All" ? activeTab : undefined,
+    sport: activeFilter !== "All" ? activeFilter : undefined,
   });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredMatches.length / itemsPerPage);
-  const paginatedMatches = filteredMatches.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  const [createMatch] = useCreateMatchMutation();
+  const [updateMatch] = useUpdateMatchMutation();
+  const [deleteMatch] = useDeleteMatchMutation();
+  const [submitResult] = useSubmitMatchResultMutation();
+  const [toggleFeature] = useToggleMatchFeatureMutation();
 
-  const handleCreateOrEditMatch = (matchData: Partial<Match>) => {
-    if (selectedMatch) {
-      setMatches(
-        matches.map((m) =>
-          m.id === selectedMatch.id ? ({ ...m, ...matchData } as Match) : m,
-        ),
-      );
-    } else {
-      const newMatch: Match = {
-        ...matchData,
-        id: Date.now().toString(),
-        status: "Upcoming",
-        participants: 0,
-      } as Match;
-      setMatches([newMatch, ...matches]);
+  const handleCreateOrEditMatch = async (formData: FormData) => {
+    try {
+      if (selectedMatch) {
+        await updateMatch({ id: selectedMatch.id, data: formData }).unwrap();
+        toast.success("Match updated successfully!");
+      } else {
+        await createMatch(formData).unwrap();
+        toast.success("Match created successfully!");
+      }
+      setIsMatchModalOpen(false);
+    } catch (error) {
+      toast.error("Failed to save match.");
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedMatch) {
-      setMatches(matches.filter((m) => m.id !== selectedMatch.id));
-      setIsDeleteModalOpen(false);
+      try {
+        await deleteMatch(selectedMatch.id).unwrap();
+        toast.success("Match deleted successfully!");
+        setIsDeleteModalOpen(false);
+      } catch (error) {
+        toast.error("Failed to delete match.");
+      }
     }
   };
 
-  const handleSubmitResult = (matchId: string, result: any) => {
-    setMatches(
-      matches.map((m) =>
-        m.id === matchId ? { ...m, status: "Completed" } : m,
-      ),
-    );
+  const handleSubmitResult = async (matchId: number, resultData: { score_a: number; score_b: number; winning_team: string }) => {
+    try {
+      await submitResult({ id: matchId, ...resultData }).unwrap();
+      toast.success("Result updated, prize calculation queued.");
+      setIsResultModalOpen(false);
+    } catch (error) {
+      toast.error("Failed to submit results.");
+    }
   };
 
-  const handleToggleFeatured = (matchId: string, isFeatured: boolean) => {
-    setMatches(
-      matches.map((m) => (m.id === matchId ? { ...m, isFeatured } : m)),
-    );
-    toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
+  const handleToggleFeatured = async (matchId: number, isFeatured: boolean) => {
+    try {
+      await toggleFeature(matchId).unwrap();
+      toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
+    } catch (error) {
+      toast.error("Failed to update feature status.");
+    }
   };
 
   const handleNotifyUser = (match: Match) => {
-    toast.success(`Notification sent to users for match: ${match.title}`);
+    // Notify user API implementation placeholder
+    toast.success(`Notification sent to users for match: ${match.match_title}`);
   };
  
   const openMatchModalForCreation = () => {
@@ -114,6 +129,10 @@ export default function MatchesClient() {
     setIsLeaderboardModalOpen(true);
   };
 
+  const totalPages = data?.total_pages || 0;
+  const paginatedMatches = data?.data || [];
+  const totalItems = data?.total_records || 0;
+
   return (
     <div className="pb-10 min-h-screen">
       <DashboardHeader
@@ -125,7 +144,7 @@ export default function MatchesClient() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => setActiveFilter("All")}
+              onClick={() => { setActiveFilter("All"); setCurrentPage(1); }}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "All"
                   ? "bg-primary text-white"
@@ -135,7 +154,7 @@ export default function MatchesClient() {
               <TranslatedText text="All" />
             </button>
             <button
-              onClick={() => setActiveFilter("Football")}
+              onClick={() => { setActiveFilter("Football"); setCurrentPage(1); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "Football"
                   ? "bg-primary text-white"
@@ -145,7 +164,7 @@ export default function MatchesClient() {
               ⚽ <TranslatedText text="Football" />
             </button>
             <button
-              onClick={() => setActiveFilter("Basketball")}
+              onClick={() => { setActiveFilter("Basketball"); setCurrentPage(1); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "Basketball"
                   ? "bg-primary text-white"
@@ -185,39 +204,47 @@ export default function MatchesClient() {
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
-          {paginatedMatches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              onEdit={openMatchModalForEditing}
-              onDelete={openDeleteModal}
-              onEnterResult={openResultModal}
-              onViewLeaderboard={openLeaderboardModal}
-              onToggleFeatured={handleToggleFeatured}
-              onNotifyUser={handleNotifyUser}
-            />
-          ))}
-          {paginatedMatches.length === 0 && (
-            <div className="col-span-full py-12 text-center text-gray-500">
-              <TranslatedText text="No matches found for the selected view." />
-            </div>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 0 && (
-          <div className="flex justify-center mt-8">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              totalItems={filteredMatches.length}
-              itemsPerPage={itemsPerPage}
-              currentItemsCount={paginatedMatches.length}
-            />
+        {isLoading ? (
+          <div>
+            <DashboardSkeleton />
           </div>
+        ) : (
+          <>
+            {/* Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+              {paginatedMatches.map((match) => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  onEdit={openMatchModalForEditing}
+                  onDelete={openDeleteModal}
+                  onEnterResult={openResultModal}
+                  onViewLeaderboard={openLeaderboardModal}
+                  onToggleFeatured={handleToggleFeatured}
+                  onNotifyUser={handleNotifyUser}
+                />
+              ))}
+              {paginatedMatches.length === 0 && (
+                <div className="col-span-full py-12 text-center text-gray-500">
+                  <TranslatedText text="No matches found for the selected view." />
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 0 && (
+              <div className="flex justify-center mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  totalItems={totalItems}
+                  itemsPerPage={itemsPerPage}
+                  currentItemsCount={paginatedMatches.length}
+                />
+              </div>
+            )}
+          </>
         )}
       </main>
 

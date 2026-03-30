@@ -1,24 +1,25 @@
-export type MatchStatus = "Upcoming" | "Latest" | "Completed" | "Cancelled";
-export type SportType = "Football" | "Basketball";
+export type MatchStatus = "upcoming" | "latest" | "completed" | "cancelled" | "Upcoming" | "Latest" | "Completed" | "Cancelled";
+export type SportType = "Football" | "Basketball" | "Cricket" | string;
 
 export interface Match {
-  id: string;
+  id: number;
+  match_title: string;
+  sport_name: SportType;
+  league_name: string;
+  match_date: string;
+  match_time_start: string;
+  team_a: string;
+  team_b: string;
+  team_a_logo: string | null;
+  team_b_logo: string | null;
+  platform_fee_percent: string;
+  promotional_amount: string;
+  feature_match: number;
+  entry_fee: string;
+  image_url: string | null;
   status: MatchStatus;
-  sport: SportType;
-  league: string;
-  title: string;
-  date: string;
-  time: string;
-  teamA: string;
-  teamB: string;
-  teamAFlag?: string;
-  teamBFlag?: string;
-  entryFee: number;
-  platformFee: number;
-  image: string;
-  participants: number;
-  isFeatured?: boolean;
-  winUpTo?: string;
+  prize_pool: string | number;
+  participants_count: number;
 }
 
 export interface LeaderboardEntry {

@@ -56,7 +56,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.sport}
+                  value={match.sport_name}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -69,7 +69,7 @@ export default function LeaderboardModal({
               <input
                 type="text"
                 disabled
-                value={match.league}
+                value={match.league_name}
                 className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
               />
             </div>
@@ -82,7 +82,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.teamA}
+                  value={match.team_a}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -93,7 +93,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.teamB}
+                  value={match.team_b}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -107,7 +107,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.date}
+                  value={match.match_date}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -118,7 +118,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.time}
+                  value={match.match_time_start}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -130,7 +130,7 @@ export default function LeaderboardModal({
               <TranslatedText text="Leaderboard" />
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <TranslatedText text="Total Participants" />: {match.participants}
+              <TranslatedText text="Total Participants" />: {match.participants_count}
             </p>
 
             <div className="relative mb-4">

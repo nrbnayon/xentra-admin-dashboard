@@ -8,7 +8,7 @@ import TranslatedText from "@/components/Shared/TranslatedText";
 interface MatchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (match: Partial<Match>) => void;
+  onSave: (formData: FormData) => void;
   match?: Match | null;
 }
 
@@ -46,24 +46,35 @@ export default function MatchModal({
 
   useEffect(() => {
     if (match) {
+      const datePart = match.match_date ? match.match_date.split("T")[0] : "";
+      let timePart = "";
+      if (match.match_time_start) {
+        const timeArray = match.match_time_start.split("T");
+        if (timeArray.length > 1) {
+          timePart = timeArray[1].substring(0, 5); // extract HH:MM
+        } else {
+          timePart = timeArray[0].substring(0, 5);
+        }
+      }
+
       setFormData({
-        title: match.title || "",
-        sport: match.sport,
-        league: match.league,
-        date: match.date,
-        time: match.time,
-        teamA: match.teamA,
-        teamB: match.teamB,
-        entryFee: match.entryFee,
-        platformFee: match.platformFee.toString(),
-        isFeatured: match.isFeatured || false,
-        winUpTo: match.winUpTo || "",
+        title: match.match_title || "",
+        sport: match.sport_name || "Football",
+        league: match.league_name || "",
+        date: datePart,
+        time: timePart,
+        teamA: match.team_a || "",
+        teamB: match.team_b || "",
+        entryFee: Number(match.entry_fee) || 50,
+        platformFee: match.platform_fee_percent?.toString() || "",
+        isFeatured: match.feature_match === 1,
+        winUpTo: match.promotional_amount?.toString() || "",
         image: null,
-        imagePreview: match.image || "",
+        imagePreview: match.image_url || "",
         teamAFlag: null,
-        teamAFlagPreview: match.teamAFlag || "",
+        teamAFlagPreview: match.team_a_logo || "",
         teamBFlag: null,
-        teamBFlagPreview: match.teamBFlag || "",
+        teamBFlagPreview: match.team_b_logo || "",
       });
     } else {
       setFormData({
@@ -176,30 +187,40 @@ export default function MatchModal({
       return;
     }
 
-    const {
-      image,
-      imagePreview,
-      teamAFlag,
-      teamAFlagPreview,
-      teamBFlag,
-      teamBFlagPreview,
-      ...restData
-    } = formData;
+    const submitData = new FormData();
+    submitData.append("match_title", formData.title);
+    submitData.append("sport_name", formData.sport);
+    submitData.append("league_name", formData.league);
 
-    onSave({
-      ...restData,
-      sport: restData.sport as Match["sport"],
-      platformFee: Number(restData.platformFee),
-      isFeatured: restData.isFeatured,
-      winUpTo: restData.winUpTo,
-      image: imagePreview || "/images/match1.png", // In a real app, this would be the uploaded URL
-      teamAFlag: teamAFlagPreview || "",
-      teamBFlag: teamBFlagPreview || "",
-    });
-    toast.success(
-      match ? "Match updated successfully!" : "Match created successfully!",
-    );
-    onClose();
+    const formattedDate = formData.date ? `${formData.date}T00:00:00` : "";
+    if (formattedDate) submitData.append("match_date", formattedDate);
+
+    // Make sure time format is well structured: YYYY-MM-DDTHH:MM:SS
+    const timeValue =
+      formData.time.length === 5 ? `${formData.time}:00` : formData.time;
+    const formattedTime = formData.date ? `${formData.date}T${timeValue}` : "";
+    if (formattedTime) submitData.append("match_time_start", formattedTime);
+
+    submitData.append("team_a", formData.teamA);
+    submitData.append("team_b", formData.teamB);
+    submitData.append("platform_fee_percent", formData.platformFee);
+    if (formData.winUpTo) {
+      submitData.append("promotional_amount", formData.winUpTo);
+    } else {
+      submitData.append("promotional_amount", "0.00");
+    }
+    submitData.append("feature_match", formData.isFeatured ? "1" : "0");
+    submitData.append("entry_fee", formData.entryFee.toString());
+
+    if (formData.image instanceof File)
+      submitData.append("image_url", formData.image);
+    if (formData.teamAFlag instanceof File)
+      submitData.append("team_a_logo", formData.teamAFlag);
+    if (formData.teamBFlag instanceof File)
+      submitData.append("team_b_logo", formData.teamBFlag);
+
+    onSave(submitData);
+    // Don't close immediately here, since API call will be handled in parent, let parent close it after success.
   };
 
   return (
@@ -682,7 +703,7 @@ export default function MatchModal({
                   <TranslatedText text="Promotional Amount (Win Up To)" />
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   value={formData.winUpTo}
                   onChange={(e) =>
                     setFormData({ ...formData, winUpTo: e.target.value })
@@ -724,13 +745,13 @@ export default function MatchModal({
         <div className="p-6 border-t dark:border-gray-700 flex justify-center gap-4">
           <button
             onClick={onClose}
-            className="px-8 py-2.5 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+            className="px-8 w-40 py-2.5 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
             <TranslatedText text="Cancel" />
           </button>
           <button
             onClick={handleSubmit}
-            className="px-8 py-2.5 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
+            className="px-8 w-40 py-2.5 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
           >
             <TranslatedText text={match ? "Save" : "+ Create"} />
           </button>
