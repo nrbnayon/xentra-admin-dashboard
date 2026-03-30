@@ -53,7 +53,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
 
   // State management
   const [open, setOpen] = useState(true);
-  const [sidebarWidth, setSidebarWidth] = useState(290);
+  const [sidebarWidth, setSidebarWidth] = useState(220);
   const [isResizing, setIsResizing] = useState(false);
   const [startX, setStartX] = useState(0);
   const [startWidth, setStartWidth] = useState(0);
@@ -63,7 +63,7 @@ export default function DashboardWrapper({ children }: DashboardWrapperProps) {
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  const minWidth = 80;
+  const minWidth = 50;
   const maxWidth = 400;
 
   // Navigation links configuration
