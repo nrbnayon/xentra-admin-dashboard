@@ -1,21 +1,25 @@
-export type NotificationType = "withdrawal_request" | "system" | "user_action";
+// types/notifications.ts
+
+export type NotificationType = "WITHDRAWAL_REJECTED" | "NEW_MATCH" | "WITHDRAWAL_REQUEST" | string;
 
 export interface AppNotification {
-  id: string;
-  type: NotificationType;
+  id: number;
   title: string;
   message: string;
-  timestamp: string;
-  isRead: boolean;
-  user?: {
-    name: string;
-    image: string;
-    moncashNumber?: string;
-    natcashNumber?: string;
-  };
-  details?: {
-    amount?: number;
-    currency?: string;
-    [key: string]: any;
-  };
+  type: NotificationType;
+  reference_id: number;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface GetNotificationsResponse {
+  page: number;
+  page_size: number;
+  total_records: number;
+  total_pages: number;
+  data: AppNotification[];
+}
+
+export interface GetNotificationsParams {
+  page?: number;
 }

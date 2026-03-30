@@ -34,3 +34,13 @@ export interface GetWithdrawalsParams {
   status?: WithdrawalStatus; // omit for "All"
   page?: number;
 }
+
+// ── Withdrawal Modal Details response ─────────────────────────────────────────
+export interface WithdrawalModalResponse {
+  transaction_id: number;
+  user_name: string;
+  method: string;
+  phone_number: string;
+  amount: string; // e.g. "100.00"
+}
+

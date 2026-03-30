@@ -7,6 +7,7 @@ import type {
   Withdrawal,
   GetWithdrawalsResponse,
   GetWithdrawalsParams,
+  WithdrawalModalResponse,
 } from "@/types/withdrawals";
 
 export const withdrawalsApi = apiSlice.injectEndpoints({
@@ -35,6 +36,12 @@ export const withdrawalsApi = apiSlice.injectEndpoints({
             : [{ type: "Withdrawals" as const, id: arg.status ?? "ALL" }],
       }
     ),
+
+    // ── 1.5. Get details for Withdrawal Modal ──────────────────────────────────
+    getWithdrawalModal: builder.query<WithdrawalModalResponse, number>({
+      query: (id) => `/admin/withdrawals/${id}/modal`,
+      providesTags: (result, error, id) => [{ type: "Withdrawals", id }],
+    }),
 
     // ── 2. Approve Withdrawal ─────────────────────────────────────────────────
     approveWithdrawal: builder.mutation<Withdrawal, number>({
@@ -127,6 +134,7 @@ export const withdrawalsApi = apiSlice.injectEndpoints({
 
 export const {
   useGetWithdrawalsQuery,
+  useGetWithdrawalModalQuery,
   useApproveWithdrawalMutation,
   useRejectWithdrawalMutation,
 } = withdrawalsApi;
