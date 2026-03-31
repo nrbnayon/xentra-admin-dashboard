@@ -7,13 +7,12 @@ import MatchModal from "./Modals/MatchModal";
 import ResultModal from "./Modals/ResultModal";
 import LeaderboardModal from "./Modals/LeaderboardModal";
 import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
-import { Pagination } from "@/components/Shared/Pagination";
-import { leaderboardData } from "@/data/matchesData";
+import { TablePagination } from "@/components/Shared/TablePagination";
 import { Match } from "@/types/matches";
 import { Plus } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { toast } from "sonner";
-import { DashboardSkeleton } from "@/components/Skeleton/DashboardSkeleton";
+import { MatchCardSkeleton } from "@/components/Skeleton/MatchCardSkeleton";
 import {
   useGetMatchesQuery,
   useCreateMatchMutation,
@@ -30,7 +29,7 @@ export default function MatchesClient() {
   const [activeTab, setActiveTab] = useState<TabType>("All");
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
   // Modals state
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
@@ -40,7 +39,7 @@ export default function MatchesClient() {
 
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 
-  const { data, isLoading } = useGetMatchesQuery({
+  const { data, isLoading, isFetching } = useGetMatchesQuery({
     page: currentPage,
     pageSize: itemsPerPage,
     tab: activeTab !== "All" ? activeTab : undefined,
@@ -61,6 +60,10 @@ export default function MatchesClient() {
       } else {
         await createMatch(formData).unwrap();
         toast.success("Match created successfully!");
+        // Revert to page 1 to see the newly created match, and reset filters if hiding it
+        setCurrentPage(1);
+        setActiveTab("All");
+        setActiveFilter("All");
       }
       setIsMatchModalOpen(false);
     } catch (error) {
@@ -100,7 +103,6 @@ export default function MatchesClient() {
   };
 
   const handleNotifyUser = (match: Match) => {
-    // Notify user API implementation placeholder
     toast.success(`Notification sent to users for match: ${match.match_title}`);
   };
  
@@ -130,8 +132,11 @@ export default function MatchesClient() {
   };
 
   const totalPages = data?.total_pages || 0;
-  const paginatedMatches = data?.data || [];
+  // Local sort just in case backend does not bump latest items to the top
+  const paginatedMatches = data?.data ? [...data.data].sort((a, b) => b.id - a.id) : [];
   const totalItems = data?.total_records || 0;
+
+  const showSkeleton = isLoading || isFetching;
 
   return (
     <div className="pb-10 min-h-screen">
@@ -204,47 +209,51 @@ export default function MatchesClient() {
           ))}
         </div>
 
-        {isLoading ? (
-          <div>
-            <DashboardSkeleton />
+        {showSkeleton ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: itemsPerPage }).map((_, i) => (
+              <MatchCardSkeleton key={i} />
+            ))}
           </div>
         ) : (
-          <>
-            {/* Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
-              {paginatedMatches.map((match) => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  onEdit={openMatchModalForEditing}
-                  onDelete={openDeleteModal}
-                  onEnterResult={openResultModal}
-                  onViewLeaderboard={openLeaderboardModal}
-                  onToggleFeatured={handleToggleFeatured}
-                  onNotifyUser={handleNotifyUser}
-                />
-              ))}
-              {paginatedMatches.length === 0 && (
-                <div className="col-span-full py-12 text-center text-gray-500">
-                  <TranslatedText text="No matches found for the selected view." />
-                </div>
-              )}
-            </div>
-
-            {/* Pagination */}
-            {totalPages > 0 && (
-              <div className="flex justify-center mt-8">
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  totalItems={totalItems}
-                  itemsPerPage={itemsPerPage}
-                  currentItemsCount={paginatedMatches.length}
-                />
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+            {paginatedMatches.map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onEdit={openMatchModalForEditing}
+                onDelete={openDeleteModal}
+                onEnterResult={openResultModal}
+                onViewLeaderboard={openLeaderboardModal}
+                onToggleFeatured={handleToggleFeatured}
+                onNotifyUser={handleNotifyUser}
+              />
+            ))}
+            {paginatedMatches.length === 0 && (
+              <div className="col-span-full py-12 text-center text-gray-500">
+                <TranslatedText text="No matches found for the selected view." />
               </div>
             )}
-          </>
+          </div>
+        )}
+
+        {/* Improved Table Pagination */}
+        {totalPages > 0 && !showSkeleton && (
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700">
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(newSize) => {
+                setItemsPerPage(newSize);
+                setCurrentPage(1); // Reset to page 1 to prevent getting out of bounds
+              }}
+              showPageSize={true}
+              pageSizeOptions={[6, 12, 24, 48]}
+            />
+          </div>
         )}
       </main>
 
@@ -267,7 +276,6 @@ export default function MatchesClient() {
         isOpen={isLeaderboardModalOpen}
         onClose={() => setIsLeaderboardModalOpen(false)}
         match={selectedMatch}
-        leaderboardData={leaderboardData}
       />
 
       <DeleteConfirmationModal

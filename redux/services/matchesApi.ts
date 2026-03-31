@@ -68,6 +68,19 @@ export const matchesApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Dashboard"],
     }),
+
+    getMatchLeaderboard: builder.query<
+      any,
+      { id: number; page?: number; pageSize?: number }
+    >({
+      query: ({ id, page, pageSize }) => {
+        let url = `/matches/${id}/leaderboard?`;
+        if (page) url += `page=${page}&`;
+        if (pageSize) url += `page_size=${pageSize}&`;
+        return url.slice(0, -1);
+      },
+      providesTags: ["Dashboard"],
+    }),
   }),
 });
 
@@ -78,4 +91,5 @@ export const {
   useSubmitMatchResultMutation,
   useToggleMatchFeatureMutation,
   useDeleteMatchMutation,
+  useGetMatchLeaderboardQuery,
 } = matchesApi;

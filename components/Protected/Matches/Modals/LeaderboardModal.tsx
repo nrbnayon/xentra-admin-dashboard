@@ -1,45 +1,66 @@
-import { Match, LeaderboardEntry } from "@/types/matches";
+import { Match } from "@/types/matches";
 import { X, Search } from "lucide-react";
 import { useState } from "react";
 import TranslatedText from "@/components/Shared/TranslatedText";
+import { useGetMatchLeaderboardQuery } from "@/redux/services/matchesApi";
+import { TablePagination } from "@/components/Shared/TablePagination";
+import { DashboardSkeleton } from "@/components/Skeleton/DashboardSkeleton";
 
 interface LeaderboardModalProps {
   isOpen: boolean;
   onClose: () => void;
   match: Match | null;
-  leaderboardData: LeaderboardEntry[];
 }
 
 export default function LeaderboardModal({
   isOpen,
   onClose,
   match,
-  leaderboardData,
 }: LeaderboardModalProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  const { data, isLoading, isFetching } = useGetMatchLeaderboardQuery(
+    { id: match?.id as number, page, pageSize },
+    { skip: !isOpen || !match?.id }
+  );
 
   if (!isOpen || !match) return null;
 
+  const handleClose = () => {
+    setSearchTerm("");
+    setPage(1);
+    onClose();
+  };
+
+  // Safe checks since RTK returns 'any' for the wrapper currently
+  const leaderboardData = data?.data?.leaderboard || [];
+  const totalItems = data?.total_records || 0;
+  const totalPages = data?.total_pages || 0;
+
+  // Let local search filter current page if backend doesn't support search param yet
+  // If backend implements search, you should pass 'searchTerm' into API
   const filteredData = leaderboardData.filter(
-    (entry) =>
-      entry.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      entry.playerNo.includes(searchTerm),
+    (entry: any) =>
+      entry.player_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      String(entry.player_phone).includes(searchTerm),
   );
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={handleClose}
       />
 
-      <div className="relative w-full max-w-3xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
         <div className="flex justify-between items-center p-6 border-b dark:border-gray-700 shrink-0">
           <h2 className="text-xl font-bold text-foreground dark:text-white">
             <TranslatedText text="Leaderboard Details" />
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-500 hover:text-red-500 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -48,7 +69,7 @@ export default function LeaderboardModal({
 
         <div className="p-6 overflow-y-auto w-full">
           <div className="space-y-4 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
                   <TranslatedText text="Sport Name" />
@@ -60,18 +81,18 @@ export default function LeaderboardModal({
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
-                <TranslatedText text="League Name" />
-              </label>
-              <input
-                type="text"
-                disabled
-                value={match.league_name}
-                className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
-              />
+              <div>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1">
+                  <TranslatedText text="League Name" />
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value={match.league_name}
+                  className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -107,7 +128,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.match_date}
+                  value={match.match_date ? match.match_date.split("T")[0] : ""}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -118,7 +139,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.match_time_start}
+                  value={match.match_time_start ? match.match_time_start.split("T")[1]?.substring(0, 5) || match.match_time_start.substring(0, 5) : ""}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -129,8 +150,8 @@ export default function LeaderboardModal({
             <h3 className="text-lg font-bold text-foreground dark:text-white">
               <TranslatedText text="Leaderboard" />
             </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <TranslatedText text="Total Participants" />: {match.participants_count}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 items-center flex justify-between">
+              <span><TranslatedText text="Total Participants" />: {match.participants_count}</span>
             </p>
 
             <div className="relative mb-4">
@@ -144,60 +165,79 @@ export default function LeaderboardModal({
               />
             </div>
 
-            <div className="w-full overflow-x-auto rounded-xl border dark:border-gray-700">
-              <table className="w-full min-w-[600px] text-left text-sm">
-                <thead className="bg-[#D9EAF7] dark:bg-[#1f2937] text-foreground dark:text-gray-200">
-                  <tr>
-                    <th className="p-3 font-semibold">
-                      <TranslatedText text="Pos" />
-                    </th>
-                    <th className="p-3 font-semibold">
-                      <TranslatedText text="Player no" />
-                    </th>
-                    <th className="p-3 font-semibold">
-                      <TranslatedText text="Name" />
-                    </th>
-                    <th className="p-3 font-semibold">
-                      <TranslatedText text="Predicted Team" />
-                    </th>
-                    <th className="p-3 font-semibold">
-                      <TranslatedText text="Status" />
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y dark:divide-gray-700">
-                  {filteredData.map((entry) => (
-                    <tr
-                      key={entry.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                    >
-                      <td className="p-3 text-foreground dark:text-gray-300">
-                        {entry.pos}
-                      </td>
-                      <td className="p-3 text-foreground dark:text-gray-300">
-                        {entry.playerNo}
-                      </td>
-                      <td className="p-3 text-foreground dark:text-gray-300">
-                        {entry.name}
-                      </td>
-                      <td className="p-3 text-foreground dark:text-gray-300">
-                        {entry.predictedTeam}
-                      </td>
-                      <td className="p-3 text-foreground dark:text-gray-300">
-                        <TranslatedText text={entry.status} />
-                      </td>
-                    </tr>
-                  ))}
-                  {filteredData.length === 0 && (
+            {isLoading || isFetching ? (
+              <div className="py-12 flex justify-center w-full min-h-[150px]">
+                 <div className="text-gray-500 animate-pulse font-medium">Loading Leaderboard...</div>
+              </div>
+            ) : (
+              <div className="w-full overflow-x-auto rounded-xl border dark:border-gray-700">
+                <table className="w-full min-w-[600px] text-left text-sm">
+                  <thead className="bg-[#D9EAF7] dark:bg-[#1f2937] text-foreground dark:text-gray-200">
                     <tr>
-                      <td colSpan={5} className="p-4 text-center text-gray-500">
-                        <TranslatedText text="No participants found." />
-                      </td>
+                      <th className="p-3 font-semibold">
+                        <TranslatedText text="Rank" />
+                      </th>
+                      <th className="p-3 font-semibold">
+                        <TranslatedText text="Player Name" />
+                      </th>
+                      <th className="p-3 font-semibold">
+                        <TranslatedText text="Player Phone" />
+                      </th>
+                      <th className="p-3 font-semibold">
+                        <TranslatedText text="Predicted Team" />
+                      </th>
+                      <th className="p-3 font-semibold">
+                        <TranslatedText text="Status" />
+                      </th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y dark:divide-gray-700">
+                    {filteredData.map((entry: any, index: number) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                      >
+                        <td className="p-3 text-foreground dark:text-gray-300">
+                          {entry.rank}
+                        </td>
+                        <td className="p-3 text-foreground dark:text-gray-300">
+                          {entry.player_name}
+                        </td>
+                        <td className="p-3 text-foreground dark:text-gray-300">
+                          {entry.player_phone}
+                        </td>
+                        <td className="p-3 text-foreground dark:text-gray-300">
+                          {entry.predicted_team}
+                        </td>
+                        <td className="p-3 text-foreground dark:text-gray-300">
+                          <TranslatedText text={entry.status} />
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredData.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="p-8 text-center text-gray-500">
+                          <TranslatedText text="No participants found." />
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            
+            {totalPages > 0 && !(isLoading || isFetching) && (
+              <TablePagination 
+                showPageSize={false}
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                itemsPerPage={pageSize}
+                onPageChange={(p) => setPage(p)}
+                className="mt-2 border-t-0 bg-transparent px-0"
+              />
+            )}
+            
           </div>
         </div>
       </div>
