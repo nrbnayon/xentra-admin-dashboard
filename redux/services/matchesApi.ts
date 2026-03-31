@@ -82,6 +82,7 @@ export const matchesApi = apiSlice.injectEndpoints({
       providesTags: ["Dashboard"],
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
