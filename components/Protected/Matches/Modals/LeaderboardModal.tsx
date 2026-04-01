@@ -47,6 +47,20 @@ export default function LeaderboardModal({
       String(entry.player_phone).includes(searchTerm),
   );
 
+  let displayDate = "";
+  let displayTime = "";
+  if (match?.match_time_start) {
+    const d = new Date(`${match.match_time_start}Z`);
+    if (!isNaN(d.getTime())) {
+      displayDate = d.toLocaleDateString("en-CA"); // Gets YYYY-MM-DD local
+      displayTime = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    } else {
+      displayDate = match.match_date ? match.match_date.split("T")[0] : "";
+      const timeParts = match.match_time_start.split("T");
+      displayTime = timeParts.length > 1 ? timeParts[1].substring(0, 5) : timeParts[0].substring(0, 5);
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -128,7 +142,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.match_date ? match.match_date.split("T")[0] : ""}
+                  value={displayDate}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
@@ -139,7 +153,7 @@ export default function LeaderboardModal({
                 <input
                   type="text"
                   disabled
-                  value={match.match_time_start ? match.match_time_start.split("T")[1]?.substring(0, 5) || match.match_time_start.substring(0, 5) : ""}
+                  value={displayTime}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
                 />
               </div>
