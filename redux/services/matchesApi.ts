@@ -89,7 +89,7 @@ export const matchesApi = apiSlice.injectEndpoints({
     }),
     notifyMatch: builder.mutation<{ message: string }, number>({
       query: (id) => ({
-        url: `/matches/${id}/notify`,
+        url: `/admin/matches/${id}/notify`,
         method: "POST",
       }),
     }),
