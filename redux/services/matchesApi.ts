@@ -86,7 +86,12 @@ export const matchesApi = apiSlice.injectEndpoints({
         const qs = searchParams.toString();
         return `/matches/${id}/leaderboard${qs ? `?${qs}` : ""}`;
       },
-      providesTags: ["Dashboard"],
+    }),
+    notifyMatch: builder.mutation<{ message: string }, number>({
+      query: (id) => ({
+        url: `/matches/${id}/notify`,
+        method: "POST",
+      }),
     }),
   }),
   overrideExisting: true,
@@ -100,4 +105,5 @@ export const {
   useToggleMatchFeatureMutation,
   useDeleteMatchMutation,
   useGetMatchLeaderboardQuery,
+  useNotifyMatchMutation,
 } = matchesApi;

@@ -20,6 +20,7 @@ import {
   useSubmitMatchResultMutation,
   useToggleMatchFeatureMutation,
   useDeleteMatchMutation,
+  useNotifyMatchMutation
 } from "@/redux/services/matchesApi";
 
 type TabType = "All" | "Upcoming" | "Latest" | "Completed";
@@ -51,6 +52,7 @@ export default function MatchesClient() {
   const [deleteMatch] = useDeleteMatchMutation();
   const [submitResult] = useSubmitMatchResultMutation();
   const [toggleFeature] = useToggleMatchFeatureMutation();
+  const [notifyMatch] = useNotifyMatchMutation();
 
   const handleCreateOrEditMatch = async (formData: FormData) => {
     try {
@@ -102,8 +104,12 @@ export default function MatchesClient() {
     }
   };
 
-  const handleNotifyUser = (match: Match) => {
-    toast.success(`Notification sent to users for match: ${match.match_title}`);
+  const handleNotifyUser = async (match: Match) => {
+    toast.promise(notifyMatch(match.id).unwrap(), {
+      loading: 'Sending push notifications...',
+      success: (data) => data.message || `Notifications sent for ${match.match_title}!`,
+      error: 'Failed to send notifications. Check backend SDK logs.'
+    });
   };
  
   const openMatchModalForCreation = () => {
