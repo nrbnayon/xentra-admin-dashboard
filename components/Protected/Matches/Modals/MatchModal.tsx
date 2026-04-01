@@ -46,15 +46,15 @@ export default function MatchModal({
 
   useEffect(() => {
     if (match) {
-      const datePart = match.match_date ? match.match_date.split("T")[0] : "";
+      // Match dates from the backend are implicitly treated as UTC
+      // Convert UTC to local browser time for the form inputs
+      const utcDate = new Date(`${match.match_time_start}Z`);
+      let datePart = "";
       let timePart = "";
-      if (match.match_time_start) {
-        const timeArray = match.match_time_start.split("T");
-        if (timeArray.length > 1) {
-          timePart = timeArray[1].substring(0, 5); // extract HH:MM
-        } else {
-          timePart = timeArray[0].substring(0, 5);
-        }
+      
+      if (!isNaN(utcDate.getTime())) {
+        datePart = utcDate.toLocaleDateString('en-CA'); // YYYY-MM-DD local
+        timePart = utcDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }); // HH:MM local
       }
 
       setFormData({
@@ -192,14 +192,17 @@ export default function MatchModal({
     submitData.append("sport_name", formData.sport);
     submitData.append("league_name", formData.league);
 
-    const formattedDate = formData.date ? `${formData.date}T00:00:00` : "";
-    if (formattedDate) submitData.append("match_date", formattedDate);
-
-    // Make sure time format is well structured: YYYY-MM-DDTHH:MM:SS
-    const timeValue =
-      formData.time.length === 5 ? `${formData.time}:00` : formData.time;
-    const formattedTime = formData.date ? `${formData.date}T${timeValue}` : "";
-    if (formattedTime) submitData.append("match_time_start", formattedTime);
+    // Map the selected local time to a true UTC naive string for the backend
+    const timeValue = formData.time.length === 5 ? `${formData.time}:00` : formData.time;
+    if (formData.date && timeValue) {
+      // Create local date object
+      const localDate = new Date(`${formData.date}T${timeValue}`);
+      // Get the UTC components directly using built-in Date methods
+      const isoUTC = localDate.toISOString().split(".")[0]; 
+      // Result is like 2026-04-01T08:30:00, which the backend will treat correctly as naive UTC
+      submitData.append("match_date", isoUTC.split("T")[0] + "T00:00:00");
+      submitData.append("match_time_start", isoUTC);
+    }
 
     submitData.append("team_a", formData.teamA);
     submitData.append("team_b", formData.teamB);

@@ -11,19 +11,22 @@ interface PaginationResponse<T> {
 
 export const matchesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // Admin paginated matches - uses /admin/matches with real-time status sync
     getMatches: builder.query<
       PaginationResponse<Match>,
       { page?: number; pageSize?: number; tab?: string; sport?: string }
     >({
       query: (params) => {
-        let url = "/matches?";
-        if (params.page) url += `page=${params.page}&`;
-        if (params.pageSize) url += `page_size=${params.pageSize}&`;
-        if (params.tab && params.tab !== "All") url += `tab=${params.tab.toLowerCase()}&`;
-        if (params.sport && params.sport !== "All") url += `sport=${params.sport}&`;
-        return url.slice(0, -1);
+        const searchParams = new URLSearchParams();
+        if (params.page) searchParams.set("page", String(params.page));
+        if (params.pageSize) searchParams.set("page_size", String(params.pageSize));
+        // Pass tab as-is (backend lowercases it); skip "All"
+        if (params.tab && params.tab !== "All") searchParams.set("tab", params.tab);
+        if (params.sport && params.sport !== "All") searchParams.set("sport", params.sport);
+        const qs = searchParams.toString();
+        return `/admin/matches${qs ? `?${qs}` : ""}`;
       },
-      providesTags: ["Dashboard"], // Use appropriate tag or add Matches tag
+      providesTags: ["Dashboard"],
     }),
 
     createMatch: builder.mutation<Match, FormData>({
@@ -44,7 +47,10 @@ export const matchesApi = apiSlice.injectEndpoints({
       invalidatesTags: ["Dashboard"],
     }),
 
-    submitMatchResult: builder.mutation<{ message: string }, { id: number; score_a: number; score_b: number; winning_team: string }>({
+    submitMatchResult: builder.mutation<
+      { message: string },
+      { id: number; score_a: number; score_b: number; winning_team: string }
+    >({
       query: ({ id, ...body }) => ({
         url: `/admin/matches/${id}/result`,
         method: "POST",
@@ -74,10 +80,11 @@ export const matchesApi = apiSlice.injectEndpoints({
       { id: number; page?: number; pageSize?: number }
     >({
       query: ({ id, page, pageSize }) => {
-        let url = `/matches/${id}/leaderboard?`;
-        if (page) url += `page=${page}&`;
-        if (pageSize) url += `page_size=${pageSize}&`;
-        return url.slice(0, -1);
+        const searchParams = new URLSearchParams();
+        if (page) searchParams.set("page", String(page));
+        if (pageSize) searchParams.set("page_size", String(pageSize));
+        const qs = searchParams.toString();
+        return `/matches/${id}/leaderboard${qs ? `?${qs}` : ""}`;
       },
       providesTags: ["Dashboard"],
     }),

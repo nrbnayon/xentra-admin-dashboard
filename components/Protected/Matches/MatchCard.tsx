@@ -27,16 +27,17 @@ export default function MatchCard({
   const { translatedText: notFeaturedText } = useTranslate("Not Featured");
 
   const isActionable =
-    match.status.toLowerCase() === "completed" || match.status.toLowerCase() === "latest";
+    match.status.toLowerCase() === "completed" ||
+    match.status.toLowerCase() === "live";
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "upcoming":
         return "text-yellow-400";
+      case "live":
+        return "text-green-400";
       case "completed":
-        return "text-green-500";
-      case "latest":
-        return "text-purple-500";
+        return "text-blue-400";
       case "cancelled":
         return "text-red-500";
       default:
@@ -46,9 +47,10 @@ export default function MatchCard({
 
   const formatDate = (dateStr: string) => {
     try {
-      const date = new Date(dateStr);
+      const date = new Date(`${dateStr}Z`); // Backend sends naive UTC, append Z
+      if (isNaN(date.getTime())) return dateStr;
       return date.toLocaleDateString("en-US", {
-        weekday: "long",
+        weekday: "short",
         day: "numeric",
         month: "short",
       });
@@ -60,13 +62,14 @@ export default function MatchCard({
   const formatTime = (timeStr: string) => {
     try {
       if (!timeStr) return "";
-      const timeParts = timeStr.split("T");
-      const timeVal = timeParts.length > 1 ? timeParts[1] : timeParts[0];
-      const [hours, minutes] = timeVal.split(":");
-      const h = parseInt(hours);
-      const ampm = h >= 12 ? "PM" : "AM";
-      const h12 = h % 12 || 12;
-      return `${h12}.${minutes}${ampm}`;
+      const date = new Date(`${timeStr}Z`);
+      if (isNaN(date.getTime())) return timeStr;
+      const formatted = date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+      return formatted.replace(":", ".").replace(" ", ""); // Matches original "3.00PM" style
     } catch (e) {
       return timeStr;
     }
