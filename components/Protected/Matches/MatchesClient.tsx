@@ -68,8 +68,9 @@ export default function MatchesClient() {
         setActiveFilter("All");
       }
       setIsMatchModalOpen(false);
-    } catch (error) {
-      toast.error("Failed to save match.");
+    } catch (error: any) {
+      const msg = error?.data?.detail || "Failed to save match.";
+      toast.error(msg);
     }
   };
 
@@ -79,8 +80,9 @@ export default function MatchesClient() {
         await deleteMatch(selectedMatch.id).unwrap();
         toast.success("Match deleted successfully!");
         setIsDeleteModalOpen(false);
-      } catch (error) {
-        toast.error("Failed to delete match.");
+      } catch (error: any) {
+        const msg = error?.data?.detail || "Failed to delete match.";
+        toast.error(msg);
       }
     }
   };
@@ -90,8 +92,9 @@ export default function MatchesClient() {
       await submitResult({ id: matchId, ...resultData }).unwrap();
       toast.success("Result updated, prize calculation queued.");
       setIsResultModalOpen(false);
-    } catch (error) {
-      toast.error("Failed to submit results.");
+    } catch (error: any) {
+      const msg = error?.data?.detail || "Failed to submit results.";
+      toast.error(msg);
     }
   };
 
@@ -99,8 +102,9 @@ export default function MatchesClient() {
     try {
       await toggleFeature(matchId).unwrap();
       toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
-    } catch (error) {
-      toast.error("Failed to update feature status.");
+    } catch (error: any) {
+      const msg = error?.data?.detail || "Failed to update feature status.";
+      toast.error(msg);
     }
   };
 

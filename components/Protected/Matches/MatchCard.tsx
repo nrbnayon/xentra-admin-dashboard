@@ -1,5 +1,5 @@
 import { Match } from "@/types/matches";
-import { SquarePen, X, Circle } from "lucide-react";
+import { SquarePen, Trash2, Circle } from "lucide-react";
 import Image from "next/image";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { useTranslate } from "@/hooks/useTranslate";
@@ -132,7 +132,7 @@ export default function MatchCard({
               onClick={() => onDelete(match)}
               className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4 text-red-500" />
+              <Trash2 className="w-4 h-4 text-red-500" />
             </button>
             <button
               onClick={() => onNotifyUser?.(match)}
@@ -154,7 +154,9 @@ export default function MatchCard({
               <p className="font-medium text-[11px] leading-tight opacity-90">
                 {formatDate(match.match_date)}
               </p>
-              <p className="font-semibold text-xs">{formatTime(match.match_time_start)}</p>
+              <p className="font-semibold text-xs">
+                {formatTime(match.match_time_start)}
+              </p>
             </div>
             <div className="flex-1 min-w-[100px] flex flex-col justify-center items-center bg-[#242424a6] px-2 py-2 rounded text-white backdrop-blur-sm">
               <p className="font-medium text-[11px] leading-tight opacity-90">
