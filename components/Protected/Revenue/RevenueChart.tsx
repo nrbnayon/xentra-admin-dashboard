@@ -32,7 +32,7 @@ export default function RevenueChart({
   description,
   lineColor = "#0190FE",
   dotColor = "#0190FE",
-  yAxisTicks = [0, 35000, 70000, 105000, 140000],
+  yAxisTicks,
   height = 400,
 }: RevenueChartProps) {
   return (
@@ -70,7 +70,11 @@ export default function RevenueChart({
               tickLine={true}
               tick={{ fontSize: 12, fill: "#6B7280" }}
               ticks={yAxisTicks}
-              domain={[0, yAxisTicks[yAxisTicks.length - 1]]}
+              domain={
+                yAxisTicks && yAxisTicks.length > 0
+                  ? [0, yAxisTicks[yAxisTicks.length - 1]]
+                  : ["auto", "auto"]
+              }
               dx={-15}
             />
             <Tooltip

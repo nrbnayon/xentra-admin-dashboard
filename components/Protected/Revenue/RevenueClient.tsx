@@ -7,6 +7,7 @@ import { StatsCard } from "@/components/Shared/StatsCard";
 import { TrendingUp, ShoppingBag } from "lucide-react";
 import { useGetRevenueQuery } from "@/redux/services/revenueApi";
 import { DashboardStatSkeleton, ChartSkeleton } from "@/components/Skeleton/DashboardSkeleton";
+import { getSmartTicks } from "@/lib/utils";
 
 // Dynamically import the chart — `ssr: false` prevents Recharts from trying
 // to measure DOM dimensions before hydration (which causes width/height = -1 warnings).
@@ -100,14 +101,6 @@ export default function RevenueClient() {
     }));
   }, [apiData]);
 
-  // Helper to calculate smart Y-axis ticks
-  const getSmartTicks = (data: any[]) => {
-    if (!data.length) return [0, 1000];
-    const max = Math.max(...data.map(d => d.revenue));
-    const step = Math.max(Math.ceil(max / 4 / 1000) * 1000, 100);
-    return [0, step, step * 2, step * 3, step * 4];
-  };
-
   if (isLoading) {
     return (
       <div className="pb-10 min-h-screen">
@@ -188,7 +181,7 @@ export default function RevenueClient() {
             description="Monthly revenue overview"
             lineColor="#0190FE"
             dotColor="#0190FE"
-            yAxisTicks={getSmartTicks(monthlyData)}
+            yAxisTicks={getSmartTicks(monthlyData, "revenue")}
           />
         </div>
 
@@ -200,7 +193,7 @@ export default function RevenueClient() {
             description="Weekly revenue overview"
             lineColor="#E53935"
             dotColor="#E53935"
-            yAxisTicks={getSmartTicks(weeklyData)}
+            yAxisTicks={getSmartTicks(weeklyData, "revenue")}
           />
           <RevenueChart
             data={dailyData}
@@ -208,7 +201,7 @@ export default function RevenueClient() {
             description="Daily revenue overview"
             lineColor="#4CAF50"
             dotColor="#4CAF50"
-            yAxisTicks={getSmartTicks(dailyData)}
+            yAxisTicks={getSmartTicks(dailyData, "revenue")}
           />
         </div>
       </main>
