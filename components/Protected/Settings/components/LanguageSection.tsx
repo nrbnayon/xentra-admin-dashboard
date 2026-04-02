@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { ChevronDown, PencilLine } from "lucide-react";
 import { useLanguage, Language } from "@/context/LanguageContext";
 import TranslatedText from "@/components/Shared/TranslatedText";

@@ -7,23 +7,32 @@ import MatchModal from "./Modals/MatchModal";
 import ResultModal from "./Modals/ResultModal";
 import LeaderboardModal from "./Modals/LeaderboardModal";
 import { DeleteConfirmationModal } from "@/components/Shared/DeleteConfirmationModal";
-import { Pagination } from "@/components/Shared/Pagination";
-import { matchesData, leaderboardData } from "@/data/matchesData";
+import { TablePagination } from "@/components/Shared/TablePagination";
 import { Match } from "@/types/matches";
 import { Plus } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { toast } from "sonner";
+import { MatchCardSkeleton } from "@/components/Skeleton/MatchCardSkeleton";
+import {
+  useGetMatchesQuery,
+  useCreateMatchMutation,
+  useUpdateMatchMutation,
+  useSubmitMatchResultMutation,
+  useToggleMatchFeatureMutation,
+  useDeleteMatchMutation,
+  useNotifyMatchMutation
+} from "@/redux/services/matchesApi";
 
 type TabType = "All" | "Upcoming" | "Latest" | "Completed";
 type FilterType = "All" | "Football" | "Basketball";
 
 export default function MatchesClient() {
-  const [matches, setMatches] = useState<Match[]>(matchesData);
   const [activeTab, setActiveTab] = useState<TabType>("All");
   const [activeFilter, setActiveFilter] = useState<FilterType>("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
+  // Modals state
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [isResultModalOpen, setIsResultModalOpen] = useState(false);
   const [isLeaderboardModalOpen, setIsLeaderboardModalOpen] = useState(false);
@@ -31,60 +40,82 @@ export default function MatchesClient() {
 
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 
-  // Filter matches
-  const filteredMatches = matches.filter((match) => {
-    if (activeTab !== "All" && match.status !== activeTab) return false;
-    if (activeFilter !== "All" && match.sport !== activeFilter) return false;
-    return true;
+  const { data, isLoading, isFetching } = useGetMatchesQuery({
+    page: currentPage,
+    pageSize: itemsPerPage,
+    tab: activeTab !== "All" ? activeTab : undefined,
+    sport: activeFilter !== "All" ? activeFilter : undefined,
   });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredMatches.length / itemsPerPage);
-  const paginatedMatches = filteredMatches.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
+  const [createMatch] = useCreateMatchMutation();
+  const [updateMatch] = useUpdateMatchMutation();
+  const [deleteMatch] = useDeleteMatchMutation();
+  const [submitResult] = useSubmitMatchResultMutation();
+  const [toggleFeature] = useToggleMatchFeatureMutation();
+  const [notifyMatch] = useNotifyMatchMutation();
 
-  const handleCreateOrEditMatch = (matchData: Partial<Match>) => {
-    if (selectedMatch) {
-      setMatches(
-        matches.map((m) =>
-          m.id === selectedMatch.id ? ({ ...m, ...matchData } as Match) : m,
-        ),
-      );
-    } else {
-      const newMatch: Match = {
-        ...matchData,
-        id: Date.now().toString(),
-        status: "Upcoming",
-        participants: 0,
-      } as Match;
-      setMatches([newMatch, ...matches]);
+  const handleCreateOrEditMatch = async (formData: FormData) => {
+    try {
+      if (selectedMatch) {
+        await updateMatch({ id: selectedMatch.id, data: formData }).unwrap();
+        toast.success("Match updated successfully!");
+      } else {
+        await createMatch(formData).unwrap();
+        toast.success("Match created successfully!");
+        // Revert to page 1 to see the newly created match, and reset filters if hiding it
+        setCurrentPage(1);
+        setActiveTab("All");
+        setActiveFilter("All");
+      }
+      setIsMatchModalOpen(false);
+    } catch (error: any) {
+      const msg = error?.data?.detail || "Failed to save match.";
+      toast.error(msg);
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedMatch) {
-      setMatches(matches.filter((m) => m.id !== selectedMatch.id));
-      setIsDeleteModalOpen(false);
+      try {
+        await deleteMatch(selectedMatch.id).unwrap();
+        toast.success("Match deleted successfully!");
+        setIsDeleteModalOpen(false);
+      } catch (error: any) {
+        const msg = error?.data?.detail || "Failed to delete match.";
+        toast.error(msg);
+      }
     }
   };
 
-  const handleSubmitResult = (matchId: string, result: any) => {
-    setMatches(
-      matches.map((m) =>
-        m.id === matchId ? { ...m, status: "Completed" } : m,
-      ),
-    );
+  const handleSubmitResult = async (matchId: number, resultData: { score_a: number; score_b: number; winning_team: string }) => {
+    try {
+      await submitResult({ id: matchId, ...resultData }).unwrap();
+      toast.success("Result updated, prize calculation queued.");
+      setIsResultModalOpen(false);
+    } catch (error: any) {
+      const msg = error?.data?.detail || "Failed to submit results.";
+      toast.error(msg);
+    }
   };
 
-  const handleToggleFeatured = (matchId: string, isFeatured: boolean) => {
-    setMatches(
-      matches.map((m) => (m.id === matchId ? { ...m, isFeatured } : m)),
-    );
-    toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
+  const handleToggleFeatured = async (matchId: number, isFeatured: boolean) => {
+    try {
+      await toggleFeature(matchId).unwrap();
+      toast.success(isFeatured ? "Match featured!" : "Match unfeatured!");
+    } catch (error: any) {
+      const msg = error?.data?.detail || "Failed to update feature status.";
+      toast.error(msg);
+    }
   };
 
+  const handleNotifyUser = async (match: Match) => {
+    toast.promise(notifyMatch(match.id).unwrap(), {
+      loading: 'Sending push notifications...',
+      success: (data) => data.message || `Notifications sent for ${match.match_title}!`,
+      error: 'Failed to send notifications. Check backend SDK logs.'
+    });
+  };
+ 
   const openMatchModalForCreation = () => {
     setSelectedMatch(null);
     setIsMatchModalOpen(true);
@@ -110,6 +141,13 @@ export default function MatchesClient() {
     setIsLeaderboardModalOpen(true);
   };
 
+  const totalPages = data?.total_pages || 0;
+  // Local sort just in case backend does not bump latest items to the top
+  const paginatedMatches = data?.data ? [...data.data].sort((a, b) => b.id - a.id) : [];
+  const totalItems = data?.total_records || 0;
+
+  const showSkeleton = isLoading || isFetching;
+
   return (
     <div className="pb-10 min-h-screen">
       <DashboardHeader
@@ -121,7 +159,7 @@ export default function MatchesClient() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => setActiveFilter("All")}
+              onClick={() => { setActiveFilter("All"); setCurrentPage(1); }}
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "All"
                   ? "bg-primary text-white"
@@ -131,7 +169,7 @@ export default function MatchesClient() {
               <TranslatedText text="All" />
             </button>
             <button
-              onClick={() => setActiveFilter("Football")}
+              onClick={() => { setActiveFilter("Football"); setCurrentPage(1); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "Football"
                   ? "bg-primary text-white"
@@ -141,7 +179,7 @@ export default function MatchesClient() {
               ⚽ <TranslatedText text="Football" />
             </button>
             <button
-              onClick={() => setActiveFilter("Basketball")}
+              onClick={() => { setActiveFilter("Basketball"); setCurrentPage(1); }}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "Basketball"
                   ? "bg-primary text-white"
@@ -181,36 +219,49 @@ export default function MatchesClient() {
           ))}
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mb-8">
-          {paginatedMatches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              onEdit={openMatchModalForEditing}
-              onDelete={openDeleteModal}
-              onEnterResult={openResultModal}
-              onViewLeaderboard={openLeaderboardModal}
-              onToggleFeatured={handleToggleFeatured}
-            />
-          ))}
-          {paginatedMatches.length === 0 && (
-            <div className="col-span-full py-12 text-center text-gray-500">
-              <TranslatedText text="No matches found for the selected view." />
-            </div>
-          )}
-        </div>
+        {showSkeleton ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+            {Array.from({ length: itemsPerPage }).map((_, i) => (
+              <MatchCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 mb-8">
+            {paginatedMatches.map((match) => (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onEdit={openMatchModalForEditing}
+                onDelete={openDeleteModal}
+                onEnterResult={openResultModal}
+                onViewLeaderboard={openLeaderboardModal}
+                onToggleFeatured={handleToggleFeatured}
+                onNotifyUser={handleNotifyUser}
+              />
+            ))}
+            {paginatedMatches.length === 0 && (
+              <div className="col-span-full py-12 text-center text-gray-500">
+                <TranslatedText text="No matches found for the selected view." />
+              </div>
+            )}
+          </div>
+        )}
 
-        {/* Pagination */}
-        {totalPages > 0 && (
-          <div className="flex justify-center mt-8">
-            <Pagination
+        {/* Improved Table Pagination */}
+        {totalPages > 0 && !showSkeleton && (
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-sm border dark:border-gray-700">
+            <TablePagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onPageChange={setCurrentPage}
-              totalItems={filteredMatches.length}
+              totalItems={totalItems}
               itemsPerPage={itemsPerPage}
-              currentItemsCount={paginatedMatches.length}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(newSize) => {
+                setItemsPerPage(newSize);
+                setCurrentPage(1); // Reset to page 1 to prevent getting out of bounds
+              }}
+              showPageSize={true}
+              pageSizeOptions={[6, 12, 24, 48]}
             />
           </div>
         )}
@@ -235,7 +286,6 @@ export default function MatchesClient() {
         isOpen={isLeaderboardModalOpen}
         onClose={() => setIsLeaderboardModalOpen(false)}
         match={selectedMatch}
-        leaderboardData={leaderboardData}
       />
 
       <DeleteConfirmationModal

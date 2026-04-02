@@ -19,10 +19,13 @@ import {
 import { toast } from "sonner";
 import { otpValidationSchema } from "@/lib/formDataValidation";
 
+import { useVerifyResetCodeMutation, useResendVerificationCodeMutation } from "@/redux/services/authApi";
+
 type FormValues = z.infer<typeof otpValidationSchema>;
 
 const VerifyOtp = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [verifyOtp, { isLoading }] = useVerifyResetCodeMutation();
+  const [resendOtp, { isLoading: isResending }] = useResendVerificationCodeMutation();
   const [countdown, setCountdown] = useState(120);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -54,43 +57,42 @@ const VerifyOtp = () => {
       return;
     }
 
-    setIsLoading(true);
     try {
-      // Simulation of sending OTP
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Resending OTP to:", phone);
+      // API call to resend OTP
+      const response = await resendOtp({ phone }).unwrap();
 
-      toast.success(`A new code has been sent to ${phone}`);
+      toast.success(response.message || `A new code has been sent to ${phone}`);
+      if (response.mock_otp_hint) {
+        toast.info(`Hint: ${response.mock_otp_hint}`);
+      }
       setCountdown(120); // Reset timer
-    } catch (error) {
+    } catch (error: any) {
       console.error("Resend failed:", error);
-      toast.error("Failed to resend OTP. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast.error(error?.data?.detail || error?.data?.message || "Failed to resend OTP. Please try again.");
     }
   };
 
   const onSubmit = async (data: FormValues) => {
-    setIsLoading(true);
     try {
-      // Simulation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("OTP:", data.otp);
+      const payload = {
+        phone: phone,
+        otp: data.otp,
+      };
 
-      toast.success("Verification successful!");
+      const response = await verifyOtp(payload).unwrap();
+
+      toast.success(response.message || "OTP verify successful! Reset password now");
 
       if (flow === "reset") {
         document.cookie =
           "reset_verified=true; path=/; max-age=300; SameSite=Strict";
-        router.push("/reset-password");
+        router.push(`/reset-password?phone=${encodeURIComponent(phone)}&otp=${encodeURIComponent(data.otp)}`);
       } else {
         router.push("/signin");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Verification failed:", error);
-      toast.error("Invalid OTP. Please try again.");
-    } finally {
-      setIsLoading(false);
+      toast.error(error?.data?.detail || error?.data?.message || "Invalid OTP. Please try again.");
     }
   };
 

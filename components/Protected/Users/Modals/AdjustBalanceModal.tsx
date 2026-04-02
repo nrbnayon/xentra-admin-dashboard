@@ -8,7 +8,7 @@ interface AdjustBalanceModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: User | null;
-  onSave: (userId: string, newBalance: number) => void;
+  onSave: (userId: string | number, newBalance: number) => void;
 }
 
 export default function AdjustBalanceModal({
@@ -36,7 +36,7 @@ export default function AdjustBalanceModal({
       return;
     }
 
-    const currentBalance = user.balance || 0;
+    const currentBalance = parseFloat(user.balance as string) || 0;
     let newBalance = currentBalance;
 
     if (actionType === "add") {
@@ -75,7 +75,7 @@ export default function AdjustBalanceModal({
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
               <TranslatedText text="User:" />{" "}
               <span className="font-semibold text-foreground dark:text-white">
-                {user.name}
+                {user.full_name}
               </span>
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">

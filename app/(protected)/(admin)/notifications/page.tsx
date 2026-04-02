@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: "Get all your notification from here",
 };
 
-export default async function NotificationsPage() {
-  await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate fetch delay for loading skeleton
+export default function NotificationsPage() {
   return <NotificationsClient />;
 }

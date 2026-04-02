@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Eye, EyeOff, PencilLine } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { toast } from "sonner";
+import { useChangePasswordMutation } from "@/redux/services/authApi";
 
 interface SecuritySectionProps {
   isEditing: boolean;
@@ -24,22 +25,36 @@ export default function SecuritySection({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleUpdatePassword = () => {
-    if (!securityInfo.currentPassword) {
-      toast.error("Current password is required");
+  const [changePassword, { isLoading: isChanging }] = useChangePasswordMutation();
+
+  const handleUpdatePassword = async () => {
+    if (!securityInfo.currentPassword || !securityInfo.newPassword || !securityInfo.confirmPassword) {
+      toast.error("All fields are required");
       return;
     }
     if (securityInfo.newPassword !== securityInfo.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-    setIsEditing(false);
-    setSecurityInfo({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    toast.success("Password updated successfully");
+
+    try {
+      await changePassword({
+        current_password: securityInfo.currentPassword,
+        new_password: securityInfo.newPassword,
+        confirm_password: securityInfo.confirmPassword,
+      }).unwrap();
+
+      setIsEditing(false);
+      setSecurityInfo({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      toast.success("Password updated successfully");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.data?.detail || error.data?.message || "Failed to update password");
+    }
   };
 
   return (
@@ -162,9 +177,10 @@ export default function SecuritySection({
               <div className="flex justify-end pt-2">
                 <button
                   onClick={handleUpdatePassword}
-                  className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer"
+                  disabled={isChanging}
+                  className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <TranslatedText text="Update Password" />
+                  <TranslatedText text={isChanging ? "Updating..." : "Update Password"} />
                 </button>
               </div>
             </div>

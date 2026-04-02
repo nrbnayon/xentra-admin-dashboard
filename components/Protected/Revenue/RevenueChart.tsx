@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import TranslatedText from "@/components/Shared/TranslatedText";
-import { ChartDataPoint } from "@/data/revenueData";
+import { ChartDataPoint } from "@/types/revenue.types";
 
 interface RevenueChartProps {
   data: ChartDataPoint[];

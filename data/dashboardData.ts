@@ -1,5 +1,5 @@
 import { User, Gamepad2, ShoppingBag, BarChart2,  CircleDashed } from "lucide-react";
-import { DashboardStatItem, RevenueData } from "@/types/dashboard";
+import { DashboardStatItem, RevenueData } from "@/types/dashboard.types";
 
 export const dashboardStatsTop: DashboardStatItem[] = [
   {

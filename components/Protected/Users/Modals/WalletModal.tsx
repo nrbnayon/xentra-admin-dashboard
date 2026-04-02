@@ -1,19 +1,23 @@
-import { X } from "lucide-react";
-import { Wallet } from "@/types/users";
+import { X, Loader2 } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
+import { useGetUserWalletQuery } from "@/redux/services/usersApi";
 
 interface WalletModalProps {
   isOpen: boolean;
   onClose: () => void;
-  wallet: Wallet | null;
+  userId: string | number | null;
 }
 
 export default function WalletModal({
   isOpen,
   onClose,
-  wallet,
+  userId,
 }: WalletModalProps) {
-  if (!isOpen || !wallet) return null;
+  const { data: wallet, isLoading, isError } = useGetUserWalletQuery(userId!, {
+    skip: !isOpen || !userId,
+  });
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -36,67 +40,79 @@ export default function WalletModal({
         </div>
 
         <div className="p-6 pt-0 space-y-4 w-full">
-          <div>
-            <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-              <TranslatedText text="Total Balance" />
-            </label>
-            <input
-              type="text"
-              disabled
-              value={`${wallet.totalBalance.toLocaleString()} HTG`}
-              className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-            />
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-10">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : isError || !wallet ? (
+            <div className="text-center py-10 text-gray-500">
+              <TranslatedText text="Failed to load wallet data." />
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                  <TranslatedText text="Total Balance" />
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value={`${wallet.total_balance || 0} HTG`}
+                  className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                />
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                <TranslatedText text="Total Deposit" />
-              </label>
-              <input
-                type="text"
-                disabled
-                value={`${wallet.totalDeposit.toLocaleString()} HTG`}
-                className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                <TranslatedText text="Total Withdrawal" />
-              </label>
-              <input
-                type="text"
-                disabled
-                value={`${wallet.totalWithdrawal.toLocaleString()} HTG`}
-                className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                    <TranslatedText text="Total Deposit" />
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${wallet.total_deposit || 0} HTG`}
+                    className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                    <TranslatedText text="Total Withdrawal" />
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${wallet.total_withdrawal || 0} HTG`}
+                    className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  />
+                </div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                <TranslatedText text="Total Winning" />
-              </label>
-              <input
-                type="text"
-                disabled
-                value={`${wallet.totalWinning.toLocaleString()} HTG`}
-                className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
-                <TranslatedText text="Total Deduction" />
-              </label>
-              <input
-                type="text"
-                disabled
-                value={`${wallet.totalDeduction.toLocaleString()} HTG`}
-                className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-              />
-            </div>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                    <TranslatedText text="Total Winning" />
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${wallet.total_winning || 0} HTG`}
+                    className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 dark:text-gray-400 mb-1 font-medium">
+                    <TranslatedText text="Total Deduction" />
+                  </label>
+                  <input
+                    type="text"
+                    disabled
+                    value={`${wallet.total_deduction || 0} HTG`}
+                    className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="pb-2"></div>
         </div>

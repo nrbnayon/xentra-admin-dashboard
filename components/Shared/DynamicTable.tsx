@@ -504,7 +504,7 @@ export function DynamicTable<T extends Record<string, any>>({
                                   title={action.tooltip}
                                   aria-label={action.label}
                                 >
-                                  {action.icon}
+                                  {typeof action.icon === "function" ? action.icon(row) : action.icon}
                                 </button>
                               ))}
                           </div>

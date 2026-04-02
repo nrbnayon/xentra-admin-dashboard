@@ -1,120 +1,185 @@
 // redux/services/authApi.ts
+// All auth endpoints injected into the root apiSlice.
+// URLs and body field names match the real API exactly.
+
 import { apiSlice } from "../features/apiSlice";
-import { usersData } from "../../data/usersData";
+import type {
+  LoginRequest,
+  LoginApiResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordApiResponse,
+  VerifyResetCodeRequest,
+  VerifyResetCodeApiResponse,
+  ResetPasswordRequest,
+  ResetPasswordApiResponse,
+  ResendOtpRequest,
+  ResendOtpApiResponse,
+  RefreshTokenRequest,
+  RefreshTokenApiResponse,
+  ProfileApiResponse,
+  UpdateProfileRequest,
+  UpdateProfileApiResponse,
+  ChangePasswordRequest,
+  ChangePasswordApiResponse,
+  UpdateAvatarApiResponse,
+  UpdatePoliciesRequest,
+  UpdatePoliciesApiResponse,
+  GetPoliciesApiResponse,
+} from "@/types/auth.types";
 
-interface LoginRequest {
-  phone_number: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-interface LoginResponse {
-  user: {
-    email_address?: string;
-    role: string;
-    phone_number?: string;
-    image?: string;
-    full_name?: string;
-  };
-  accessToken: string;
-  refreshToken: string;
-}
-
-interface VerifyOtpRequest {
-  phone_number: string;
-  otp: string;
-}
-
-interface VerifyOtpResponse {
-  message: string;
-  verified: boolean;
-}
-
-// Inject endpoints into the API slice
 export const authApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
-    // Login endpoint (Dummy auth logic)
-    login: builder.mutation<LoginResponse, LoginRequest>({
-      queryFn: async (credentials) => {
-        // Simulate network delay
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-
-        // Find user by phone number or fallback to the first admin user
-        const foundUser =
-          usersData.find((u) => u.phone_number === credentials.phone_number) ||
-          usersData.find((u) => u.role === "admin") ||
-          usersData[0];
-
-        return {
-          data: {
-            user: {
-              phone_number: foundUser.phone_number || credentials.phone_number,
-              role: foundUser.role,
-              full_name: foundUser.name,
-              image: foundUser.image,
-              email_address: foundUser.email_address,
-            },
-            accessToken: `mock_access_token_${Date.now()}`,
-            refreshToken: `mock_refresh_token_${Date.now()}`,
-          },
-        };
-      },
-      invalidatesTags: ["Auth"],
+    // ── 1. Login ──────────────────────────────────────────────────────────────
+    login: builder.mutation<LoginApiResponse, LoginRequest>({
+      query: (body) => ({
+        url: "/auth/login",
+        method: "POST",
+        body,
+      }),
     }),
 
-    // Verify OTP endpoint (Dummy auth logic)
-    verifyOtp: builder.mutation<VerifyOtpResponse, VerifyOtpRequest>({
-      queryFn: async (otpData) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // Reject all, but accept 123456 or 111111 mock OTP
-        if (otpData.otp === "123456" || otpData.otp === "111111") {
-          return { data: { message: "OTP Verified", verified: true } };
-        }
-        return {
-          error: {
-            status: 400,
-            data: { message: "Invalid OTP" },
-            name: "Error",
-            message: "Invalid OTP",
-          },
-        };
-      },
+    // ── 2. Forgot Password ────────────────────────────────────────────────────
+    forgotPassword: builder.mutation<
+      ForgotPasswordApiResponse,
+      ForgotPasswordRequest
+    >({
+      query: (body) => ({
+        url: "/auth/forgot-password",
+        method: "POST",
+        body,
+      }),
     }),
 
-    // Logout endpoint (Dummy auth logic)
-    logout: builder.mutation<{ message: string }, void>({
-      queryFn: async () => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return { data: { message: "Logged out successfully" } };
-      },
-      invalidatesTags: ["Auth"],
+    // ── 3. Resend OTP ─────────────────────────────────────────────────────────
+    resendVerificationCode: builder.mutation<
+      ResendOtpApiResponse,
+      ResendOtpRequest
+    >({
+      query: (body) => ({
+        url: "/auth/resend-otp",
+        method: "POST",
+        body,
+      }),
     }),
 
-    // Get current user (Dummy auth logic)
-    getCurrentUser: builder.query<LoginResponse["user"], void>({
-      queryFn: async () => {
-        const adminUser =
-          usersData.find((u) => u.role === "admin") || usersData[0];
+    // ── 4. Verify OTP ─────────────────────────────────────────────────────────
+    verifyResetCode: builder.mutation<
+      VerifyResetCodeApiResponse,
+      VerifyResetCodeRequest
+    >({
+      query: (body) => ({
+        url: "/auth/forgot-password-verify-otp",
+        method: "POST",
+        body,
+      }),
+    }),
 
-        return {
-          data: {
-            phone_number: adminUser.phone_number,
-            role: adminUser.role,
-            full_name: adminUser.name,
-            image: adminUser.image,
-            email_address: adminUser.email_address,
-          },
-        };
-      },
-      providesTags: ["Auth"],
+    // ── 5. Reset Password ─────────────────────────────────────────────────────
+    resetPassword: builder.mutation<
+      ResetPasswordApiResponse,
+      ResetPasswordRequest
+    >({
+      query: (body) => ({
+        url: "/auth/reset-password",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // ── 6. Refresh Token ──────────────────────────────────────────────────────
+    refreshToken: builder.mutation<
+      RefreshTokenApiResponse,
+      RefreshTokenRequest
+    >({
+      query: (body) => ({
+        url: "/auth/refresh-token",
+        method: "POST", // changed from GET to POST as it accepts body
+        body,
+      }),
+    }),
+
+    // ── 7. Get Profile ────────────────────────────────────────────────────────
+    getProfile: builder.query<ProfileApiResponse, void>({
+      query: () => ({
+        url: "/users/me",
+        method: "GET",
+      }),
+      providesTags: ["Profile"],
+    }),
+
+    // ── 8. Update Profile ─────────────────────────────────────────────────────
+    updateProfile: builder.mutation<
+      UpdateProfileApiResponse,
+      UpdateProfileRequest
+    >({
+      query: (body) => ({
+        url: "/admin/settings/account",
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+
+    // ── 9. Change Password ────────────────────────────────────────────────────
+    changePassword: builder.mutation<
+      ChangePasswordApiResponse,
+      ChangePasswordRequest
+    >({
+      query: (body) => ({
+        url: "/admin/settings/security",
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    // ── 10. Update Avatar ─────────────────────────────────────────────────────
+    updateAvatar: builder.mutation<UpdateAvatarApiResponse, FormData>({
+      query: (body) => ({
+        url: "/users/me/avatar",
+        method: "POST",
+        body,
+        // FormData headers are handled automatically by fetchBaseQuery
+        // if we don't set Content-Type: application/json in apiSlice
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+
+    // ── 11. Update Policies ────────────────────────────────────────────────────
+    updatePolicies: builder.mutation<
+      UpdatePoliciesApiResponse,
+      UpdatePoliciesRequest
+    >({
+      query: (body) => ({
+        url: "/admin/settings/policies",
+        method: "PUT",
+        body,
+      }),
+    }),
+
+    // ── 12. Get Policies ──────────────────────────────────────────────────────
+    getPolicies: builder.query<GetPoliciesApiResponse, void>({
+      query: () => ({
+        url: "/admin/settings/policies",
+        method: "GET",
+      }),
+      providesTags: ["Profile"],
     }),
   }),
 });
 
-// Export hooks for usage in functional components
 export const {
   useLoginMutation,
-  useVerifyOtpMutation,
-  useLogoutMutation,
-  useGetCurrentUserQuery,
+  useForgotPasswordMutation,
+  useVerifyResetCodeMutation,
+  useResetPasswordMutation,
+  useResendVerificationCodeMutation,
+  useRefreshTokenMutation,
+  useGetProfileQuery,
+  useLazyGetProfileQuery,
+  useUpdateProfileMutation,
+  useChangePasswordMutation,
+  useUpdateAvatarMutation,
+  useUpdatePoliciesMutation,
+  useGetPoliciesQuery,
 } = authApi;

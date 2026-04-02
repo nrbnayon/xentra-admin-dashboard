@@ -7,7 +7,7 @@ import TranslatedText from "@/components/Shared/TranslatedText";
 interface ResultModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (matchId: string, result: any) => void;
+  onSubmit: (matchId: number, result: { score_a: number; score_b: number; winning_team: string }) => void;
   match: Match | null;
 }
 
@@ -54,9 +54,12 @@ export default function ResultModal({
       return;
     }
 
-    onSubmit(match.id, formData);
-    toast.success("Result submitted successfully!");
-    onClose();
+    onSubmit(match.id, {
+      score_a: Number(formData.teamAScore),
+      score_b: Number(formData.teamBScore),
+      winning_team: formData.winningTeam
+    });
+    // Don't toast and close here, let the calling screen handle it upon success
   };
 
   return (
@@ -85,7 +88,7 @@ export default function ResultModal({
               </label>
               <input
                 type="text"
-                value={match.teamA}
+                value={match.team_a}
                 disabled
                 className="w-full border rounded-lg p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400 outline-none"
               />
@@ -120,7 +123,7 @@ export default function ResultModal({
               </label>
               <input
                 type="text"
-                value={match.teamB}
+                value={match.team_b}
                 disabled
                 className="w-full border rounded-lg p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400 outline-none"
               />
@@ -160,8 +163,9 @@ export default function ResultModal({
               className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.winningTeam ? "border-red-500" : ""}`}
             >
               <option value="">Select winner...</option>
-              <option value={match.teamA}>{match.teamA}</option>
-              <option value={match.teamB}>{match.teamB}</option>
+              <option value="A">Team A</option>
+              <option value="B">Team B</option>
+              {/* Note: The mock API response in payload shows winning_team: "A". So passing "A" or "B". */}
               <option value="Draw">Draw</option>
             </select>
             {errors.winningTeam && (

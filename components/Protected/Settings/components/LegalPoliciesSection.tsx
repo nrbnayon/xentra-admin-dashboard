@@ -1,17 +1,18 @@
 "use client";
 
-import React from "react";
 import { Eye } from "lucide-react";
 import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface LegalPoliciesSectionProps {
   onOpenTerms: () => void;
   onOpenRules: () => void;
+  onOpenPrivacy: () => void;
 }
 
 export default function LegalPoliciesSection({
   onOpenTerms,
   onOpenRules,
+  onOpenPrivacy,
 }: LegalPoliciesSectionProps) {
   return (
     <div className="bg-white rounded-[24px] border border-gray-100 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
@@ -55,6 +56,24 @@ export default function LegalPoliciesSection({
               </h3>
               <p className="text-xs text-[#4B5563] font-medium mt-1">
                 <TranslatedText text="Manage your contest rules from here" />
+              </p>
+            </div>
+            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
+              <Eye className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Privacy Policy Item */}
+          <div
+            className="flex items-center justify-between group cursor-pointer"
+            onClick={onOpenPrivacy}
+          >
+            <div>
+              <h3 className="text-sm font-bold text-[#1F2937] group-hover:text-primary transition-colors">
+                <TranslatedText text="Privacy Policy" />
+              </h3>
+              <p className="text-xs text-[#4B5563] font-medium mt-1">
+                <TranslatedText text="Manage your privacy policy from here" />
               </p>
             </div>
             <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
