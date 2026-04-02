@@ -15,6 +15,7 @@ import TranslatedText from "@/components/Shared/TranslatedText";
 
 interface RevenueTrendChartProps {
   data: RevenueData[];
+  yAxisTicks?: number[];
 }
 
 const CustomDot = (props: any) => {
@@ -22,7 +23,10 @@ const CustomDot = (props: any) => {
   return <circle cx={cx} cy={cy} r={5} fill="#0190FE" stroke="none" />;
 };
 
-export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
+export default function RevenueTrendChart({
+  data,
+  yAxisTicks,
+}: RevenueTrendChartProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -64,8 +68,12 @@ export default function RevenueTrendChart({ data }: RevenueTrendChartProps) {
                 axisLine={{ stroke: "#9CA3AF" }}
                 tickLine={true}
                 tick={{ fontSize: 12, fill: "#6B7280" }}
-                ticks={[0, 35000, 70000, 105000, 140000]}
-                domain={[0, 140000]}
+                ticks={yAxisTicks}
+                domain={
+                  yAxisTicks && yAxisTicks.length > 0
+                    ? [0, yAxisTicks[yAxisTicks.length - 1]]
+                    : ["auto", "auto"]
+                }
                 dx={-15}
               />
               <Tooltip

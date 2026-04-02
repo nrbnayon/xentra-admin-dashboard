@@ -7,6 +7,7 @@ import { StatsCard } from "@/components/Shared/StatsCard";
 import { TrendingUp, ShoppingBag } from "lucide-react";
 import { useGetRevenueQuery } from "@/redux/services/revenueApi";
 import { DashboardStatSkeleton, ChartSkeleton } from "@/components/Skeleton/DashboardSkeleton";
+import { getSmartTicks } from "@/lib/utils";
 
 // Dynamically import the chart — `ssr: false` prevents Recharts from trying
 // to measure DOM dimensions before hydration (which causes width/height = -1 warnings).
@@ -100,46 +101,6 @@ export default function RevenueClient() {
     }));
   }, [apiData]);
 
-  // Helper to calculate smart Y-axis ticks
-  const getSmartTicks = (data: any[]) => {
-    if (!data.length) return [0, 10, 20, 30, 40];
-    
-    const max = Math.max(...data.map((d) => d.revenue));
-    if (max === 0) return [0, 10, 20, 30, 40];
-
-    // Find a nice step size
-    // We want roughly 5 ticks
-    const targetTicks = 5;
-    const rawStep = max / (targetTicks - 1);
-    
-    // Handle cases where max is very small (like 5.25) or very large
-    const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
-    const ratio = rawStep / magnitude;
-
-    let step;
-    if (ratio < 1.5) step = 1 * magnitude;
-    else if (ratio < 3) step = 2 * magnitude;
-    else if (ratio < 7) step = 5 * magnitude;
-    else step = 10 * magnitude;
-
-    const ticks = [];
-    let currentTick = 0;
-
-    // Add ticks until we cover the max value
-    while (ticks.length === 0 || ticks[ticks.length - 1] < max) {
-      ticks.push(Number(currentTick.toFixed(2)));
-      currentTick += step;
-    }
-
-    // Ensure we have at least a few ticks for aesthetics
-    while (ticks.length < 5) {
-      ticks.push(Number(currentTick.toFixed(2)));
-      currentTick += step;
-    }
-
-    return ticks;
-  };
-
   if (isLoading) {
     return (
       <div className="pb-10 min-h-screen">
@@ -220,7 +181,7 @@ export default function RevenueClient() {
             description="Monthly revenue overview"
             lineColor="#0190FE"
             dotColor="#0190FE"
-            yAxisTicks={getSmartTicks(monthlyData)}
+            yAxisTicks={getSmartTicks(monthlyData, "revenue")}
           />
         </div>
 
@@ -232,7 +193,7 @@ export default function RevenueClient() {
             description="Weekly revenue overview"
             lineColor="#E53935"
             dotColor="#E53935"
-            yAxisTicks={getSmartTicks(weeklyData)}
+            yAxisTicks={getSmartTicks(weeklyData, "revenue")}
           />
           <RevenueChart
             data={dailyData}
@@ -240,7 +201,7 @@ export default function RevenueClient() {
             description="Daily revenue overview"
             lineColor="#4CAF50"
             dotColor="#4CAF50"
-            yAxisTicks={getSmartTicks(dailyData)}
+            yAxisTicks={getSmartTicks(dailyData, "revenue")}
           />
         </div>
       </main>

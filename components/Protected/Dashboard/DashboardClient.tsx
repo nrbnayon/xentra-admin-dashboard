@@ -7,6 +7,7 @@ import { dashboardStatsTop, dashboardStatsBottom } from "@/data/dashboardData";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { useGetAdminDashboardOverviewQuery } from "@/redux/services/dashboardApi";
 import { DashboardSkeleton } from "@/components/Skeleton/DashboardSkeleton";
+import { getSmartTicks } from "@/lib/utils";
 
 export default function DashboardClient() {
   const { data: apiData, isLoading } = useGetAdminDashboardOverviewQuery();
@@ -116,7 +117,10 @@ export default function DashboardClient() {
           </div>
 
           {/* RevenueCostTrendChart section */}
-          <RevenueTrendChart data={chartData} />
+          <RevenueTrendChart
+            data={chartData}
+            yAxisTicks={getSmartTicks(chartData, "revenue")}
+          />
         </div>
       </main>
     </div>
