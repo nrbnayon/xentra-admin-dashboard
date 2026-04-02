@@ -114,6 +114,9 @@ const onTokenRefreshed = (token: string) => {
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://10.10.12.62:6005",
   prepareHeaders: (headers, { getState }) => {
+    // Bypass ngrok browser warning
+    headers.set("ngrok-skip-browser-warning", "true");
+
     // Prefer Redux state token (most up-to-date after refresh),
     // fall back to cookie (covers page-refresh rehydration)
     const stateToken = (getState() as RootState).auth.user
