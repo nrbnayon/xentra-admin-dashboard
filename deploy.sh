@@ -8,7 +8,7 @@ echo "📥 Pulling latest code..."
 git pull origin main
 
 echo "📦 Installing dependencies..."
-npm install
+# npm install
 
 echo "🏗️ Building Next.js..."
 npm run build
