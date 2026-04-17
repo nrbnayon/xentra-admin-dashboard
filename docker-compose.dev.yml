@@ -1,0 +1,19 @@
+services:
+  frontend:
+    container_name: xentra_admin_frontend_dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: deps
+    command: npm run dev -- --hostname 0.0.0.0 --port 3000
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
