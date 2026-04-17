@@ -1,0 +1,16 @@
+services:
+  frontend:
+    container_name: xentra_admin_frontend
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+    image: xentra-admin-dashboard:latest
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api/v1}
+    restart: unless-stopped
