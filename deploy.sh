@@ -77,7 +77,7 @@ if curl -f -s -m 5 http://localhost:3000 > /dev/null 2>&1; then
   echo "✅ App responding on :3000"
 else
   echo "⚠️  App not responding yet. Showing logs:"
-  pm2 logs frontend --lines 30
+  pm2 logs admin-dashboard --lines 30
   echo ""
   echo "Retrying in 3 seconds..."
   sleep 3
@@ -119,5 +119,5 @@ echo "  • Build: $CHUNKS_COUNT static chunks"
 echo "  • App: Running on :3000"
 echo "  • Nginx: Reloaded"
 echo ""
-echo "To monitor: pm2 logs frontend"
+echo "To monitor: pm2 logs admin-dashboard"
 echo "═══════════════════════════════════════════════════════"
