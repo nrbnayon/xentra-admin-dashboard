@@ -14,7 +14,7 @@ cd $RELEASE_DIR
 
 # 2. Install deps (lighter)
 echo "📦 Installing dependencies..."
-npm install --no-audit --no-fund
+npm install --no-audit --no-fund --prefer-offline
 
 # 3. Build (IMPORTANT: isolate build)
 echo "🏗️ Building app..."
