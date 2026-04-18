@@ -78,7 +78,7 @@ export default function RevenueTrendChart({
               />
               <Tooltip
                 content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
+                  if (active && payload && payload.length && payload[0]?.value !== undefined) {
                     return (
                       <div className="bg-white p-3 rounded-lg shadow-[0px_0px_20px_0px_rgba(0,0,0,0.1)] border-none">
                         <p className="text-sm font-semibold text-foreground">
