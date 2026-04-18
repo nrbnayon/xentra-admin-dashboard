@@ -112,7 +112,7 @@ const onTokenRefreshed = (token: string) => {
 
 // ─── Base query ───────────────────────────────────────────────────────────────
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://10.10.12.62:6005",
+  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "https://api.xentrasports.com/api/v1",
   prepareHeaders: (headers, { getState }) => {
     // Bypass ngrok browser warning
     headers.set("ngrok-skip-browser-warning", "true");
