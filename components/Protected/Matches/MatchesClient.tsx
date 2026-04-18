@@ -160,6 +160,7 @@ export default function MatchesClient() {
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => { setActiveFilter("All"); setCurrentPage(1); }}
+              aria-label="all"
               className={`px-6 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer ${
                 activeFilter === "All"
                   ? "bg-primary text-white"
@@ -192,6 +193,7 @@ export default function MatchesClient() {
 
           <button
             onClick={openMatchModalForCreation}
+            aria-label="open"
             className="flex items-center gap-2 bg-primary hover:bg-[#2a4365] text-white px-5 py-2.5 rounded-lg text-sm font-medium shadow-sm transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
@@ -208,6 +210,7 @@ export default function MatchesClient() {
                 setActiveTab(tab as TabType);
                 setCurrentPage(1);
               }}
+            aria-label="tab"
               className={`flex-1 max-w-50 py-3 text-sm font-medium border-b-2 transition-colors cursor-pointer ${
                 activeTab === tab
                   ? "border-primary text-primary"

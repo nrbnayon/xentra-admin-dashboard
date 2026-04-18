@@ -73,6 +73,7 @@ export default function ResultModal({
         <div className="flex justify-end p-4">
           <button
             onClick={onClose}
+            aria-label="Close Result Modal"
             className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -91,6 +92,7 @@ export default function ResultModal({
                 value={match.team_a}
                 disabled
                 className="w-full border rounded-lg p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400 outline-none"
+                aria-label="Team A"
               />
             </div>
             <div>
@@ -126,6 +128,7 @@ export default function ResultModal({
                 value={match.team_b}
                 disabled
                 className="w-full border rounded-lg p-2.5 bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400 outline-none"
+                aria-label="Team B"
               />
             </div>
             <div>
@@ -161,6 +164,7 @@ export default function ResultModal({
                 setFormData({ ...formData, winningTeam: e.target.value })
               }
               className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.winningTeam ? "border-red-500" : ""}`}
+              aria-label="Winning Team"
             >
               <option value="">Select winner...</option>
               <option value="A">Team A</option>
@@ -180,12 +184,14 @@ export default function ResultModal({
           <button
             onClick={onClose}
             className="flex-1 py-3 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+            aria-label="Cancel"
           >
             <TranslatedText text="Cancel" />
           </button>
           <button
             onClick={handleSubmit}
             className="flex-1 py-3 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
+            aria-label="Submit & Calculate"
           >
             <TranslatedText text="Submit & Calculate" />
           </button>

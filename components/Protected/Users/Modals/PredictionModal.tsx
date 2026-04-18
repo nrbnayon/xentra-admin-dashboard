@@ -33,6 +33,7 @@ export default function PredictionModal({
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close Prediction Modal"
             className="text-gray-500 hover:text-red-500 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -68,6 +69,7 @@ export default function PredictionModal({
                     disabled
                     value={prediction.sport_name}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    aria-label="Sport Name"
                   />
                 </div>
 
@@ -80,6 +82,7 @@ export default function PredictionModal({
                     disabled
                     value={prediction.league_name}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    aria-label="League Name"
                   />
                 </div>
 
@@ -93,6 +96,7 @@ export default function PredictionModal({
                       disabled
                       value={prediction.match_date}
                       className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      aria-label="Match Date"
                     />
                   </div>
                   <div>
@@ -104,6 +108,7 @@ export default function PredictionModal({
                       disabled
                       value={prediction.match_time_start}
                       className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      aria-label="Match Time Start"
                     />
                   </div>
                 </div>
@@ -118,6 +123,7 @@ export default function PredictionModal({
                       disabled
                       value={prediction.team_a}
                       className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      aria-label="Team A"
                     />
                   </div>
                   <div>
@@ -129,6 +135,7 @@ export default function PredictionModal({
                       disabled
                       value={prediction.team_b}
                       className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      aria-label="Team B"
                     />
                   </div>
                 </div>
@@ -142,6 +149,7 @@ export default function PredictionModal({
                     disabled
                     value={prediction.prediction}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                    aria-label="User Prediction"
                   />
                 </div>
               </div>

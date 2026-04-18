@@ -51,6 +51,7 @@ export default function PolicyModal({
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="w-full h-full min-h-[400px] p-4 bg-gray-50 border border-gray-200 rounded-2xl text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none resize-none font-sans"
+              aria-label="Edit Policy Content"
             />
           ) : (
             <div className="space-y-4 text-sm text-[#4B5563] font-medium whitespace-pre-wrap leading-relaxed">
@@ -63,6 +64,7 @@ export default function PolicyModal({
           <button
             onClick={onClose}
             className="flex-1 py-4 px-6 border border-gray-200 rounded-full font-bold text-[#4B5563] hover:bg-gray-50 transition-all cursor-pointer"
+            aria-label="Close Modal"
           >
             <TranslatedText text="Cancel" />
           </button>
@@ -70,6 +72,7 @@ export default function PolicyModal({
             <button
               onClick={onSave}
               className="flex-1 py-4 px-6 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+              aria-label="Save Policy"
             >
               <TranslatedText text="Save" />
             </button>
@@ -77,6 +80,7 @@ export default function PolicyModal({
             <button
               onClick={() => setIsEditing(true)}
               className="flex-1 py-4 px-6 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 cursor-pointer"
+              aria-label="Edit Policy"
             >
               <TranslatedText text="Edit" />
             </button>

@@ -40,7 +40,7 @@ export default function LegalPoliciesSection({
                 <TranslatedText text="Manage your teams and condition from here" />
               </p>
             </div>
-            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
+            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none" aria-label="View Terms and Conditions">
               <Eye className="w-5 h-5" />
             </button>
           </div>
@@ -58,7 +58,7 @@ export default function LegalPoliciesSection({
                 <TranslatedText text="Manage your contest rules from here" />
               </p>
             </div>
-            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
+            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none" aria-label="View Contest Rules">
               <Eye className="w-5 h-5" />
             </button>
           </div>
@@ -76,7 +76,7 @@ export default function LegalPoliciesSection({
                 <TranslatedText text="Manage your privacy policy from here" />
               </p>
             </div>
-            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none">
+            <button className="p-2 text-gray-400 group-hover:text-primary transition-all pointer-events-none" aria-label="View Privacy Policy">
               <Eye className="w-5 h-5" />
             </button>
           </div>

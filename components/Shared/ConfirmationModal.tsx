@@ -34,6 +34,7 @@ export function ConfirmationModal({
         <button
           onClick={onClose}
           disabled={isLoading}
+          aria-label="Close Confirmation Modal"
           className="absolute right-4 top-4 text-secondary hover:text-foreground dark:hover:text-gray-200 disabled:opacity-50"
         >
           <X size={20} />
@@ -49,6 +50,7 @@ export function ConfirmationModal({
             onClick={onClose}
             disabled={isLoading}
             className="border-gray-200 dark:border-gray-700"
+            aria-label="Cancel"
           >
             {cancelText}
           </Button>

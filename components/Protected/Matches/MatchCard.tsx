@@ -124,18 +124,21 @@ export default function MatchCard({
             </button>
             <button
               onClick={() => onEdit(match)}
+              aria-label="Edit Match"
               className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
             >
               <SquarePen className="w-4 h-4 text-foreground" />
             </button>
             <button
               onClick={() => onDelete(match)}
+              aria-label="Delete Match"
               className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
             >
               <Trash2 className="w-4 h-4 text-red-500" />
             </button>
             <button
               onClick={() => onNotifyUser?.(match)}
+              aria-label="Notify User"
               className="bg-white hover:bg-gray-300 px-4 py-1.5 rounded-full transition-colors cursor-pointer text-primary text-[10px] md:text-xs font-semibold whitespace-nowrap"
             >
               <TranslatedText text="Notify User" />
@@ -189,6 +192,7 @@ export default function MatchCard({
         <div className="flex flex-wrap justify-center gap-3 mt-auto pt-2">
           <button
             onClick={() => onEnterResult(match)}
+            aria-label="Enter Result"
             className="flex-1 min-w-[120px] max-w-[150px] bg-primary hover:bg-[#2a4365] text-white text-xs sm:text-sm font-medium py-2.5 rounded-full transition-all active:scale-95 cursor-pointer shadow-lg"
           >
             <TranslatedText text="Enter Result" />
@@ -196,6 +200,7 @@ export default function MatchCard({
           {isActionable && (
             <button
               onClick={() => onViewLeaderboard(match)}
+              aria-label="View Leaderboard"
               className="flex-1 min-w-[140px] max-w-[170px] bg-white hover:bg-gray-100 text-primary text-xs sm:text-sm font-medium py-2.5 rounded-full transition-all active:scale-95 cursor-pointer shadow-lg"
             >
               <TranslatedText text="View Leaderboard" />

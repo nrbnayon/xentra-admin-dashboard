@@ -34,6 +34,7 @@ export default function LogoutModal({
             <button
               onClick={onClose}
               className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors duration-200"
+              aria-label="Close Logout Modal"
             >
               <X className="h-5 w-5 text-destructive" />
             </button>

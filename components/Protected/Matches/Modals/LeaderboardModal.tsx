@@ -75,6 +75,7 @@ export default function LeaderboardModal({
           </h2>
           <button
             onClick={handleClose}
+            aria-label="Close Leaderboard Modal"
             className="text-gray-500 hover:text-red-500 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -93,6 +94,7 @@ export default function LeaderboardModal({
                   disabled
                   value={match.sport_name}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                  aria-label="Sport Name"
                 />
               </div>
 
@@ -105,6 +107,7 @@ export default function LeaderboardModal({
                   disabled
                   value={match.league_name}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                  aria-label="League Name"
                 />
               </div>
             </div>
@@ -119,6 +122,7 @@ export default function LeaderboardModal({
                   disabled
                   value={match.team_a}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                  aria-label="Team A"
                 />
               </div>
               <div>
@@ -130,6 +134,7 @@ export default function LeaderboardModal({
                   disabled
                   value={match.team_b}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                  aria-label="Team B"
                 />
               </div>
             </div>
@@ -144,6 +149,7 @@ export default function LeaderboardModal({
                   disabled
                   value={displayDate}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                  aria-label="Date"
                 />
               </div>
               <div>
@@ -155,6 +161,7 @@ export default function LeaderboardModal({
                   disabled
                   value={displayTime}
                   className="w-full border rounded p-2.5 bg-white dark:bg-gray-700 text-foreground dark:text-gray-300"
+                  aria-label="Time"
                 />
               </div>
             </div>

@@ -34,6 +34,7 @@ export default function WalletModal({
           <button
             onClick={onClose}
             className="text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+            aria-label="Close Wallet Modal"
           >
             <X className="w-6 h-6" />
           </button>
@@ -59,6 +60,7 @@ export default function WalletModal({
                   disabled
                   value={`${wallet.total_balance || 0} HTG`}
                   className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  aria-label="Total Balance"
                 />
               </div>
 
@@ -72,6 +74,7 @@ export default function WalletModal({
                     disabled
                     value={`${wallet.total_deposit || 0} HTG`}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                    aria-label="Total Deposit"
                   />
                 </div>
                 <div>
@@ -83,6 +86,7 @@ export default function WalletModal({
                     disabled
                     value={`${wallet.total_withdrawal || 0} HTG`}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                    aria-label="Total Withdrawal"
                   />
                 </div>
               </div>
@@ -97,6 +101,7 @@ export default function WalletModal({
                     disabled
                     value={`${wallet.total_winning || 0} HTG`}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                    aria-label="Total Winning"
                   />
                 </div>
                 <div>
@@ -108,6 +113,7 @@ export default function WalletModal({
                     disabled
                     value={`${wallet.total_deduction || 0} HTG`}
                     className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                    aria-label="Total Deduction"
                   />
                 </div>
               </div>

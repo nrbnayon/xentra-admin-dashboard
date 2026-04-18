@@ -146,6 +146,7 @@ export default function AccountInformation({
           {!isEditing && (
             <button
               onClick={() => setIsEditing(true)}
+              aria-label="Edit Account Information"
               className="p-2 text-gray-400 hover:text-primary transition-all cursor-pointer"
             >
               <PencilLine className="w-5 h-5" />
@@ -191,11 +192,13 @@ export default function AccountInformation({
                     className="hidden"
                     accept="image/*"
                     onChange={handleImageUpload}
+                    aria-label="Upload Profile Image"
                   />
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={!isEditing}
                     className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-xl text-xs font-bold hover:bg-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    aria-label="Change Profile Image"
                   >
                     <Camera className="w-4 h-4" />
                     <TranslatedText text="Change Image" />
@@ -206,6 +209,7 @@ export default function AccountInformation({
                       !isEditing || accountInfo.image === "/images/user.webp"
                     }
                     className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    aria-label="Remove Profile Image"
                   >
                     <Trash2 className="w-4 h-4" />
                     <TranslatedText text="Remove" />
@@ -290,6 +294,7 @@ export default function AccountInformation({
                 <button
                   onClick={handleSave}
                   disabled={isUpdating}
+                  aria-label="Save Changes"
                   className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <TranslatedText
