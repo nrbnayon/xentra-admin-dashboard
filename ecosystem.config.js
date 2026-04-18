@@ -13,7 +13,7 @@ module.exports = {
       name: "frontend",
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3000",
-      node_args: "--max-old-space-size=896",
+      node_args: "--max-old-space-size=1024", // Limit Node.js memory to 1GB
       instances: 1,
 
       // ✅ IMPORTANT: Do NOT use cluster mode for Next.js
@@ -30,7 +30,7 @@ module.exports = {
       watch: false,
       ignore_watch: ["node_modules", ".next", ".git"],
 
-      // Node capped at 896MB — PM2 restarts at 1G before OS OOM kills it
+      // Node capped at 1GB — PM2 restarts at 1G before OS OOM kills it
       max_memory_restart: "1G",
 
       kill_timeout: 8000,

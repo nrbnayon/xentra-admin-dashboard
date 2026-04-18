@@ -1,49 +1,123 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting deployment..."
+LOG_FILE="logs/deploy.log"
+mkdir -p logs
+
+# Redirect all output to log file and console
+exec > >(tee -a "$LOG_FILE")
+exec 2>&1
+
+echo "═══════════════════════════════════════════════════════"
+echo "🚀 Starting deployment at $(date)"
+echo "═══════════════════════════════════════════════════════"
+
 cd /var/www/xentra-admin-dashboard || exit 1
 
-echo "📥 Resetting and pulling latest code..."
+echo ""
+echo "📥 Pulling latest code..."
 git reset --hard
 git pull origin main
 
-echo "📦 Checking if dependencies need updating..."
-if git diff HEAD~1 HEAD --name-only | grep -q "package.json"; then
-  echo "🔄 package.json changed — installing dependencies..."
+echo ""
+echo "📦 Checking dependencies..."
+if git diff HEAD~1 HEAD --name-only 2>/dev/null | grep -q "package.json"; then
+  echo "🔄 package.json changed — installing..."
   npm install --no-audit --no-fund --prefer-offline
 else
-  echo "✅ No package.json changes — skipping npm install."
+  echo "✅ package.json unchanged — skipping install"
 fi
 
-echo "🏗️ Building Next.js..."
-rm -rf .next  # Clean old build
-NODE_OPTIONS="--max-old-space-size=896" npm run build
+echo ""
+echo "🧹 Cleaning old build..."
+rm -rf .next
+rm -rf .turbo
+
+echo ""
+echo "🏗️ Building Next.js with 1GB memory..."
+NODE_OPTIONS="--max-old-space-size=1024" npm run build
 
 # Verify build succeeded
 if [ ! -d ".next" ]; then
-  echo "❌ Build failed — .next directory not created!"
+  echo "❌ FAILED: .next directory not created!"
+  echo "Build output:"
+  npm run build 2>&1 | tail -30
   exit 1
 fi
 
-echo "✅ Build completed successfully"
-echo "🔁 Restarting PM2 frontend..."
+# Check if chunks were actually generated
+CHUNKS_COUNT=$(find .next/static/chunks -name "*.js" -o -name "*.css" 2>/dev/null | wc -l)
+if [ "$CHUNKS_COUNT" -lt 5 ]; then
+  echo "❌ FAILED: Only $CHUNKS_COUNT chunks found (expected 10+)"
+  echo "Chunks directory:"
+  ls -la .next/static/chunks/ 2>/dev/null || echo "Empty!"
+  exit 1
+fi
+
+echo "✅ Build completed: $CHUNKS_COUNT static files generated"
+
+# Fix permissions for Nginx
+echo ""
+echo "🔐 Setting file permissions for Nginx..."
+sudo chown -R www-data:www-data .next
+sudo chmod -R 755 .next
+
+echo ""
+echo "🔁 Restarting PM2..."
 pm2 reload ecosystem.config.js --env production || pm2 start ecosystem.config.js --env production
-
-# Wait for app to start
-sleep 3
-
-# Check if app is running
-if ! curl -f http://localhost:3000 > /dev/null 2>&1; then
-  echo "⚠️  Warning: App not responding on port 3000"
-  pm2 logs frontend --lines 50
-  exit 1
-fi
-
-echo "💾 Saving PM2 state..."
 pm2 save
 
-echo "🌐 Reloading Nginx..."
-nginx -t && systemctl reload nginx
+# Wait for app to fully start
+echo "⏳ Waiting for app to start..."
+sleep 4
 
-echo "✅ Deployment completed successfully!"
+echo ""
+echo "🏥 Health check..."
+if curl -f -s -m 5 http://localhost:3000 > /dev/null 2>&1; then
+  echo "✅ App responding on :3000"
+else
+  echo "⚠️  App not responding yet. Showing logs:"
+  pm2 logs frontend --lines 30
+  echo ""
+  echo "Retrying in 3 seconds..."
+  sleep 3
+  if curl -f -s -m 5 http://localhost:3000 > /dev/null 2>&1; then
+    echo "✅ App now responding"
+  else
+    echo "❌ App still not responding!"
+    exit 1
+  fi
+fi
+
+echo ""
+echo "🌐 Testing Nginx config..."
+sudo nginx -t
+
+echo "🔄 Reloading Nginx..."
+sudo systemctl reload nginx
+
+echo ""
+echo "🧪 Testing static file serving..."
+if [ -f ".next/static/chunks/_app*.js" ]; then
+  SAMPLE_FILE=$(ls .next/static/chunks/_app*.js 2>/dev/null | head -1)
+  if [ ! -z "$SAMPLE_FILE" ]; then
+    echo "Testing: $SAMPLE_FILE"
+    # Note: External HTTPS test might fail in some environments, so we just check file exists
+    ls -lh "$SAMPLE_FILE"
+    echo "✅ Static files present"
+  fi
+fi
+
+echo ""
+echo "═══════════════════════════════════════════════════════"
+echo "✅ DEPLOYMENT COMPLETED SUCCESSFULLY at $(date)"
+echo "═══════════════════════════════════════════════════════"
+echo ""
+echo "📋 Summary:"
+echo "  • Git: Latest code from main"
+echo "  • Build: $CHUNKS_COUNT static chunks"
+echo "  • App: Running on :3000"
+echo "  • Nginx: Reloaded"
+echo ""
+echo "To monitor: pm2 logs frontend"
+echo "═══════════════════════════════════════════════════════"
