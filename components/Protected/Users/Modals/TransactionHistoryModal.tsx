@@ -34,6 +34,7 @@ export default function TransactionHistoryModal({
           <button
             onClick={onClose}
             className="text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+            aria-label="Close Transaction History Modal"
           >
             <X className="w-6 h-6" />
           </button>

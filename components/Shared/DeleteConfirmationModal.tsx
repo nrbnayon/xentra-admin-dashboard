@@ -51,6 +51,7 @@ export function DeleteConfirmationModal({
         <button
           onClick={onClose}
           disabled={isLoading}
+          aria-label="Close Modal"
           className="absolute right-4 top-4 p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <X className="w-5 h-5" />
@@ -95,6 +96,7 @@ export function DeleteConfirmationModal({
             <button
               onClick={onClose}
               disabled={isLoading}
+              aria-label="Close Modal"
               className="flex-1 px-4 py-2.5 bg-gray-100 text-foreground dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-secondary font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <TranslatedText text="Cancel" />
@@ -102,6 +104,7 @@ export function DeleteConfirmationModal({
             <button
               onClick={onConfirm}
               disabled={isLoading}
+              aria-label="Confirm Delete"
               className={`flex-1 flex items-center justify-center px-4 py-2.5 rounded-lg font-semibold shadow-sm transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
                 variant === "danger"
                   ? "bg-red-500 hover:bg-red-700 text-white"

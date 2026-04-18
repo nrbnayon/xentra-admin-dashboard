@@ -271,6 +271,7 @@ export default function WithdrawalsClient() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
+              aria-label={`Switch to ${tab} tab`}
               className={`px-8 py-3 font-medium border-b-2 transition-colors cursor-pointer min-w-30 ${
                 activeTab === tab
                   ? "border-[#1a365d] text-[#1a365d] dark:text-blue-400 dark:border-blue-400"
@@ -291,6 +292,7 @@ export default function WithdrawalsClient() {
             <button
               onClick={() => refetch()}
               className="px-4 py-2 text-sm bg-[#1a365d] text-white rounded-lg hover:bg-[#1e4080] transition"
+              aria-label="Retry"
             >
               <TranslatedText text="Retry" />
             </button>

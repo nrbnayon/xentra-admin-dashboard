@@ -64,6 +64,7 @@ export default function AdjustBalanceModal({
           </h2>
           <button
             onClick={onClose}
+            aria-label="Close Modal"
             className="text-red-500 hover:text-red-700 transition-colors cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -99,6 +100,7 @@ export default function AdjustBalanceModal({
                   checked={actionType === "add"}
                   onChange={() => setActionType("add")}
                   className="w-4 h-4 text-primary"
+                  aria-label="Add Funds"
                 />
                 <TranslatedText text="Add Funds" />
               </label>
@@ -110,6 +112,7 @@ export default function AdjustBalanceModal({
                   checked={actionType === "deduct"}
                   onChange={() => setActionType("deduct")}
                   className="w-4 h-4 text-red-500"
+                  aria-label="Deduct Funds"
                 />
                 <TranslatedText text="Deduct Funds" />
               </label>
@@ -134,12 +137,14 @@ export default function AdjustBalanceModal({
         <div className="p-6 pt-0 flex justify-end gap-3 mt-4">
           <button
             onClick={onClose}
+            aria-label="Cancel Balance Adjustment"
             className="px-4 py-2 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
           >
             <TranslatedText text="Cancel" />
           </button>
           <button
             onClick={handleSubmit}
+            aria-label="Submit Balance Adjustment"
             className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 shadow-sm transition-colors cursor-pointer"
           >
             <TranslatedText text="Submit" />

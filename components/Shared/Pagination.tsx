@@ -74,6 +74,7 @@ export function Pagination({
           className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
+          aria-label="Previous Page"
         >
           <ChevronLeft className="w-4 h-4 text-secondary" />
         </button>
@@ -110,6 +111,7 @@ export function Pagination({
           className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
+          aria-label="Next Page"
         >
           <ChevronRight className="w-4 h-4 text-secondary" />
         </button>

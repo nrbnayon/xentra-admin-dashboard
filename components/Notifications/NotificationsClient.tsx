@@ -92,6 +92,7 @@ export default function NotificationsClient() {
         {/* Tabs */}
         <div className="flex border-b border-gray-100 mb-8 overflow-x-auto no-scrollbar">
           <button
+          aria-label="all"
             className={`px-10 py-3 text-sm font-semibold border-b-2 transition-all ${
               activeTab === "All"
                 ? "border-primary text-primary"
@@ -108,7 +109,7 @@ export default function NotificationsClient() {
              <p className="text-red-500 font-medium">
                <TranslatedText text="Failed to load notifications." />
              </p>
-             <button onClick={() => refetch()} className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-[#1e4080] transition">
+             <button onClick={() => refetch()} className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-[#1e4080] transition" aria-label="Retry Loading Notifications">
                <TranslatedText text="Retry" />
              </button>
           </div>
@@ -160,6 +161,7 @@ export default function NotificationsClient() {
                        <button
                          onClick={() => openDetails(notification)}
                          className="px-6 py-2 bg-[#F9FAFB] border border-[#E4E7EC] rounded-lg text-sm font-bold text-[#344054] hover:bg-gray-100 transition-colors cursor-pointer"
+                         aria-label="View Notification Details"
                        >
                          <TranslatedText text="View" />
                        </button>
@@ -167,6 +169,7 @@ export default function NotificationsClient() {
                        {notification.type === "WITHDRAWAL_REQUEST" && (
                          <button
                            onClick={() => openReject(notification)}
+                           aria-label="Reject Notification"
                            className="px-6 py-2 text-sm font-bold text-[#D92D20] hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                          >
                            <TranslatedText text="Reject" />
@@ -221,6 +224,7 @@ export default function NotificationsClient() {
             onClick={isActionLoading ? undefined : () => setIsRejectModalOpen(false)}
             disabled={isActionLoading}
             className="absolute right-4 top-4 text-secondary hover:text-red-500 transition-all p-2 rounded-full cursor-pointer disabled:opacity-50"
+            aria-label="Close"
           >
             <X className="w-6 h-6" />
           </button>
@@ -235,6 +239,7 @@ export default function NotificationsClient() {
               <button
                 onClick={isActionLoading ? undefined : () => setIsRejectModalOpen(false)}
                 disabled={isActionLoading}
+                aria-label="Cancel"
                 className="flex-1 py-4 border border-gray-200 rounded-full font-bold text-secondary hover:bg-gray-50 transition-all cursor-pointer disabled:opacity-50"
               >
                 <TranslatedText text="Cancel" />

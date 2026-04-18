@@ -105,7 +105,7 @@ export type UpdateProfileApiResponse = ApiResponse<ProfileResponseData>;
 export interface ChangePasswordRequest {
   current_password: string;
   new_password: string;
-  confirm_password: string;
+  confirm_new_password: string;
 }
 
 export type ChangePasswordApiResponse = ApiResponse<null>;

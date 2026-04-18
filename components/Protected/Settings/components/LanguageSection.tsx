@@ -44,6 +44,7 @@ export default function LanguageSection({
           {!isEditing && (
             <button
               onClick={() => setIsEditing(true)}
+              aria-label="Edit Language Settings"
               className="p-2 text-gray-400 hover:text-primary transition-all cursor-pointer"
             >
               <PencilLine className="w-5 h-5" />
@@ -62,6 +63,7 @@ export default function LanguageSection({
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value as Language)}
+                    aria-label="Select Language"
                     className="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer"
                   >
                     <option value="en">English</option>
@@ -74,6 +76,7 @@ export default function LanguageSection({
               <div className="flex justify-end pt-2">
                 <button
                   onClick={handleSaveLanguage}
+                  aria-label="Save Language Changes"
                   className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer"
                 >
                   <TranslatedText text="Save Changes" />

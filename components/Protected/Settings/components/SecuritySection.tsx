@@ -41,7 +41,7 @@ export default function SecuritySection({
       await changePassword({
         current_password: securityInfo.currentPassword,
         new_password: securityInfo.newPassword,
-        confirm_password: securityInfo.confirmPassword,
+        confirm_new_password: securityInfo.confirmPassword,
       }).unwrap();
 
       setIsEditing(false);
@@ -72,6 +72,7 @@ export default function SecuritySection({
           {!isEditing && (
             <button
               onClick={() => setIsEditing(true)}
+              aria-label="Edit Security Settings"
               className="p-2 text-gray-400 hover:text-primary transition-all cursor-pointer"
             >
               <PencilLine className="w-5 h-5" />
@@ -101,6 +102,7 @@ export default function SecuritySection({
                   />
                   <button
                     onClick={() => setShowCurrentPassword((prev) => !prev)}
+                    aria-label={showCurrentPassword ? "Hide current password" : "Show current password"}
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 cursor-pointer"
                   >
                     {showCurrentPassword ? (
@@ -132,6 +134,7 @@ export default function SecuritySection({
                     />
                     <button
                       onClick={() => setShowNewPassword((prev) => !prev)}
+                      aria-label={showNewPassword ? "Hide new password" : "Show new password"}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 cursor-pointer"
                     >
                       {showNewPassword ? (
@@ -162,6 +165,7 @@ export default function SecuritySection({
                     />
                     <button
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
+                      aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 cursor-pointer"
                     >
                       {showConfirmPassword ? (
@@ -178,6 +182,7 @@ export default function SecuritySection({
                 <button
                   onClick={handleUpdatePassword}
                   disabled={isChanging}
+                  aria-label="Update Password"
                   className="bg-primary text-white px-8 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <TranslatedText text={isChanging ? "Updating..." : "Update Password"} />
@@ -196,6 +201,7 @@ export default function SecuritySection({
                 <button
                   className="text-gray-300 hover:text-gray-400 cursor-pointer"
                   onClick={() => setIsEditing(true)}
+                  aria-label="Edit Security Settings"
                 >
                   <EyeOff className="w-5 h-5" />
                 </button>

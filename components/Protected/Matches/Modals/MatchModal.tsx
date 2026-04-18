@@ -8,7 +8,7 @@ import TranslatedText from "@/components/Shared/TranslatedText";
 interface MatchModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (formData: FormData) => void;
+  onSave: (formData: FormData) => Promise<void>;
   match?: Match | null;
 }
 
@@ -40,6 +40,7 @@ export default function MatchModal({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [dragActive, setDragActive] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const teamAFlagRef = useRef<HTMLInputElement>(null);
   const teamBFlagRef = useRef<HTMLInputElement>(null);
@@ -181,11 +182,15 @@ export default function MatchModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validate()) {
       toast.error("Please fill in all required fields.");
       return;
     }
+
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
 
     const submitData = new FormData();
     submitData.append("match_title", formData.title);
@@ -222,15 +227,21 @@ export default function MatchModal({
     if (formData.teamBFlag instanceof File)
       submitData.append("team_b_logo", formData.teamBFlag);
 
-    onSave(submitData);
-    // Don't close immediately here, since API call will be handled in parent, let parent close it after success.
+    try {
+      await onSave(submitData);
+      // Don't close immediately here, since API call will be handled in parent, let parent close it after success.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={() => {
+          if (!isSubmitting) onClose();
+        }}
       />
 
       <div className="relative w-full max-w-4xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col max-h-[90vh] overflow-y-auto scrollbar-hide">
@@ -240,6 +251,8 @@ export default function MatchModal({
           </h2>
           <button
             onClick={onClose}
+            aria-label="close"
+            disabled={isSubmitting}
             className="text-gray-500 hover:text-red-500 cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -255,7 +268,10 @@ export default function MatchModal({
               </span>
               {formData.imagePreview && (
                 <button
+                  type="button"
+                  aria-label="Remove banner image"
                   className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                  disabled={isSubmitting}
                   onClick={(e) => {
                     e.preventDefault();
                     setFormData({ ...formData, image: null, imagePreview: "" });
@@ -270,7 +286,9 @@ export default function MatchModal({
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={(e) => handleDrop(e, "image")}
-              onClick={() => fileInputRef.current?.click()}
+              onClick={() => {
+                if (!isSubmitting) fileInputRef.current?.click();
+              }}
               className={`border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[160px] relative overflow-hidden ${
                 dragActive
                   ? "border-primary bg-primary/10"
@@ -311,6 +329,8 @@ export default function MatchModal({
               type="file"
               accept="image/*"
               className="hidden"
+              aria-label="Upload banner image"
+              disabled={isSubmitting}
               onChange={(e) => handleFileChange(e, "image")}
             />
           </div>
@@ -323,11 +343,13 @@ export default function MatchModal({
               </label>
               <input
                 type="text"
+                aria-label="Match title"
                 value={formData.title}
                 onChange={(e) =>
                   setFormData({ ...formData, title: e.target.value })
                 }
                 placeholder="e.g. FIFA WORLD CUP"
+                disabled={isSubmitting}
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.title ? "border-red-500" : ""}`}
               />
               {errors.title && (
@@ -342,10 +364,12 @@ export default function MatchModal({
                 <span className="text-red-500">*</span>
               </label>
               <select
+                aria-label="Sport name"
                 value={formData.sport}
                 onChange={(e) =>
                   setFormData({ ...formData, sport: e.target.value })
                 }
+                disabled={isSubmitting}
                 className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
               >
                 <option value="Football">Football</option>
@@ -361,11 +385,13 @@ export default function MatchModal({
             </label>
             <input
               type="text"
+              aria-label="League name"
               value={formData.league}
               onChange={(e) =>
                 setFormData({ ...formData, league: e.target.value })
               }
               placeholder="e.g. Premier League"
+              disabled={isSubmitting}
               className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.league ? "border-red-500" : ""}`}
             />
             {errors.league && (
@@ -383,10 +409,12 @@ export default function MatchModal({
               </label>
               <input
                 type="date"
+                aria-label="Match date"
                 value={formData.date}
                 onChange={(e) =>
                   setFormData({ ...formData, date: e.target.value })
                 }
+                disabled={isSubmitting}
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.date ? "border-red-500" : ""}`}
               />
               {errors.date && (
@@ -402,10 +430,12 @@ export default function MatchModal({
               </label>
               <input
                 type="time"
+                aria-label="Match start time"
                 value={formData.time}
                 onChange={(e) =>
                   setFormData({ ...formData, time: e.target.value })
                 }
+                disabled={isSubmitting}
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.time ? "border-red-500" : ""}`}
               />
               {errors.time && (
@@ -426,11 +456,13 @@ export default function MatchModal({
                 </label>
                 <input
                   type="text"
+                  aria-label="Team A name"
                   value={formData.teamA}
                   onChange={(e) =>
                     setFormData({ ...formData, teamA: e.target.value })
                   }
                   placeholder="Team A Name"
+                  disabled={isSubmitting}
                   className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamA ? "border-red-500" : ""}`}
                 />
                 {errors.teamA && (
@@ -446,7 +478,10 @@ export default function MatchModal({
                   </span>
                   {formData.teamAFlagPreview && (
                     <button
+                      type="button"
+                      aria-label="Remove Team A flag"
                       className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                      disabled={isSubmitting}
                       onClick={(e) => {
                         e.preventDefault();
                         setFormData({
@@ -465,7 +500,9 @@ export default function MatchModal({
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
                   onDrop={(e) => handleDrop(e, "teamAFlag")}
-                  onClick={() => teamAFlagRef.current?.click()}
+                  onClick={() => {
+                    if (!isSubmitting) teamAFlagRef.current?.click();
+                  }}
                   className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
                     dragActive
                       ? "border-primary bg-primary/10"
@@ -500,6 +537,8 @@ export default function MatchModal({
                   type="file"
                   accept="image/*"
                   className="hidden"
+                  aria-label="Upload Team A flag"
+                  disabled={isSubmitting}
                   onChange={(e) => handleFileChange(e, "teamAFlag")}
                 />
               </div>
@@ -514,11 +553,13 @@ export default function MatchModal({
                 </label>
                 <input
                   type="text"
+                  aria-label="Team B name"
                   value={formData.teamB}
                   onChange={(e) =>
                     setFormData({ ...formData, teamB: e.target.value })
                   }
                   placeholder="Team B Name"
+                  disabled={isSubmitting}
                   className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamB ? "border-red-500" : ""}`}
                 />
                 {errors.teamB && (
@@ -534,7 +575,10 @@ export default function MatchModal({
                   </span>
                   {formData.teamBFlagPreview && (
                     <button
+                      type="button"
+                      aria-label="Remove Team B flag"
                       className="text-red-500 hover:text-red-700 flex items-center gap-1 text-xs cursor-pointer"
+                      disabled={isSubmitting}
                       onClick={(e) => {
                         e.preventDefault();
                         setFormData({
@@ -553,7 +597,9 @@ export default function MatchModal({
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
                   onDrop={(e) => handleDrop(e, "teamBFlag")}
-                  onClick={() => teamBFlagRef.current?.click()}
+                  onClick={() => {
+                    if (!isSubmitting) teamBFlagRef.current?.click();
+                  }}
                   className={`border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-all min-h-[120px] relative overflow-hidden ${
                     dragActive
                       ? "border-primary bg-primary/10"
@@ -588,6 +634,8 @@ export default function MatchModal({
                   type="file"
                   accept="image/*"
                   className="hidden"
+                  aria-label="Upload Team B flag"
+                  disabled={isSubmitting}
                   onChange={(e) => handleFileChange(e, "teamBFlag")}
                 />
               </div>
@@ -611,6 +659,7 @@ export default function MatchModal({
                       <div className="relative flex items-center">
                         <input
                           type="checkbox"
+                          aria-label={`Platform fee ${fee} percent`}
                           checked={Number(formData.platformFee) === fee}
                           onChange={() =>
                             setFormData({
@@ -618,6 +667,7 @@ export default function MatchModal({
                               platformFee: fee.toString(),
                             })
                           }
+                          disabled={isSubmitting}
                           className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 appearance-none checked:bg-gray-500 checked:border-gray-500 transition-all cursor-pointer"
                         />
                         {Number(formData.platformFee) === fee && (
@@ -666,10 +716,12 @@ export default function MatchModal({
                       <div className="relative flex items-center">
                         <input
                           type="checkbox"
+                          aria-label={`Entry fee ${fee} HTG`}
                           checked={formData.entryFee === fee}
                           onChange={() =>
                             setFormData({ ...formData, entryFee: fee })
                           }
+                          disabled={isSubmitting}
                           className="w-5 h-5 rounded border-2 border-gray-300 dark:border-gray-600 appearance-none checked:bg-gray-500 checked:border-gray-500 transition-all cursor-pointer"
                         />
                         {formData.entryFee === fee && (
@@ -707,10 +759,12 @@ export default function MatchModal({
                 </label>
                 <input
                   type="number"
+                  aria-label="Promotional amount"
                   value={formData.winUpTo}
                   onChange={(e) =>
                     setFormData({ ...formData, winUpTo: e.target.value })
                   }
+                  disabled={isSubmitting}
                   className="w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="e.g. 500,000 HTG"
                 />
@@ -719,12 +773,15 @@ export default function MatchModal({
               {/* Featured Match */}
               <div className="flex items-center gap-2 py-2.5">
                 <button
+                  type="button"
+                  aria-label="Toggle featured match"
                   onClick={() =>
                     setFormData({
                       ...formData,
                       isFeatured: !formData.isFeatured,
                     })
                   }
+                  disabled={isSubmitting}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
                     formData.isFeatured
                       ? "bg-primary"
@@ -748,15 +805,21 @@ export default function MatchModal({
         <div className="p-6 border-t dark:border-gray-700 flex justify-center gap-4">
           <button
             onClick={onClose}
+            aria-label="Cancel match form"
+            disabled={isSubmitting}
             className="px-8 w-40 py-2.5 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
             <TranslatedText text="Cancel" />
           </button>
           <button
-            onClick={handleSubmit}
+            onClick={() => {
+              void handleSubmit();
+            }}
+            aria-label={match ? "Save match" : "Create match"}
+            disabled={isSubmitting}
             className="px-8 w-40 py-2.5 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
           >
-            <TranslatedText text={match ? "Save" : "+ Create"} />
+            <TranslatedText text={isSubmitting ? (match ? "Saving..." : "Creating...") : (match ? "Save" : "+ Create")} />
           </button>
         </div>
       </div>

@@ -65,6 +65,7 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
       <div className="w-full">
         <div className="relative">
           <input
+            aria-label={label}
             ref={ref}
             type={type}
             className={cn(
@@ -99,7 +100,6 @@ const FloatingInput = React.forwardRef<HTMLInputElement, FloatingInputProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder=" "
-            aria-invalid={!!error}
             {...props}
           />
 
