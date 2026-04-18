@@ -10,7 +10,7 @@
 module.exports = {
   apps: [
     {
-      name: "frontend",
+      name: "admin-dashboard",
       script: "node_modules/next/dist/bin/next",
       args: "start -p 3000",
       node_args: "--max-old-space-size=1024", // Limit Node.js memory to 1GB
@@ -35,8 +35,8 @@ module.exports = {
 
       kill_timeout: 8000,
       merge_logs: true,
-      output: "logs/frontend-out.log",
-      error: "logs/frontend-err.log",
+      output: "logs/admin-dashboard-out.log",
+      error: "logs/admin-dashboard-err.log",
       log_date_format: "YYYY-MM-DD HH:mm:ss Z",
 
       max_restarts: 10,
@@ -53,7 +53,7 @@ module.exports = {
       path: "/var/www/xentra-admin-dashboard",
       "post-deploy":
         "npm install && npm run build && pm2 reload ecosystem.config.js --env production || pm2 start ecosystem.config.js --env production",
-      "pre-deploy-local": 'echo "Deploying frontend to production"',
+      "pre-deploy-local": 'echo "Deploying admin-dashboard to production"',
     },
   },
 };
