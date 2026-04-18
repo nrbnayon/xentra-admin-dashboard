@@ -1,37 +1,31 @@
 #!/bin/bash
 set -e
 
-APP_DIR="/var/www/xentra-admin-dashboard"
-RELEASE_DIR="$APP_DIR/releases/$(date +%s)"
+echo "🚀 Starting deployment..."
+cd /var/www/xentra-admin-dashboard || exit 1
 
-echo "🚀 Starting Zero-Downtime Deployment..."
+echo "📥 Resetting and pulling latest code..."
+git reset --hard
+git pull origin main
 
-# 1. Clone fresh copy
-echo "📥 Cloning fresh release..."
-git clone https://github.com/nrbnayon/xentra-admin-dashboard.git $RELEASE_DIR
+echo "📦 Checking if dependencies need updating..."
+if git diff HEAD~1 HEAD --name-only | grep -q "package.json"; then
+  echo "🔄 package.json changed — installing dependencies..."
+  npm install --no-audit --no-fund --prefer-offline
+else
+  echo "✅ No package.json changes — skipping npm install."
+fi
 
-cd $RELEASE_DIR
+echo "🏗️ Building Next.js..."
+NODE_OPTIONS="--max-old-space-size=896" npm run build
 
-# 2. Install deps (lighter)
-echo "📦 Installing dependencies..."
-npm install --no-audit --no-fund --prefer-offline
+echo "🔁 Restarting PM2 frontend..."
+pm2 reload ecosystem.config.js --env production || pm2 start ecosystem.config.js --env production
 
-# 3. Build (IMPORTANT: isolate build)
-echo "🏗️ Building app..."
-NODE_OPTIONS="--max-old-space-size=512" npm run build
+echo "💾 Saving PM2 state..."
+pm2 save
 
-# 4. Point current to new release
-echo "🔗 Switching to new release..."
-ln -sfn $RELEASE_DIR $APP_DIR/current
+echo "🌐 Reloading Nginx..."
+nginx -t && systemctl reload nginx
 
-cd $APP_DIR/current
-
-# 5. Reload PM2 (zero downtime)
-echo "🔁 Reloading PM2 (zero downtime)..."
-pm2 start ecosystem.config.js --env production || pm2 reload frontend
-
-# 6. Cleanup old releases (keep last 3)
-echo "🧹 Cleaning old releases..."
-ls -dt $APP_DIR/releases/* | tail -n +4 | xargs rm -rf || true
-
-echo "✅ Deployment completed with ZERO downtime!"
+echo "✅ Deployment completed successfully!"
