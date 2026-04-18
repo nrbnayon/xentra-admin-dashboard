@@ -85,7 +85,7 @@ export default function RevenueTrendChart({
                           {payload[0].payload.month}
                         </p>
                         <p className="text-sm text-[#0190FE] font-bold">
-                          ${payload[0].value.toLocaleString()}
+                          ${payload[0]?.value !== undefined ? payload[0]?.value.toLocaleString() : null}
                         </p>
                       </div>
                     );
