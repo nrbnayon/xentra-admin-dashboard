@@ -89,7 +89,7 @@ export default function RevenueChart({
                         className="text-sm font-bold"
                         style={{ color: lineColor }}
                       >
-                        {payload[0].value.toLocaleString()} HTG
+                        {payload[0]?.value !== undefined ? payload[0]?.value.toLocaleString() : null} HTG
                       </p>
                     </div>
                   );
