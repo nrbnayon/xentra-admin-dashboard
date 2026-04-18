@@ -1,22 +1,13 @@
-/**
- * PM2 Ecosystem Configuration for Frontend (Next.js)
- * 
- * Usage:
- *   pm2 start ecosystem.config.js --env production
- *   pm2 monit  # View real-time monitoring
- *   pm2 logs   # View logs
- */
-
 module.exports = {
   apps: [
     {
       name: 'frontend',
-      script: 'node_modules/next/dist/bin/next',
-      args: 'start -p 3000',
-      node_args: '--max-old-space-size=512',
-      instances: 1,
-      exec_mode: 'fork', // ✅ IMPORTANT: Do NOT use cluster for Next.js
-      
+      script: 'npm',
+      args: 'start',
+
+      instances: 2,
+      exec_mode: 'fork',
+
       env: {
         NODE_ENV: 'development'
       },
@@ -26,32 +17,12 @@ module.exports = {
 
       autorestart: true,
       watch: false,
-      ignore_watch: ['node_modules', '.next', '.git'],
-      
-      max_memory_restart: '1G', // Restart if exceeds 1GB
-      max_cpu_usage: 85,
-      
-      kill_timeout: 8000,
-      merge_logs: true,
+
+      max_memory_restart: '1G',
+
       output: 'logs/frontend-out.log',
       error: 'logs/frontend-err.log',
       log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-      
-      max_restarts: 10,
-      min_uptime: 60000,
     }
-  ],
-
-  // Global settings
-  deploy: {
-    production: {
-      user: 'root',
-      host: 'xentrasports.com', 
-      ref: 'origin/main',
-      repo: 'https://github.com/nrbnayon/xentra-admin-dashboard.git',
-      path: '/var/www/xentra-admin-dashboard',
-      'post-deploy': 'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
-      'pre-deploy-local': 'echo "Deploying frontend to production"'
-    }
-  }
+  ]
 };
