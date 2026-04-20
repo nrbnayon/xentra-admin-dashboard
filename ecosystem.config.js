@@ -47,7 +47,7 @@ module.exports = {
   deploy: {
     production: {
       user: "root",
-      host: "bassport.tech",
+      host: "xentrasports.com",
       ref: "origin/main",
       repo: "https://github.com/nrbnayon/xentra-admin-dashboard.git",
       path: "/var/www/xentra-admin-dashboard",
