@@ -50,7 +50,7 @@ export default function MatchesClient() {
   const [createMatch] = useCreateMatchMutation();
   const [updateMatch] = useUpdateMatchMutation();
   const [deleteMatch] = useDeleteMatchMutation();
-  const [submitResult] = useSubmitMatchResultMutation();
+  const [submitResult, { isLoading: isSubmittingResult }] = useSubmitMatchResultMutation();
   const [toggleFeature] = useToggleMatchFeatureMutation();
   const [notifyMatch] = useNotifyMatchMutation();
 
@@ -283,6 +283,7 @@ export default function MatchesClient() {
         onClose={() => setIsResultModalOpen(false)}
         onSubmit={handleSubmitResult}
         match={selectedMatch}
+        isSubmitting={isSubmittingResult}
       />
 
       <LeaderboardModal

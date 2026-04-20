@@ -9,6 +9,7 @@ interface ResultModalProps {
   onClose: () => void;
   onSubmit: (matchId: number, result: { score_a: number; score_b: number; winning_team: string }) => void;
   match: Match | null;
+  isSubmitting?: boolean;
 }
 
 export default function ResultModal({
@@ -16,6 +17,7 @@ export default function ResultModal({
   onClose,
   onSubmit,
   match,
+  isSubmitting = false,
 }: ResultModalProps) {
   const [formData, setFormData] = useState({
     teamAScore: "",
@@ -49,6 +51,8 @@ export default function ResultModal({
   };
 
   const handleSubmit = () => {
+    if (isSubmitting) return;
+
     if (!validate()) {
       toast.error("Please fill in all required fields.");
       return;
@@ -66,15 +70,18 @@ export default function ResultModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
+        onClick={() => {
+          if (!isSubmitting) onClose();
+        }}
       />
 
       <div className="relative w-full max-w-2xl bg-white dark:bg-gray-800 rounded-xl shadow-2xl flex flex-col">
         <div className="flex justify-end p-4">
           <button
             onClick={onClose}
+            disabled={isSubmitting}
             aria-label="Close Result Modal"
-            className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer"
+            className="text-gray-400 hover:text-red-500 transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
             <X className="w-6 h-6" />
           </button>
@@ -106,6 +113,7 @@ export default function ResultModal({
                 onChange={(e) =>
                   setFormData({ ...formData, teamAScore: e.target.value })
                 }
+                disabled={isSubmitting}
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamAScore ? "border-red-500" : ""}`}
                 placeholder="0"
               />
@@ -142,6 +150,7 @@ export default function ResultModal({
                 onChange={(e) =>
                   setFormData({ ...formData, teamBScore: e.target.value })
                 }
+                disabled={isSubmitting}
                 className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.teamBScore ? "border-red-500" : ""}`}
                 placeholder="0"
               />
@@ -163,6 +172,7 @@ export default function ResultModal({
               onChange={(e) =>
                 setFormData({ ...formData, winningTeam: e.target.value })
               }
+              disabled={isSubmitting}
               className={`w-full border rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 ${errors.winningTeam ? "border-red-500" : ""}`}
               aria-label="Winning Team"
             >
@@ -183,6 +193,7 @@ export default function ResultModal({
         <div className="p-8 pb-10 flex gap-4 w-full">
           <button
             onClick={onClose}
+            disabled={isSubmitting}
             className="flex-1 py-3 border rounded-full text-foreground dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
             aria-label="Cancel"
           >
@@ -190,10 +201,11 @@ export default function ResultModal({
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-3 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer"
-            aria-label="Submit & Calculate"
+            disabled={isSubmitting}
+            className="flex-1 py-3 bg-primary hover:bg-[#2a4365] text-white rounded-full font-medium shadow transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            aria-label="Submit Result"
           >
-            <TranslatedText text="Submit & Calculate" />
+            <TranslatedText text={isSubmitting ? "Submitting..." : "Submit Result"} />
           </button>
         </div>
       </div>

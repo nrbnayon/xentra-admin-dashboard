@@ -30,6 +30,10 @@ export default function MatchCard({
     match.status.toLowerCase() === "completed" ||
     match.status.toLowerCase() === "live";
 
+  const canDelete = !["live", "completed", "finished"].includes(
+    match.status.toLowerCase()
+  );
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "upcoming":
@@ -64,9 +68,9 @@ export default function MatchCard({
 
       return date.toLocaleDateString("en-US", {
         weekday: "short",
-        day: "numeric",
         month: "short",
-        timeZone: "UTC",
+        day: "numeric",
+        year: "numeric",
       });
     } catch {
       return dateStr;
@@ -84,10 +88,9 @@ export default function MatchCard({
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
-        timeZone: "UTC",
       });
 
-      return formatted.replace(":", ".").replace(" ", ""); // Matches original "3.00PM" style
+      return formatted.replace(" ", "");
     } catch {
       return timeStr;
     }
@@ -147,13 +150,15 @@ export default function MatchCard({
             >
               <SquarePen className="w-4 h-4 text-foreground" />
             </button>
-            <button
-              onClick={() => onDelete(match)}
-              aria-label="Delete Match"
-              className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
-            >
-              <Trash2 className="w-4 h-4 text-red-500" />
-            </button>
+            {canDelete && (
+              <button
+                onClick={() => onDelete(match)}
+                aria-label="Delete Match"
+                className="bg-white hover:bg-gray-300 p-1.5 rounded-full transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </button>
+            )}
             <button
               onClick={() => onNotifyUser?.(match)}
               aria-label="Notify User"
