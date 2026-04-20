@@ -20,6 +20,9 @@ export interface Match {
   status: MatchStatus;
   prize_pool: string | number;
   participants_count: number;
+  score_a?: number;
+  score_b?: number;
+  winning_team?: string;
 }
 
 export interface LeaderboardEntry {

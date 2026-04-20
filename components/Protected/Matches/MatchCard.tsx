@@ -1,5 +1,5 @@
 import { Match } from "@/types/matches";
-import { SquarePen, Trash2, Circle } from "lucide-react";
+import { SquarePen, Trash2, Circle, Trophy } from "lucide-react";
 import Image from "next/image";
 import TranslatedText from "@/components/Shared/TranslatedText";
 import { useTranslate } from "@/hooks/useTranslate";
@@ -203,11 +203,29 @@ export default function MatchCard({
           </div>
 
           <div className="mt-5 font-bold text-white text-base md:text-lg flex items-center justify-center gap-3 bg-[#242424a6] px-6 py-2 rounded-full border border-white/10 backdrop-blur-sm max-w-full">
-            <span className="truncate">{match.team_a}</span>
-            <span className="text-sm font-medium opacity-80">
+            <div className="flex items-center gap-2 truncate">
+              {match.winning_team === "A" && (
+                <Trophy className="w-4 h-4 text-yellow-400 shrink-0" />
+              )}
+              <span className="truncate">{match.team_a}</span>
+              {match.score_a !== undefined && match.score_a !== null && (
+                <span className="ml-1 text-primary-light">({match.score_a})</span>
+              )}
+            </div>
+            
+            <span className="text-sm font-medium opacity-80 shrink-0">
               <TranslatedText text="V/S" />
             </span>
-            <span className="truncate">{match.team_b}</span>
+
+            <div className="flex items-center gap-2 truncate">
+              {match.score_b !== undefined && match.score_b !== null && (
+                <span className="mr-1 text-primary-light">({match.score_b})</span>
+              )}
+              <span className="truncate">{match.team_b}</span>
+              {match.winning_team === "B" && (
+                <Trophy className="w-4 h-4 text-yellow-400 shrink-0" />
+              )}
+            </div>
           </div>
         </div>
 
