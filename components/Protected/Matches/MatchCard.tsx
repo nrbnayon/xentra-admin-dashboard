@@ -45,16 +45,30 @@ export default function MatchCard({
     }
   };
 
+  const parseApiDate = (value: string) => {
+    if (!value) return null;
+
+    // API sometimes sends ISO UTC strings (already ending with Z).
+    // Only append Z when timezone info is missing.
+    const hasTimezone = /z$/i.test(value) || /[+-]\d{2}:\d{2}$/.test(value);
+    const normalized = hasTimezone ? value : `${value}Z`;
+    const parsedDate = new Date(normalized);
+
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  };
+
   const formatDate = (dateStr: string) => {
     try {
-      const date = new Date(`${dateStr}Z`); // Backend sends naive UTC, append Z
-      if (isNaN(date.getTime())) return dateStr;
+      const date = parseApiDate(dateStr);
+      if (!date) return dateStr;
+
       return date.toLocaleDateString("en-US", {
         weekday: "short",
         day: "numeric",
         month: "short",
+        timeZone: "UTC",
       });
-    } catch (e) {
+    } catch {
       return dateStr;
     }
   };
@@ -62,15 +76,19 @@ export default function MatchCard({
   const formatTime = (timeStr: string) => {
     try {
       if (!timeStr) return "";
-      const date = new Date(`${timeStr}Z`);
-      if (isNaN(date.getTime())) return timeStr;
+
+      const date = parseApiDate(timeStr);
+      if (!date) return timeStr;
+
       const formatted = date.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
         hour12: true,
+        timeZone: "UTC",
       });
+
       return formatted.replace(":", ".").replace(" ", ""); // Matches original "3.00PM" style
-    } catch (e) {
+    } catch {
       return timeStr;
     }
   };
