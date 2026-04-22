@@ -356,6 +356,8 @@ const INFO_ROUTES = [
   "/privacy-policy",
   "/terms", // add page later if needed
   "/about-us", // add page later if needed
+  "/payment",
+  "/payment/success",
 ];
 
 // ── Universal protected routes ────────────────────────────────────────────────
