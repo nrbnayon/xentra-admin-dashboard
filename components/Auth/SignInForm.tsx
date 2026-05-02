@@ -72,7 +72,11 @@ export const SignInForm = () => {
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      toast.error(error?.data?.detail || error?.data?.message || "Login failed. Please check your credentials.");
+      toast.error(
+        error?.data?.detail ||
+          error?.data?.message ||
+          "Login failed. Please check your credentials.",
+      );
     }
   };
 

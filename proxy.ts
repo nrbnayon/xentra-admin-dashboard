@@ -354,11 +354,16 @@ const PUBLIC_ONLY_ROUTES = ["/success"];
 // before any auth check is performed.
 const INFO_ROUTES = [
   "/privacy-policy",
+  "/app-privacy-policy",
+  "/terms-conditions",
+  "/app-terms-conditions",
   "/terms", // add page later if needed
   "/about-us", // add page later if needed
+  "/payment",
+  "/payment/success",
 ];
 
-// ── Universal protected routes ────────────────────────────────────────────────
+// ── Universal protected routes ──────────────────────────────────────────────── ok
 // Accessible to ANY authenticated user regardless of role.
 // Maps to app/(protected)/(shared)/*
 const UNIVERSAL_PROTECTED_ROUTES = ["/profile", "/settings", "/notifications"];
