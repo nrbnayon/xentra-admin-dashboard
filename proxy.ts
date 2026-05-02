@@ -363,7 +363,7 @@ const INFO_ROUTES = [
   "/payment/success",
 ];
 
-// ── Universal protected routes ────────────────────────────────────────────────
+// ── Universal protected routes ──────────────────────────────────────────────── ok
 // Accessible to ANY authenticated user regardless of role.
 // Maps to app/(protected)/(shared)/*
 const UNIVERSAL_PROTECTED_ROUTES = ["/profile", "/settings", "/notifications"];
