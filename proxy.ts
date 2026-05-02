@@ -354,6 +354,9 @@ const PUBLIC_ONLY_ROUTES = ["/success"];
 // before any auth check is performed.
 const INFO_ROUTES = [
   "/privacy-policy",
+  "/app-privacy-policy",
+  "/terms-conditions",
+  "/app-terms-conditions",
   "/terms", // add page later if needed
   "/about-us", // add page later if needed
   "/payment",

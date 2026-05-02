@@ -1,0 +1,168 @@
+{
+  "privacyPolicy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "March 04, 2026",
+    "sections": [
+      {
+        "id": 1,
+        "title": "1. Information We Collect",
+        "content": "XENTRA collects necessary information to provide our skill-based prediction services:",
+        "items": [
+          "Phone Number: Used for account identification and security.",
+          "Display Name: To identify you on leaderboards.",
+          "Device Information: To ensure platform integrity and prevent fraud.",
+          "Transaction History: Keeping track of your wallet activities."
+        ]
+      },
+      {
+        "id": 2,
+        "title": "2. How We Use Your Data",
+        "content": "Your data is used specifically for:",
+        "items": [
+          "Authenticating and securing your account.",
+          "Processing wallet deposits and withdrawals.",
+          "Calculating and displaying contest rankings.",
+          "Improving app features and user experience."
+        ]
+      },
+      {
+        "id": 3,
+        "title": "3. Data Security",
+        "content": "We use industry-standard encryption and security protocols to protect your information. Your phone number is never shared with third parties for marketing purposes."
+      },
+      {
+        "id": 4,
+        "title": "4. User Rights & Account Deletion",
+        "content": "You have full control over your data. You can request a summary of the data we hold or request its permanent removal.",
+        "deletionSteps": [
+          "Open the XENTRA app",
+          "Go to Profile Settings",
+          "Select 'Delete Account'",
+          "Confirm the deletion"
+        ],
+        "deletionNote": "Please note: Account deletion is permanent and will result in the loss of all wallet balances and history."
+      },
+      {
+        "id": 5,
+        "title": "5. Compliance",
+        "content": "XENTRA complies with applicable data protection regulations. We do not participate in unauthorized data sharing or selling."
+      },
+      {
+        "id": 6,
+        "title": "6. Contact Us",
+        "content": "If you have any questions regarding your privacy, please contact our support team:",
+        "email": "support@xentrasports.com"
+      }
+    ]
+  },
+  "termsConditions": {
+    "title": "Terms & Conditions",
+    "effectiveDate": "March 04, 2026",
+    "sections": [
+      {
+        "id": 1,
+        "title": "1. Eligibility",
+        "items": [
+          "You must be 18 years or older to use XENTRA.",
+          "By registering, you confirm you meet the legal age."
+        ]
+      },
+      {
+        "id": 2,
+        "title": "2. Account Registration",
+        "items": [
+          "Registration is completed using your phone number.",
+          "You are responsible for keeping your login information secure.",
+          "Each person is allowed only one account.",
+          "XENTRA reserves the right to suspend or close accounts involved in fraud, abuse, or suspicious activity."
+        ]
+      },
+      {
+        "id": 3,
+        "title": "3. Nature of the Platform",
+        "items": [
+          "XENTRA is a skill-based sports prediction platform operated by Xentra Sports.",
+          "Participants compete against other players by predicting match outcomes as exact scores.",
+          "Contest rankings are determined based on prediction accuracy and performance.",
+          "Contest outcomes depend on participant skill, knowledge, and analysis of sporting events.",
+          "All contests are entertainment-based competitions designed for sports fans.",
+          "XENTRA does not provide betting odds and is not a sportsbook."
+        ]
+      },
+      {
+        "id": 4,
+        "title": "4. Wallet & Payments",
+        "items": [
+          "A platform service fee is deducted from contest entry fees.",
+          "The remaining amount forms the contest prize pool that is distributed to qualifying winners."
+        ]
+      },
+      {
+        "id": 5,
+        "title": "5. Platform Fees",
+        "items": [
+          "A service fee is deducted before distributing prizes.",
+          "The remaining amount forms the prize pool."
+        ]
+      },
+      {
+        "id": 6,
+        "title": "6. Winners & Rankings",
+        "content": "XENTRA is committed to maintaining a fair and competitive environment for all participants. Users must participate honestly and respect the integrity of the platform and its contests.",
+        "prohibitedActivities": [
+          "Manipulating contest results",
+          "Creating multiple accounts",
+          "Using another person's identity",
+          "Colluding with other users",
+          "Exploiting software bugs",
+          "Using automated tools or bots",
+          "Fraudulent or abusive behavior"
+        ]
+      },
+      {
+        "id": 7,
+        "title": "7. Fair Play",
+        "content": "Any attempt to manipulate results or abuse the system may result in:",
+        "consequences": [
+          "Account suspension",
+          "Loss of funds",
+          "Permanent ban"
+        ]
+      },
+      {
+        "id": 8,
+        "title": "8. No Profit Guarantee",
+        "items": [
+          "Participation in contests involves risk and does not guarantee winnings.",
+          "Prizes are awarded only to top-ranked participants based on contest results.",
+          "XENTRA does not guarantee profits or financial gains from participation."
+        ]
+      },
+      {
+        "id": 9,
+        "title": "9. Service Availability",
+        "content": "XENTRA may modify or suspend services at any time."
+      },
+      {
+        "id": 10,
+        "title": "10. Withdrawal Processing",
+        "items": [
+          "Withdrawal requests are subject to review and verification by the platform.",
+          "XENTRA processes withdrawal requests within 24 to 48 hours after approval.",
+          "In certain cases, additional verification may be required before withdrawals are completed.",
+          "XENTRA reserves the right to delay or refuse withdrawals if suspicious or fraudulent activity is detected."
+        ]
+      },
+      {
+        "id": 11,
+        "title": "11. Changes to Conditions",
+        "content": "These conditions may change at any time. Continued use of the app indicates acceptance of changes."
+      },
+      {
+        "id": 12,
+        "title": "12. Contact",
+        "content": "For assistance, contact XENTRA through the app or email support@xentrasports.com."
+      }
+    ]
+  }
+}
