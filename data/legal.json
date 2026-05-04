@@ -49,7 +49,12 @@
       },
       {
         "id": 6,
-        "title": "6. Contact Us",
+        "title": "6. Children's Privacy",
+        "content": "XENTRA is intended for users who are 18 years of age or older. We do not knowingly collect personal information from individuals under the age of 18. If we become aware that a user is under 18, we will take steps to remove their information and terminate their account."
+      },
+      {
+        "id": 7,
+        "title": "7. Contact Us",
         "content": "If you have any questions regarding your privacy, please contact our support team:",
         "email": "support@xentrasports.com"
       }
