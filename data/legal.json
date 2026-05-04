@@ -49,7 +49,12 @@
       },
       {
         "id": 6,
-        "title": "6. Contact Us",
+        "title": "6. Children's Privacy",
+        "content": "XENTRA is intended for users who are 18 years of age or older. We do not knowingly collect personal information from individuals under the age of 18. If we become aware that a user is under 18, we will take steps to remove their information and terminate their account."
+      },
+      {
+        "id": 7,
+        "title": "7. Contact Us",
         "content": "If you have any questions regarding your privacy, please contact our support team:",
         "email": "support@xentrasports.com"
       }
@@ -145,23 +150,132 @@
       },
       {
         "id": 10,
-        "title": "10. Withdrawal Processing",
+        "title": "10. Changes to Conditions",
+        "content": "These conditions may change at any time. Continued use of the app indicates acceptance of changes."
+      },
+      {
+        "id": 11,
+        "title": "11. Contact",
+        "content": "For assistance, contact XENTRA through the app or email support@xentrasports.com."
+      },
+      {
+        "id": 12,
+        "title": "12. Platform Operator",
+        "items": [
+          "XENTRA is a digital platform operated by Xentra Sports.",
+          "The platform provides skill-based sports prediction contests where participants compete for prizes based on prediction accuracy."
+        ]
+      },
+      {
+        "id": 13,
+        "title": "13. Withdrawal Processing",
         "items": [
           "Withdrawal requests are subject to review and verification by the platform.",
           "XENTRA processes withdrawal requests within 24 to 48 hours after approval.",
           "In certain cases, additional verification may be required before withdrawals are completed.",
           "XENTRA reserves the right to delay or refuse withdrawals if suspicious or fraudulent activity is detected."
         ]
+      }
+    ]
+  },
+  "contestRules": {
+    "title": "Contest Rules",
+    "sections": [
+      {
+        "id": 1,
+        "title": "1. Qualification",
+        "items": [
+          "Players must be 18 years or older to participate."
+        ]
+      },
+      {
+        "id": 2,
+        "title": "2. How to Participate",
+        "content": "Each contest requires players to:",
+        "items": [
+          "Choose the team they think will win (Team A / Team B / Draw).",
+          "Predict the exact final score of the match"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "3. Ranking System",
+        "content": "Rankings are determined as follows:",
+        "items": [
+          "Exact score + correct winning team = highest score."
+        ],
+        "footer": "If no player predicts the exact score, rankings are based on the closest difference, using this formula:\n• (|Predicted Team A score – Actual Team A score| + |Predicted Team B score – Actual Team B score|)\n• The smallest total difference gives the best rank."
+      },
+      {
+        "id": 4,
+        "title": "4. Payment Structure",
+        "items": [
+          "Only the Top 5 players for each match receive payment.",
+          "The distribution of payments is based on the position in the ranking."
+        ]
+      },
+      {
+        "id": 5,
+        "title": "5. Prize Fund",
+        "items": [
+          "The total prize fund is calculated after deducting platform service fees.",
+          "The remaining amount is distributed to the qualifying winners."
+        ]
+      },
+      {
+        "id": 6,
+        "title": "6. Jackpot Rules",
+        "content": "If no participant correctly predicts the exact final score of a match, the contest winners will be determined based on the closest score prediction according to the ranking rules.",
+        "items": [
+          "If no qualifying predictions meet the criteria defined by the platform, XENTRA reserves the right to roll over the remaining prize pool to a future contest or jackpot.",
+          "The platform may also apply the rollover to selected upcoming matches or special contests.",
+          "Rolled-over prize pools may increase the total prize available in future contests."
+        ]
+      },
+      {
+        "id": 7,
+        "title": "7. Match Results",
+        "items": [
+          "The administrator enters official results after the match ends.",
+          "Rankings are automatically calculated based on the final results."
+        ]
+      },
+      {
+        "id": 8,
+        "title": "8. Wallet Updates",
+        "items": [
+          "Wallet balances are automatically updated once results are confirmed."
+        ]
+      },
+      {
+        "id": 9,
+        "title": "9. Fraud & Abuse",
+        "content": "XENTRA reserves the right to suspend or close accounts involved in:",
+        "items": [
+          "Fraud",
+          "Collusion",
+          "System abuse",
+          "Manipulation of contests"
+        ]
+      },
+      {
+        "id": 10,
+        "title": "10. Nature of Contests",
+        "items": [
+          "All contests on XENTRA are skill-based precision competitions where players compete against each other.",
+          "Contest outcomes are determined by precision accuracy and ranking performance.",
+          "XENTRA contests are not sports betting activities."
+        ]
       },
       {
         "id": 11,
-        "title": "11. Changes to Conditions",
-        "content": "These conditions may change at any time. Continued use of the app indicates acceptance of changes."
-      },
-      {
-        "id": 12,
-        "title": "12. Contact",
-        "content": "For assistance, contact XENTRA through the app or email support@xentrasports.com."
+        "title": "11. Special & Featured Contests",
+        "items": [
+          "XENTRA may organize special or featured contests for selected matches, tournaments, or promotional events.",
+          "These contests may include increased prize pools, promotional rewards, or special conditions.",
+          "Details of each featured contest, including entry requirements and prize distribution, will be displayed within the contest before participation.",
+          "By entering a featured contest, participants agree to the specific rules and prize structure displayed for that contest."
+        ]
       }
     ]
   }
