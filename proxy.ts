@@ -357,6 +357,7 @@ const INFO_ROUTES = [
   "/app-privacy-policy",
   "/terms-conditions",
   "/app-terms-conditions",
+  "/app-contest-rules",
   "/terms", // add page later if needed
   "/about-us", // add page later if needed
   "/payment",
