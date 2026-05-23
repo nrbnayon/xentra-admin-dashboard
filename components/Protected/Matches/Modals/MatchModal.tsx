@@ -708,7 +708,7 @@ export default function MatchModal({
                   <span className="text-red-500">*</span>
                 </label>
                 <div className="flex flex-wrap gap-4 items-center">
-                  {[50, 100, 250, 500].map((fee) => (
+                  {[25, 50, 100, 250, 500].map((fee) => (
                     <label
                       key={fee}
                       className="flex items-center gap-1.5 cursor-pointer group"
