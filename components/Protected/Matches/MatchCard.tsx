@@ -178,7 +178,7 @@ export default function MatchCard({
           <div className="flex flex-wrap justify-between w-full max-w-[420px] px-1 gap-2">
             <div className="flex-1 min-w-[100px] flex flex-col justify-center items-center bg-[#242424a6] px-2 py-2 rounded text-white backdrop-blur-sm">
               <p className="font-medium text-[11px] leading-tight opacity-90">
-                {formatDate(match.match_date)}
+                {formatDate(match.match_time_start)}
               </p>
               <p className="font-semibold text-xs">
                 {formatTime(match.match_time_start)}

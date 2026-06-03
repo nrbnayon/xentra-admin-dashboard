@@ -19,6 +19,31 @@ export default function PredictionModal({
 
   if (!isOpen) return null;
 
+  const formatDateTime = (timeStr: string) => {
+    try {
+      if (!timeStr) return { displayDate: "", displayTime: "" };
+      const hasTimezone = /z$/i.test(timeStr) || /[+-]\d{2}:\d{2}$/.test(timeStr);
+      const normalized = hasTimezone ? timeStr : `${timeStr}Z`;
+      const date = new Date(normalized);
+      if (Number.isNaN(date.getTime())) return { displayDate: timeStr, displayTime: timeStr };
+
+      const displayDate = date.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      const displayTime = date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).replace(" ", "");
+      return { displayDate, displayTime };
+    } catch {
+      return { displayDate: timeStr, displayTime: timeStr };
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
@@ -94,7 +119,7 @@ export default function PredictionModal({
                     <input
                       type="text"
                       disabled
-                      value={prediction.match_date}
+                      value={formatDateTime(prediction.match_time_start).displayDate}
                       className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                       aria-label="Match Date"
                     />
@@ -106,7 +131,7 @@ export default function PredictionModal({
                     <input
                       type="text"
                       disabled
-                      value={prediction.match_time_start}
+                      value={formatDateTime(prediction.match_time_start).displayTime}
                       className="w-full border rounded-lg p-2.5 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300"
                       aria-label="Match Time Start"
                     />
